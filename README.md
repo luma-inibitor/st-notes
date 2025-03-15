@@ -14,17 +14,24 @@ Discord:
 - 🧵 [ST discord: Individual character message styles](https://discord.com/channels/1100685673633153084/1335308918259454122)
 
 
-Hide overflow.
+<details><summary>Hide overflow</summary>
+
 ```css
 body { overflow: hidden; }
 ```
+</details>
 
-Style all out=of-context messages
+<details><summary>Style all out-of-context messages</summary>
+
 ```css
 #chat > .mes:has(~ .lastInContext) { opacity: 0.5; }
 ```
+</details>
 
-Collapse hidden (ghost) messages. Made with Discord theme in mind, needs adjustment when used with other themes.
+<details><summary>Collapse hidden (ghost) messages</summary>
+
+Made with Discord theme in mind, needs adjustment when used with other themes.
+
 ```css
 html > body {
   .mes[is_system="true"] {
@@ -46,15 +53,19 @@ html > body {
   }
 }
 ```
+</details>
 
-Hide default Custom CSS text box.
+<details><summary>Hide default Custom CSS text box</summary>
+
 ```css
 .flex-container.flexnowrap.alignitemscenter:has(> textarea#customCSS) {
     display: none !important;
 }
 ```
+</details>
 
-Remove popout button in the quick-reply menu
+<details><summary>Remove popout button in the quick-reply menu</summary>
+
 ```css
 html > body {
     #qr--popoutTrigger {
@@ -65,8 +76,10 @@ html > body {
     }
 }
 ```
+</details>
 
-Show character avatar as the background
+<details><summary>Show character avatar as the background</summary>
+
 ```css
 .zoomed_avatar_container {
     max-height: 100svh;
@@ -93,8 +106,10 @@ Show character avatar as the background
     object-position: center top;
 }
 ```
+</details>
 
-Expand QR only when the input field is focused
+<details><summary>Expand QR only when the input field is focused</summary>
+
 ```css
 #qr--bar {
     max-height: 0;
@@ -111,8 +126,10 @@ Expand QR only when the input field is focused
     transition: all 1s ease-in-out;
 }
 ```
+</details>
 
-Expand QR to a single line on mobile
+<details><summary>Expand QR to a single line on mobile</summary>
+
 ```css
 @media screen and (max-width: 1000px) {
     #qr--bar > .qr--buttons, 
@@ -145,6 +162,7 @@ Expand QR to a single line on mobile
     }
 }
 ```
+</details>
 
 Very fancy character banner display in messages
 <details><summary>Expand for details</summary>
@@ -270,7 +288,8 @@ Very fancy character banner display in messages
   - Borders and shadows (`border`, `box-shadow`)
 </details>
 
-Makes background only appear within the chat width
+<details><summary>Makes background only appear within the chat width</summary>
+
 ```css
 #bg1::before,
 #bg_custom::before {
@@ -302,3 +321,4 @@ Makes background only appear within the chat width
     );
 }
 ```
+</details>
