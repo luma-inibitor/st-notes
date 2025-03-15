@@ -164,8 +164,8 @@ html > body {
 ```
 </details>
 
-Very fancy character banner display in messages
-<details><summary>Expand for details</summary>
+
+<details><summary>Very fancy character banner display in messages</summary>
 
 - 🧵 [By Rivelle in ST discord](https://discord.com/channels/1100685673633153084/1226855443586879519/1332626877226942544)
 - See also: 🧵 [Individual character message styles](https://discord.com/channels/1100685673633153084/1335308918259454122)
