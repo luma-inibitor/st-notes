@@ -162,6 +162,21 @@ function normalize(d) {
     if (typeof f.id !== 'string' || !f.id) f.id = 'finding-' + (i + 1);
     if (typeof f.order !== 'number') f.order = i + 1;
     if (typeof f.statement !== 'string') f.statement = '';
+    // description and evidence are optional and supplied by a separate process:
+    // absent stays absent so this tool never invents fields it does not own.
+    if (f.description !== undefined && typeof f.description !== 'string') {
+      f.description = f.description == null ? '' : String(f.description);
+    }
+    if (f.evidence !== undefined) {
+      f.evidence = arr(f.evidence)
+        .filter(function (e) { return e && typeof e === 'object'; })
+        .map(function (e) {
+          return {
+            file: typeof e.file === 'string' ? e.file : '',
+            symbol: typeof e.symbol === 'string' ? e.symbol : '',
+          };
+        });
+    }
     f.tags = arr(f.tags).filter(function (t) { return typeof t === 'string' && t; });
     if (typeof f.severity !== 'string') f.severity = m.severityVocabulary[m.severityVocabulary.length - 1];
     if (typeof f.grade !== 'string') f.grade = m.gradeVocabulary[0];
@@ -241,6 +256,18 @@ function validate(d) {
     if (!f || typeof f !== 'object') { errs.push(where + ' is not an object'); return; }
     if (typeof f.id !== 'string' || !f.id) errs.push(where + ' has no id');
     if (typeof f.statement !== 'string') errs.push(where + ' statement must be a string');
+    // description / evidence are optional: absent is always fine
+    if (f.description !== undefined && typeof f.description !== 'string') errs.push(where + ' description must be a string');
+    if (f.evidence !== undefined) {
+      if (!Array.isArray(f.evidence)) errs.push(where + ' evidence must be an array');
+      else f.evidence.forEach(function (e, j) {
+        if (!e || typeof e !== 'object') errs.push(where + ' evidence ' + j + ' is not an object');
+        else {
+          if (e.file !== undefined && typeof e.file !== 'string') errs.push(where + ' evidence ' + j + ' file must be a string');
+          if (e.symbol !== undefined && typeof e.symbol !== 'string') errs.push(where + ' evidence ' + j + ' symbol must be a string');
+        }
+      });
+    }
     if (sev.indexOf(f.severity) === -1) errs.push(where + ' severity "' + f.severity + '" not in severityVocabulary');
     if (grd.indexOf(f.grade) === -1) errs.push(where + ' grade "' + f.grade + '" not in gradeVocabulary');
     if (!Array.isArray(f.tags)) errs.push(where + ' tags must be an array');
@@ -367,7 +394,8 @@ function saveState() {
 // mutations
 // ---------------------------------------------------------------------------
 
-const EDITABLE = ['statement', 'tags', 'severity', 'grade', 'cluster', 'decision', 'mergeInto'];
+// evidence is deliberately absent: it is read-only in this tool.
+const EDITABLE = ['statement', 'description', 'tags', 'severity', 'grade', 'cluster', 'decision', 'mergeInto'];
 
 function findIn(d, id) {
   for (let i = 0; i < d.findings.length; i++) if (d.findings[i].id === id) return d.findings[i];
@@ -405,7 +433,7 @@ function applyOp(d, op) {
     } else if (op.field === 'decision') {
       if (v === '' || v == null) v = null;
       else v = String(v);
-    } else if (op.field === 'statement') {
+    } else if (op.field === 'statement' || op.field === 'description') {
       v = String(v == null ? '' : v);
     } else {
       v = String(v);
@@ -750,6 +778,19 @@ main#main { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .rowmain { min-width: 0; flex: 1 1 auto; }
 .rowmeta { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 3px; }
 .stmt { overflow-wrap: anywhere; }
+/* collapsed-row description: subordinate to the headline, clamped to two lines
+   so row height stays scannable. Rendered only when there is text. */
+.desc {
+  margin-top: 2px; color: var(--muted); font-size: 12.5px; line-height: 1.4;
+  overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.evlist { display: flex; flex-direction: column; gap: 3px; }
+.ev {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px;
+  color: var(--muted); overflow-wrap: anywhere;
+}
+.ev .evsym { color: var(--chip-fg); }
 .chip {
   display: inline-flex; align-items: center; gap: 4px; border-radius: 999px;
   padding: 1px 7px; font-size: 11px; border: 1px solid var(--border-strong);
@@ -826,7 +867,7 @@ function CLIENT() {
     save: { state: 'saved' },
     f: {
       severity: [], grade: [], group: [], cluster: [], decision: [], tag: [],
-      ann: 'any', edited: 'any', clus: 'any', q: ''
+      ann: 'any', edited: 'any', clus: 'any', desc: 'any', q: ''
     },
     sort: 'order',
     groupBy: 'none',
@@ -844,6 +885,7 @@ function CLIENT() {
 
   var SECTIONS = [
     { key: 'stmt', title: 'Statement' },
+    { key: 'desc', title: 'Description' },
     { key: 'class', title: 'Classification' },
     { key: 'triage', title: 'Triage' },
     { key: 'ann', title: 'Annotations' }
@@ -874,6 +916,11 @@ function CLIENT() {
     for (var i = 0; i < fs.length; i++) if (fs[i].id === id) return fs[i];
     return null;
   }
+  // description and evidence are optional in the data file; read through helpers
+  // so every call site treats "absent" and "empty" the same way.
+  function descOf(f) { return typeof f.description === 'string' ? f.description : ''; }
+  function hasDesc(f) { return descOf(f).trim() !== ''; }
+  function evidenceOf(f) { return Array.isArray(f.evidence) ? f.evidence : []; }
   function sevClass(s) {
     var known = ['critical', 'high', 'medium', 'low'];
     return inArr(known, s) ? 'sev-' + s : 'sev-other';
@@ -1030,16 +1077,21 @@ function CLIENT() {
       if (state.f.clus === 'none') return f.cluster == null || f.cluster === '';
       return true;
     }
+    if (key === 'desc') {
+      if (state.f.desc === 'has') return hasDesc(f);
+      if (state.f.desc === 'none') return !hasDesc(f);
+      return true;
+    }
     if (key === 'q') {
       var q = state.f.q.trim().toLowerCase();
       if (!q) return true;
-      var hay = (f.id + ' ' + f.statement + ' ' + f.annotations.map(function (a) { return a.text; }).join(' ')).toLowerCase();
+      var hay = (f.id + ' ' + f.statement + ' ' + descOf(f) + ' ' + f.annotations.map(function (a) { return a.text; }).join(' ')).toLowerCase();
       return q.split(/\s+/).every(function (t) { return hay.indexOf(t) !== -1; });
     }
     return true;
   }
 
-  var ALL_FACET_KEYS = ['severity', 'grade', 'tag', 'group', 'cluster', 'decision', 'ann', 'edited', 'clus', 'q'];
+  var ALL_FACET_KEYS = ['severity', 'grade', 'tag', 'group', 'cluster', 'decision', 'ann', 'edited', 'clus', 'desc', 'q'];
 
   function matchesAll(f, exceptKey) {
     for (var i = 0; i < ALL_FACET_KEYS.length; i++) {
@@ -1066,7 +1118,9 @@ function CLIENT() {
       if (facetKey === 'clus') {
         var hasC = f.cluster != null && f.cluster !== '';
         if ((value === 'has') === hasC) n++;
+        return;
       }
+      if (facetKey === 'desc') { if ((value === 'has') === hasDesc(f)) n++; }
     });
     return n;
   }
@@ -1077,13 +1131,14 @@ function CLIENT() {
     if (state.f.ann !== 'any') n++;
     if (state.f.edited !== 'any') n++;
     if (state.f.clus !== 'any') n++;
+    if (state.f.desc !== 'any') n++;
     if (state.f.q.trim()) n++;
     return n;
   }
 
   function clearFilters() {
     FACET_DEFS.forEach(function (d) { state.f[d.key] = []; });
-    state.f.ann = 'any'; state.f.edited = 'any'; state.f.clus = 'any'; state.f.q = '';
+    state.f.ann = 'any'; state.f.edited = 'any'; state.f.clus = 'any'; state.f.desc = 'any'; state.f.q = '';
     renderAll();
   }
 
@@ -1324,7 +1379,7 @@ function CLIENT() {
   }
 
   function searchHtml() {
-    return '<input type="search" id="q" placeholder="Search statements, ids, annotations" value="' + esc(state.f.q) + '" style="width:100%">';
+    return '<input type="search" id="q" placeholder="Search statements, descriptions, ids, annotations" value="' + esc(state.f.q) + '" style="width:100%">';
   }
 
   function renderFacets() {
@@ -1335,7 +1390,7 @@ function CLIENT() {
         var n = state.f[d.key].length;
         return '<button type="button" class="btn" data-pop="' + d.key + '" aria-pressed="false">' + esc(d.title) + (n ? ' (' + n + ')' : '') + '</button>';
       }).join('');
-      var tri = [['ann', 'Annotations'], ['edited', 'Edited'], ['clus', 'Cluster set']].map(function (t) {
+      var tri = [['ann', 'Annotations'], ['edited', 'Edited'], ['clus', 'Cluster set'], ['desc', 'Description']].map(function (t) {
         var on = state.f[t[0]] !== 'any';
         return '<button type="button" class="btn" data-pop="' + t[0] + '" aria-pressed="false"' + (on ? ' style="border-color:var(--accent)"' : '') + '>' + esc(t[1]) + (on ? ': ' + esc(state.f[t[0]]) : '') + '</button>';
       }).join('');
@@ -1356,6 +1411,7 @@ function CLIENT() {
         '<div class="fgroup"><h3>Annotations</h3>' + triGroupHtml('ann', 'Annotations', 'has', 'none') + '</div>' +
         '<div class="fgroup"><h3>Edited</h3>' + triGroupHtml('edited', 'Edited', 'edited', 'untouched') + '</div>' +
         '<div class="fgroup"><h3>Cluster</h3>' + triGroupHtml('clus', 'Cluster', 'has', 'unclustered') + '</div>' +
+        '<div class="fgroup"><h3>Description</h3>' + triGroupHtml('desc', 'Description', 'has description', 'missing description') + '</div>' +
         '</aside>';
     }
     // keep an open popover's content fresh
@@ -1374,6 +1430,7 @@ function CLIENT() {
     if (key === 'ann') return triGroupHtml('ann', 'Annotations', 'has', 'none');
     if (key === 'edited') return triGroupHtml('edited', 'Edited', 'edited', 'untouched');
     if (key === 'clus') return triGroupHtml('clus', 'Cluster', 'has', 'unclustered');
+    if (key === 'desc') return triGroupHtml('desc', 'Description', 'has description', 'missing description');
     return '';
   }
 
@@ -1381,6 +1438,7 @@ function CLIENT() {
     var fl = filtered();
     var decidedF = fl.filter(function (f) { return f.decision != null; }).length;
     var decidedT = findings().filter(function (f) { return f.decision != null; }).length;
+    var describedF = fl.filter(hasDesc).length;
     var sorts = [['order', 'order'], ['severity', 'severity'], ['id', 'id'], ['group', 'group'], ['cluster', 'cluster']];
     var groups = [['none', 'none'], ['severity', 'severity'], ['tag', 'tag'], ['group', 'group'], ['cluster', 'cluster'], ['decision', 'decision'], ['grade', 'grade']];
     $('#viewbar').innerHTML =
@@ -1394,7 +1452,8 @@ function CLIENT() {
       '<button type="button" class="btn sm" id="expandall">Expand all</button>' +
       '<span class="spacer"></span>' +
       '<span id="progress">showing <b>' + fl.length + '</b>/' + findings().length +
-      ' · decided <b>' + decidedF + '</b>/' + fl.length + ' shown, <b>' + decidedT + '</b>/' + findings().length + ' total</span>';
+      ' · decided <b>' + decidedF + '</b>/' + fl.length + ' shown, <b>' + decidedT + '</b>/' + findings().length + ' total' +
+      ' · described <b>' + describedF + '</b>/' + fl.length + ' shown</span>';
   }
 
   function renderBulkBar() {
@@ -1494,6 +1553,21 @@ function CLIENT() {
     var stmt = sectHtml(f.id, 'stmt', 'Statement',
       '<textarea data-edit="statement" data-id="' + esc(f.id) + '" rows="4">' + esc(f.statement) + '</textarea>');
 
+    // description is the body under the one-line statement; evidence sits with it
+    // and is read-only here — it is produced elsewhere.
+    var ev = evidenceOf(f);
+    var evBody = ev.length
+      ? '<div class="field"><span class="flabel">evidence</span></div>' +
+        '<div class="evlist scrollx">' + ev.map(function (e) {
+          var file = typeof e.file === 'string' ? e.file : '';
+          var sym = typeof e.symbol === 'string' ? e.symbol : '';
+          return '<div class="ev">' + esc(file) + (sym ? ' · <span class="evsym">' + esc(sym) + '</span>' : '') + '</div>';
+        }).join('') + '</div>'
+      : '';
+    var desc = sectHtml(f.id, 'desc', 'Description' + (hasDesc(f) ? '' : ' (empty)'),
+      '<textarea data-edit="description" data-id="' + esc(f.id) + '" rows="6" placeholder="Two to four sentences of body text, beneath the one-line statement above.">' + esc(descOf(f)) + '</textarea>' +
+      evBody);
+
     var tagChips = f.tags.map(function (t) {
       return '<span class="chip">' + esc(t) + ' <button type="button" class="btn sm" data-untag="' + esc(t) + '" data-id="' + esc(f.id) + '" title="remove tag" style="padding:0 4px;border:0;background:none">×</button></span>';
     }).join(' ');
@@ -1534,7 +1608,7 @@ function CLIENT() {
       '<div><textarea data-annnew="' + esc(f.id) + '" rows="2" placeholder="Add an annotation (kept separate from the statement)"></textarea>' +
       '<button type="button" class="btn sm" data-annadd="' + esc(f.id) + '">Add annotation</button></div>';
 
-    return '<div class="editor">' + stmt +
+    return '<div class="editor">' + stmt + desc +
       sectHtml(f.id, 'class', 'Classification', cls) +
       sectHtml(f.id, 'triage', 'Triage', triage) +
       sectHtml(f.id, 'ann', 'Annotations (' + f.annotations.length + ')', annBody) +
@@ -1550,6 +1624,7 @@ function CLIENT() {
       '<div class="rowmain">' +
       '<div class="rowmeta scrollx">' + chipsHtml(f) + '</div>' +
       '<div class="stmt">' + linkify(f.statement) + '</div>' +
+      (!open && hasDesc(f) ? '<div class="desc">' + linkify(descOf(f)) + '</div>' : '') +
       '</div>' +
       '<span class="caret">' + (open ? '▾' : '▸') + '</span>' +
       '</div>' +
@@ -1918,7 +1993,8 @@ function CLIENT() {
       var field = ed.getAttribute('data-edit');
       var v = ed.value;
       debounced('edit:' + id + ':' + field, function () {
-        setField(id, field, field === 'statement' ? v : (v.trim() === '' ? null : v.trim()), true);
+        var freeText = field === 'statement' || field === 'description';
+        setField(id, field, freeText ? v : (v.trim() === '' ? null : v.trim()), true);
       });
       return;
     }
