@@ -4,7 +4,7 @@
     "title": "Long-Term Memory findings",
     "ltmPackage": "1.1.6",
     "engine": "2.4.1",
-    "updatedAt": "2026-08-10T22:09:59.073Z",
+    "updatedAt": "2026-08-10T22:17:52.154Z",
     "tagVocabulary": [
       "UX",
       "ARCH",
@@ -325,7 +325,7 @@
         "UX",
         "BUG"
       ],
-      "severity": "medium",
+      "severity": "critical",
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
@@ -695,7 +695,7 @@
         "ARCH",
         "UX"
       ],
-      "severity": "medium",
+      "severity": "high",
       "grade": "source",
       "group": "Review",
       "cluster": null,
@@ -711,13 +711,19 @@
       "tags": [
         "ARCH"
       ],
-      "severity": "medium",
+      "severity": "high",
       "grade": "source",
       "group": "Review",
       "cluster": null,
       "decision": "keep",
       "mergeInto": null,
-      "annotations": [],
+      "annotations": [
+        {
+          "id": "ann-msnsljq1-2cu6w",
+          "text": "Scored high for impact, but deliberately not a priority ask. Real undo means retaining transaction journals instead of deleting them on commit, which is a big lift; the operator does not want the maintainer to prioritise it. Worth stating as context for why bulk accept is risky, not as a request.",
+          "createdAt": "2026-08-10T22:17:52.153Z"
+        }
+      ],
       "edited": true
     },
     {
@@ -762,7 +768,7 @@
         "ARCH",
         "UX"
       ],
-      "severity": "low",
+      "severity": "high",
       "grade": "source",
       "group": "Review",
       "cluster": null,
