@@ -57,6 +57,7 @@ const DEFAULT_TAGS = ['UX', 'ARCH', 'SCALE', 'USER', 'ENV', 'MODEL', 'BUG', 'ENG
 const DEFAULT_SEVERITY = ['critical', 'high', 'medium', 'low'];
 const DEFAULT_GRADE = ['source', 'observed', 'measured', 'reported'];
 const DEFAULT_DECISION = ['keep', 'cut', 'rework', 'merge'];
+const DEFAULT_EFFORT = ['small', 'medium', 'large'];
 
 // What each severity level means, shown in the ? cheatsheet and as tooltips on
 // severity chips and severity selectors. Edit here to reword.
@@ -100,6 +101,7 @@ function fixtureDoc() {
       severityVocabulary: DEFAULT_SEVERITY.slice(),
       gradeVocabulary: DEFAULT_GRADE.slice(),
       decisionVocabulary: DEFAULT_DECISION.slice(),
+      effortVocabulary: DEFAULT_EFFORT.slice(),
     },
     findings: [
       mk('fixture-cold-start', 1, 'Cold start writes no memory at all, so the first session teaches the agent nothing. See finding 3 for the related recall gap.', ['UX', 'ARCH'], 'critical', 'source', 'Lifecycle'),
@@ -154,6 +156,7 @@ function normalize(d) {
   if (!Array.isArray(m.severityVocabulary) || !m.severityVocabulary.length) m.severityVocabulary = DEFAULT_SEVERITY.slice();
   if (!Array.isArray(m.gradeVocabulary) || !m.gradeVocabulary.length) m.gradeVocabulary = DEFAULT_GRADE.slice();
   if (!Array.isArray(m.decisionVocabulary) || !m.decisionVocabulary.length) m.decisionVocabulary = DEFAULT_DECISION.slice();
+  if (!Array.isArray(m.effortVocabulary) || !m.effortVocabulary.length) m.effortVocabulary = DEFAULT_EFFORT.slice();
   if (!Array.isArray(d.findings)) throw new Error('data file has no findings array');
   d.removed = arr(d.removed);
   d.notes = arr(d.notes);
@@ -176,6 +179,13 @@ function normalize(d) {
             symbol: typeof e.symbol === 'string' ? e.symbol : '',
           };
         });
+    }
+    // fix and effort are optional in the same way: absent stays absent.
+    if (f.fix !== undefined && typeof f.fix !== 'string') {
+      f.fix = f.fix == null ? '' : String(f.fix);
+    }
+    if (f.effort !== undefined && f.effort !== null && typeof f.effort !== 'string') {
+      f.effort = String(f.effort);
     }
     f.tags = arr(f.tags).filter(function (t) { return typeof t === 'string' && t; });
     if (typeof f.severity !== 'string') f.severity = m.severityVocabulary[m.severityVocabulary.length - 1];
@@ -236,8 +246,10 @@ function validate(d) {
   const grd = arr(m.gradeVocabulary);
   const tgs = arr(m.tagVocabulary);
   const dec = arr(m.decisionVocabulary);
+  const eff = arr(m.effortVocabulary);
   if (!sev.length) errs.push('meta.severityVocabulary is empty');
   if (!grd.length) errs.push('meta.gradeVocabulary is empty');
+  if (!eff.length) errs.push('meta.effortVocabulary is empty');
   if (!Array.isArray(d.findings)) return ['findings is not an array'];
 
   const ids = Object.create(null);
@@ -268,6 +280,9 @@ function validate(d) {
         }
       });
     }
+    // fix / effort are optional: absent is always fine
+    if (f.fix !== undefined && typeof f.fix !== 'string') errs.push(where + ' fix must be a string');
+    if (f.effort !== undefined && f.effort !== null && eff.indexOf(f.effort) === -1) errs.push(where + ' effort "' + f.effort + '" not in effortVocabulary');
     if (sev.indexOf(f.severity) === -1) errs.push(where + ' severity "' + f.severity + '" not in severityVocabulary');
     if (grd.indexOf(f.grade) === -1) errs.push(where + ' grade "' + f.grade + '" not in gradeVocabulary');
     if (!Array.isArray(f.tags)) errs.push(where + ' tags must be an array');
@@ -395,7 +410,7 @@ function saveState() {
 // ---------------------------------------------------------------------------
 
 // evidence is deliberately absent: it is read-only in this tool.
-const EDITABLE = ['statement', 'description', 'tags', 'severity', 'grade', 'cluster', 'decision', 'mergeInto'];
+const EDITABLE = ['statement', 'description', 'fix', 'effort', 'tags', 'severity', 'grade', 'cluster', 'decision', 'mergeInto'];
 
 function findIn(d, id) {
   for (let i = 0; i < d.findings.length; i++) if (d.findings[i].id === id) return d.findings[i];
@@ -430,10 +445,10 @@ function applyOp(d, op) {
     } else if (op.field === 'cluster' || op.field === 'mergeInto') {
       if (v === '' || v == null) v = null;
       else v = String(v).trim() || null;
-    } else if (op.field === 'decision') {
+    } else if (op.field === 'decision' || op.field === 'effort') {
       if (v === '' || v == null) v = null;
       else v = String(v);
-    } else if (op.field === 'statement' || op.field === 'description') {
+    } else if (op.field === 'statement' || op.field === 'description' || op.field === 'fix') {
       v = String(v == null ? '' : v);
     } else {
       v = String(v);
@@ -493,6 +508,8 @@ function applyOp(d, op) {
         f.cluster = c;
       } else if (kind === 'decision') {
         f.decision = op.value == null || op.value === '' ? null : String(op.value);
+      } else if (kind === 'effort') {
+        f.effort = op.value == null || op.value === '' ? null : String(op.value);
       } else {
         throw new Error('unknown bulk op: ' + kind);
       }
@@ -649,6 +666,9 @@ const CSS = `
   --err: #b3261e;
   --chip-bg: #e8ebf1;
   --chip-fg: #2b3340;
+  /* effort sits next to severity on a row, so it gets its own hue (cool violet,
+     square-ish) and can never be mistaken for a severity chip. */
+  --eff-bg: #e9e2fb; --eff-fg: #46308c; --eff-bd: #bfb0e8;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -672,6 +692,7 @@ const CSS = `
     --err: #ff8f86;
     --chip-bg: #2a3038;
     --chip-fg: #cfd6e0;
+    --eff-bg: #251d3d; --eff-fg: #cbbcf5; --eff-bd: #43356b;
   }
 }
 html, body { margin: 0; padding: 0; }
@@ -801,6 +822,8 @@ main#main { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .chip.sev-medium { background: var(--sev-medium-bg); color: var(--sev-medium-fg); border-color: var(--sev-medium-bd); }
 .chip.sev-low { background: var(--sev-low-bg); color: var(--sev-low-fg); border-color: var(--sev-low-bd); }
 .chip.sev-other { background: var(--sev-other-bg); color: var(--sev-other-fg); border-color: var(--sev-other-bd); }
+/* squared corners and a prefix keep effort readable as "not a severity" */
+.chip.eff { background: var(--eff-bg); color: var(--eff-fg); border-color: var(--eff-bd); border-radius: 4px; }
 .chip.idchip { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; cursor: default; }
 .chip.dec { border-style: dashed; }
 .chip.flag { cursor: default; }
@@ -866,7 +889,7 @@ function CLIENT() {
     doc: null,
     save: { state: 'saved' },
     f: {
-      severity: [], grade: [], group: [], cluster: [], decision: [], tag: [],
+      severity: [], grade: [], group: [], cluster: [], decision: [], effort: [], tag: [],
       ann: 'any', edited: 'any', clus: 'any', desc: 'any', q: ''
     },
     sort: 'order',
@@ -886,6 +909,7 @@ function CLIENT() {
   var SECTIONS = [
     { key: 'stmt', title: 'Statement' },
     { key: 'desc', title: 'Description' },
+    { key: 'fix', title: 'Proposed fix' },
     { key: 'class', title: 'Classification' },
     { key: 'triage', title: 'Triage' },
     { key: 'ann', title: 'Annotations' }
@@ -921,6 +945,9 @@ function CLIENT() {
   function descOf(f) { return typeof f.description === 'string' ? f.description : ''; }
   function hasDesc(f) { return descOf(f).trim() !== ''; }
   function evidenceOf(f) { return Array.isArray(f.evidence) ? f.evidence : []; }
+  function fixOf(f) { return typeof f.fix === 'string' ? f.fix : ''; }
+  function hasFix(f) { return fixOf(f).trim() !== ''; }
+  function effortOf(f) { return typeof f.effort === 'string' && f.effort ? f.effort : null; }
   function sevClass(s) {
     var known = ['critical', 'high', 'medium', 'low'];
     return inArr(known, s) ? 'sev-' + s : 'sev-other';
@@ -1030,7 +1057,8 @@ function CLIENT() {
     { key: 'tag', title: 'Tag', values: function () { return usedValues(function (f) { return f.tags; }, meta().tagVocabulary); }, of: function (f) { return f.tags.slice(); } },
     { key: 'group', title: 'Group', values: function () { return usedValues(function (f) { return [f.group == null ? UNSET : f.group]; }, []); }, of: function (f) { return [f.group == null ? UNSET : f.group]; } },
     { key: 'cluster', title: 'Cluster', values: function () { return usedValues(function (f) { return [f.cluster == null ? UNSET : f.cluster]; }, []); }, of: function (f) { return [f.cluster == null ? UNSET : f.cluster]; } },
-    { key: 'decision', title: 'Decision', values: function () { return meta().decisionVocabulary.concat([UNSET]); }, of: function (f) { return [f.decision == null ? UNSET : f.decision]; } }
+    { key: 'decision', title: 'Decision', values: function () { return meta().decisionVocabulary.concat([UNSET]); }, of: function (f) { return [f.decision == null ? UNSET : f.decision]; } },
+    { key: 'effort', title: 'Effort', values: function () { return meta().effortVocabulary.concat([UNSET]); }, of: function (f) { return [effortOf(f) == null ? UNSET : effortOf(f)]; } }
   ];
 
   function usedValues(get, seed) {
@@ -1085,13 +1113,13 @@ function CLIENT() {
     if (key === 'q') {
       var q = state.f.q.trim().toLowerCase();
       if (!q) return true;
-      var hay = (f.id + ' ' + f.statement + ' ' + descOf(f) + ' ' + f.annotations.map(function (a) { return a.text; }).join(' ')).toLowerCase();
+      var hay = (f.id + ' ' + f.statement + ' ' + descOf(f) + ' ' + fixOf(f) + ' ' + f.annotations.map(function (a) { return a.text; }).join(' ')).toLowerCase();
       return q.split(/\s+/).every(function (t) { return hay.indexOf(t) !== -1; });
     }
     return true;
   }
 
-  var ALL_FACET_KEYS = ['severity', 'grade', 'tag', 'group', 'cluster', 'decision', 'ann', 'edited', 'clus', 'desc', 'q'];
+  var ALL_FACET_KEYS = ['severity', 'grade', 'tag', 'group', 'cluster', 'decision', 'effort', 'ann', 'edited', 'clus', 'desc', 'q'];
 
   function matchesAll(f, exceptKey) {
     for (var i = 0; i < ALL_FACET_KEYS.length; i++) {
@@ -1379,7 +1407,7 @@ function CLIENT() {
   }
 
   function searchHtml() {
-    return '<input type="search" id="q" placeholder="Search statements, descriptions, ids, annotations" value="' + esc(state.f.q) + '" style="width:100%">';
+    return '<input type="search" id="q" placeholder="Search statements, descriptions, fixes, ids, annotations" value="' + esc(state.f.q) + '" style="width:100%">';
   }
 
   function renderFacets() {
@@ -1439,6 +1467,7 @@ function CLIENT() {
     var decidedF = fl.filter(function (f) { return f.decision != null; }).length;
     var decidedT = findings().filter(function (f) { return f.decision != null; }).length;
     var describedF = fl.filter(hasDesc).length;
+    var fixedF = fl.filter(hasFix).length;
     var sorts = [['order', 'order'], ['severity', 'severity'], ['id', 'id'], ['group', 'group'], ['cluster', 'cluster']];
     var groups = [['none', 'none'], ['severity', 'severity'], ['tag', 'tag'], ['group', 'group'], ['cluster', 'cluster'], ['decision', 'decision'], ['grade', 'grade']];
     $('#viewbar').innerHTML =
@@ -1453,7 +1482,8 @@ function CLIENT() {
       '<span class="spacer"></span>' +
       '<span id="progress">showing <b>' + fl.length + '</b>/' + findings().length +
       ' · decided <b>' + decidedF + '</b>/' + fl.length + ' shown, <b>' + decidedT + '</b>/' + findings().length + ' total' +
-      ' · described <b>' + describedF + '</b>/' + fl.length + ' shown</span>';
+      ' · described <b>' + describedF + '</b>/' + fl.length + ' shown' +
+      ' · with fix <b>' + fixedF + '</b>/' + fl.length + ' shown</span>';
   }
 
   function renderBulkBar() {
@@ -1472,6 +1502,9 @@ function CLIENT() {
       '</select></label>' +
       '<label>decision <select data-bulkval="decision"><option value="">…</option>' +
       m.decisionVocabulary.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join('') +
+      '<option value="__clear__">(clear)</option></select></label>' +
+      '<label>effort <select data-bulkval="effort"><option value="">…</option>' +
+      m.effortVocabulary.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join('') +
       '<option value="__clear__">(clear)</option></select></label>' +
       '<label>add tag <input type="text" data-bulkin="addTag" list="dl-tags" size="9"></label>' +
       '<button type="button" class="btn sm" data-bulk="addTag">Add</button>' +
@@ -1525,6 +1558,8 @@ function CLIENT() {
   function chipsHtml(f) {
     var out = '';
     out += '<button type="button" class="chip ' + sevClass(f.severity) + '" data-chip="severity" data-val="' + esc(f.severity) + '" title="' + esc(sevTitle(f.severity, 'Filter by severity')) + '">' + esc(f.severity) + '</button>';
+    var eff = effortOf(f);
+    if (eff) out += '<button type="button" class="chip eff" data-chip="effort" data-val="' + esc(eff) + '" title="Estimated effort — filter by effort">⚒ ' + esc(eff) + '</button>';
     out += '<button type="button" class="chip" data-chip="grade" data-val="' + esc(f.grade) + '" title="Filter by grade">' + esc(f.grade) + '</button>';
     f.tags.forEach(function (t) {
       out += '<button type="button" class="chip" data-chip="tag" data-val="' + esc(t) + '" title="Filter by tag">' + esc(t) + '</button>';
@@ -1568,6 +1603,17 @@ function CLIENT() {
       '<textarea data-edit="description" data-id="' + esc(f.id) + '" rows="6" placeholder="Two to four sentences of body text, beneath the one-line statement above.">' + esc(descOf(f)) + '</textarea>' +
       evBody);
 
+    // proposed fix: the one-sentence change being proposed, plus how big it is.
+    var effCur = effortOf(f);
+    var fixBody =
+      '<textarea data-edit="fix" data-id="' + esc(f.id) + '" rows="3" placeholder="One sentence: the change being proposed.">' + esc(fixOf(f)) + '</textarea>' +
+      '<div class="field"><span class="flabel">effort</span>' +
+      '<select data-edit="effort" data-id="' + esc(f.id) + '">' +
+      '<option value=""' + (effCur == null ? ' selected' : '') + '>' + esc(UNSET) + '</option>' +
+      m.effortVocabulary.map(function (v) { return '<option value="' + esc(v) + '"' + (effCur === v ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('') +
+      '</select></div>';
+    var fix = sectHtml(f.id, 'fix', 'Proposed fix' + (hasFix(f) ? '' : ' (empty)'), fixBody);
+
     var tagChips = f.tags.map(function (t) {
       return '<span class="chip">' + esc(t) + ' <button type="button" class="btn sm" data-untag="' + esc(t) + '" data-id="' + esc(f.id) + '" title="remove tag" style="padding:0 4px;border:0;background:none">×</button></span>';
     }).join(' ');
@@ -1608,7 +1654,7 @@ function CLIENT() {
       '<div><textarea data-annnew="' + esc(f.id) + '" rows="2" placeholder="Add an annotation (kept separate from the statement)"></textarea>' +
       '<button type="button" class="btn sm" data-annadd="' + esc(f.id) + '">Add annotation</button></div>';
 
-    return '<div class="editor">' + stmt + desc +
+    return '<div class="editor">' + stmt + desc + fix +
       sectHtml(f.id, 'class', 'Classification', cls) +
       sectHtml(f.id, 'triage', 'Triage', triage) +
       sectHtml(f.id, 'ann', 'Annotations (' + f.annotations.length + ')', annBody) +
@@ -1965,6 +2011,7 @@ function CLIENT() {
       if (!val) return;
       if (kind === 'severity') doBulk('severity', val, true, 'Set severity "' + val + '"');
       else if (kind === 'decision') doBulk('decision', val === '__clear__' ? '' : val, true, val === '__clear__' ? 'Clear decision' : 'Set decision "' + val + '"');
+      else if (kind === 'effort') doBulk('effort', val === '__clear__' ? '' : val, true, val === '__clear__' ? 'Clear effort' : 'Set effort "' + val + '"');
       return;
     }
     var ed = t.closest && t.closest('[data-edit]');
@@ -1993,7 +2040,7 @@ function CLIENT() {
       var field = ed.getAttribute('data-edit');
       var v = ed.value;
       debounced('edit:' + id + ':' + field, function () {
-        var freeText = field === 'statement' || field === 'description';
+        var freeText = field === 'statement' || field === 'description' || field === 'fix';
         setField(id, field, freeText ? v : (v.trim() === '' ? null : v.trim()), true);
       });
       return;

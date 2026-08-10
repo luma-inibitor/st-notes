@@ -4,7 +4,7 @@
     "title": "Long-Term Memory findings",
     "ltmPackage": "1.1.6",
     "engine": "2.4.1",
-    "updatedAt": "2026-08-10T22:51:41.876Z",
+    "updatedAt": "2026-08-10T23:06:44.063Z",
     "tagVocabulary": [
       "UX",
       "ARCH",
@@ -34,6 +34,11 @@
       "cut",
       "rework",
       "merge"
+    ],
+    "effortVocabulary": [
+      "small",
+      "medium",
+      "large"
     ]
   },
   "findings": [
@@ -63,7 +68,9 @@
           "file": "LtmWorkspace.tsx",
           "symbol": "review summary"
         }
-      ]
+      ],
+      "fix": "Add a collapsible glossary block to LtmWorkspace.tsx that defines source note, extraction, evidence unit, mutation, draft, note, section and chunk in one line each.",
+      "effort": "small"
     },
     {
       "id": "default-source-tab-opens-empty",
@@ -90,7 +97,9 @@
           "file": "en.json",
           "symbol": "ui.longTermMemory.sourcesworkspace.noNewOrRetryableSourcesAreReadyToImport"
         }
-      ]
+      ],
+      "fix": "Initialise the tab state in SourcesWorkspace.tsx to the first entry in sourceTabs that has importable items rather than hardcoding \"chats\".",
+      "effort": "small"
     },
     {
       "id": "only-summaries-are-ingestible",
@@ -118,7 +127,9 @@
           "file": "schema.ts",
           "symbol": "ltmSourceProvenanceSchema, createNoteBody"
         }
-      ]
+      ],
+      "fix": "Add a raw transcript source kind to ltmSourceProvenanceSchema with an interop.ts branch that reads chat messages instead of only chat.metadata summary entries.",
+      "effort": "large"
     },
     {
       "id": "curation-and-recall-share-one-surface",
@@ -150,7 +161,9 @@
           "file": "LastInjectionSummary.tsx",
           "symbol": "last-injection readout"
         }
-      ]
+      ],
+      "fix": "Add a Recall destination to LongTermMemoryNavigation.tsx that hosts the LastInjectionSummary content as a full surface instead of a collapsed block inside the curation workspace.",
+      "effort": "medium"
     },
     {
       "id": "source-notes-counted-as-memories",
@@ -182,7 +195,9 @@
           "file": "schema.ts",
           "symbol": "ltmNoteTypeSchema"
         }
-      ]
+      ],
+      "fix": "Exclude notes of type source from the totals computed by writeLtmNoteSummary() in index-state.ts so the navigation badge and vault total count only recallable memories.",
+      "effort": "small"
     },
     {
       "id": "preset-voids-injection",
@@ -211,7 +226,9 @@
           "file": "generation-injection.ts",
           "symbol": "recordGenerationLongTermMemoryDispatch()"
         }
-      ]
+      ],
+      "fix": "In generate.routes.ts assign a longTermMemoryRecallReceipt marked as skipped when presetOwnsAgentPlacement is set with no long-term-memory agent_data section so the dispatch record shows recall was dropped.",
+      "effort": "medium"
     },
     {
       "id": "injection-readout-has-no-negative-state",
@@ -240,7 +257,9 @@
           "file": "generation-injection.ts",
           "symbol": "recordGenerationLongTermMemoryDispatch()"
         }
-      ]
+      ],
+      "fix": "Have recordGenerationLongTermMemoryDispatch() write a zero-count record with a timestamp when a turn injects nothing so LastInjectionSummary.tsx can render an explicit nothing-injected state instead of stale values.",
+      "effort": "medium"
     },
     {
       "id": "imports-are-born-roleplay-only",
@@ -277,7 +296,9 @@
           "file": "MemoryVault.tsx",
           "symbol": "newNote"
         }
-      ]
+      ],
+      "fix": "Make resolvedMode in source-extraction.ts and newNote in MemoryVault.tsx default to all three modes when no chat mode is known instead of falling back to roleplay.",
+      "effort": "small"
     },
     {
       "id": "mode-eligibility-invisible-at-accept",
@@ -304,7 +325,9 @@
           "file": "MemoryVault.tsx",
           "symbol": "note editor, batch(\"modes\")"
         }
-      ]
+      ],
+      "fix": "Replace the read-only modes text in ReviewQueue.tsx with the per-mode checkbox control from the MemoryVault.tsx note editor and send the chosen modes with the accept call.",
+      "effort": "medium"
     },
     {
       "id": "nothing-recalled-is-one-message",
@@ -331,7 +354,9 @@
           "file": "generation-injection.ts",
           "symbol": "prepareGenerationLongTermMemory()"
         }
-      ]
+      ],
+      "fix": "Populate rejected candidates in budget.ts unconditionally rather than only when explain is set and show the dominant rejectionReason in the recall readout.",
+      "effort": "small"
     },
     {
       "id": "explain-data-mostly-never-leaves-the-process",
@@ -367,7 +392,9 @@
           "file": "ActivityView.tsx",
           "symbol": "recall_explanation rendering"
         }
-      ]
+      ],
+      "fix": "Include laneScores, rawLaneScores, normalizedScore, finalNormalizedScore, the fused score, tier and cooldownPenalty in the recall_explanation event emitted by prepareGenerationLongTermMemory().",
+      "effort": "small"
     },
     {
       "id": "recency-weighting-is-unreachable",
@@ -409,7 +436,9 @@
           "file": "retention.ts",
           "symbol": "pruning read of lastInjectedAt"
         }
-      ]
+      ],
+      "fix": "Pass a cooldowns option derived from each candidate's lastInjectedAt into reciprocalRankFuse() from retrieveLongTermMemory() in retrieval.ts.",
+      "effort": "medium"
     },
     {
       "id": "no-chronology-between-event-memories",
@@ -441,7 +470,9 @@
           "file": "schema.ts",
           "symbol": "ltmSectionSchema, ltmMemoryChunkSchema"
         }
-      ]
+      ],
+      "fix": "Add an optional in-world timestamp field to ltmSectionSchema that extraction populates and that serializeLongTermMemoryPrompt() uses to order TIMELINE bullets.",
+      "effort": "large"
     },
     {
       "id": "injected-lines-cannot-be-attributed",
@@ -472,7 +503,9 @@
           "file": "LastInjectionSummary.tsx",
           "symbol": "recalled note list"
         }
-      ]
+      ],
+      "fix": "Emit the owning note title and section key alongside every world, timeline_event, thread, tone and scene bullet in memoryTitle() in prompt.ts.",
+      "effort": "small"
     },
     {
       "id": "embedding-lane-can-die-silently",
@@ -510,7 +543,9 @@
           "file": "ltmStatusResponseSchema",
           "symbol": "embeddingsAvailable"
         }
-      ]
+      ],
+      "fix": "Render the embeddingsAvailable field already returned by /status as a degraded semantic lane warning in LongTermMemoryDetail.tsx.",
+      "effort": "small"
     },
     {
       "id": "index-rebuild-failure-invisible",
@@ -542,7 +577,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "indexRebuildFailures"
         }
-      ]
+      ],
+      "fix": "Leave the indexes marked dirty in applyInner() in reconciliation.ts when rebuildLongTermMemoryIndexes throws so vault health reports the failure instead of reading healthy.",
+      "effort": "small"
     },
     {
       "id": "empty-trusted-roster-still-enforces",
@@ -581,7 +618,9 @@
           "file": "SourcesWorkspace.tsx",
           "symbol": "import targets"
         }
-      ]
+      ],
+      "fix": "Skip enforceTrustedSubjects in source-extraction.ts when loadTrustedLtmSubjectCatalog() returns a roster with zero entries.",
+      "effort": "small"
     },
     {
       "id": "persona-scope-not-settable-in-ui",
@@ -619,7 +658,9 @@
           "file": "SourcesWorkspace.tsx",
           "symbol": "import targets"
         }
-      ]
+      ],
+      "fix": "Add an add-persona control to the scope editor in MemoryVault.tsx beside the existing chat, group and character-id inputs.",
+      "effort": "small"
     },
     {
       "id": "rejected-candidates-are-easy-to-miss",
@@ -650,7 +691,9 @@
           "file": "routes.ts",
           "symbol": "/rejected-suggestions"
         }
-      ]
+      ],
+      "fix": "Show the count returned by /rejected-suggestions as a badge on the review queue header and open the details panel when that count is non-zero.",
+      "effort": "small"
     },
     {
       "id": "block-reasons-are-raw-enum-names",
@@ -677,7 +720,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "block reason rendering"
         }
-      ]
+      ],
+      "fix": "Add the eight draft block reason codes to rejectionReasonLabels and its parallel suggested-fix table in ReviewQueue.tsx.",
+      "effort": "small"
     },
     {
       "id": "completion-summary-omits-what-was-dropped",
@@ -704,7 +749,9 @@
           "file": "SourcesWorkspace.tsx",
           "symbol": "importResultSummary"
         }
-      ]
+      ],
+      "fix": "Include totalCandidates, keptUnits and droppedUnits from summarizeExtractionOutcome() in the importResultSummary rendered by SourcesWorkspace.tsx.",
+      "effort": "small"
     },
     {
       "id": "null-for-optional-fails-the-whole-unit",
@@ -737,7 +784,9 @@
           "file": "schema",
           "symbol": "ltmEvidenceUnitSchema"
         }
-      ]
+      ],
+      "fix": "Strip null-valued optional fields in normalizeEvidenceUnitResponse() before parseEvidenceUnitPayload validates the unit.",
+      "effort": "small"
     },
     {
       "id": "structured-output-needs-are-unstated",
@@ -770,7 +819,9 @@
           "file": "evidence-unit-extraction.ts",
           "symbol": "extractJsonObject"
         }
-      ]
+      ],
+      "fix": "State the json_schema with strict false requirement in the extraction model help text in MemorySettings.tsx.",
+      "effort": "small"
     },
     {
       "id": "truncated-output-discards-everything",
@@ -798,7 +849,9 @@
           "file": "MemorySettings.tsx",
           "symbol": "maxOutputTokens"
         }
-      ]
+      ],
+      "fix": "Parse the buffered response up to the last complete evidence unit in runLongTermMemoryEvidenceUnitExtraction() instead of throwing ltm_model_output_truncated.",
+      "effort": "medium"
     },
     {
       "id": "no-size-guard-before-the-model-call",
@@ -821,7 +874,9 @@
           "file": "evidence-unit-extraction.ts",
           "symbol": "preflightExtractionPromptContext()"
         }
-      ]
+      ],
+      "fix": "Apply a fixed fallback character budget in preflightExtractionPromptContext() when the provider reports no context window instead of early-returning unchecked.",
+      "effort": "small"
     },
     {
       "id": "extraction-progress-is-unobservable",
@@ -850,7 +905,9 @@
           "file": "SourcesWorkspace.tsx",
           "symbol": "import panel"
         }
-      ]
+      ],
+      "fix": "Return POST /import/source-notes as an SSE stream that emits a per-source completion event the import panel in SourcesWorkspace.tsx renders as progress.",
+      "effort": "medium"
     },
     {
       "id": "package-cannot-set-its-own-timeout",
@@ -882,7 +939,9 @@
           "file": "runtime-config.ts",
           "symbol": "getChatGenerationTimeoutMs"
         }
-      ]
+      ],
+      "fix": "Expose a timeoutMs option on the capability language-model surface in package-runtime.ts that forwards to the existing withLlmRequestTimeout helper.",
+      "effort": "medium"
     },
     {
       "id": "re-extraction-is-one-at-a-time",
@@ -914,7 +973,9 @@
           "file": "routes.ts",
           "symbol": "extract handler"
         }
-      ]
+      ],
+      "fix": "Point reextract() in SourcesWorkspace.tsx at the existing batch POST /import/source-notes route with the multi-selected source ids.",
+      "effort": "small"
     },
     {
       "id": "draft-freshness-flips-with-no-notification",
@@ -946,7 +1007,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "freshnessLabel"
         }
-      ]
+      ],
+      "fix": "Add a stale-draft count computed from draftFreshness() to the review summary in LtmWorkspace.tsx so the transition is visible without opening the queue.",
+      "effort": "small"
     },
     {
       "id": "bulk-gaps-are-specific",
@@ -978,7 +1041,9 @@
           "file": "SourcesWorkspace.tsx",
           "symbol": "reextract()"
         }
-      ]
+      ],
+      "fix": "Add batch accept and skip routes modelled on POST /notes/batch and drive them from runBatch() in ReviewQueue.tsx.",
+      "effort": "medium"
     },
     {
       "id": "one-hard-coded-grouping-axis",
@@ -1007,7 +1072,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "/drafts/review query"
         }
-      ]
+      ],
+      "fix": "Pivot ReviewQueue.tsx to group rows under the target memory title that targets[] already returns.",
+      "effort": "medium"
     },
     {
       "id": "selection-is-wiped-on-navigation",
@@ -1035,7 +1102,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "runBatch()"
         }
-      ]
+      ],
+      "fix": "Narrow the selectedIds reset effect in ReviewQueue.tsx so selection clears only on chat change, not on source or draft change.",
+      "effort": "small"
     },
     {
       "id": "in-progress-review-state-is-lost",
@@ -1063,7 +1132,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "selectedIds/editedById reset effect"
         }
-      ]
+      ],
+      "fix": "Persist selectedIds and editedById to localStorage keyed by chat id so a reload restores the in-progress pass.",
+      "effort": "small"
     },
     {
       "id": "no-review-progress-or-keyboard-path",
@@ -1091,7 +1162,9 @@
           "file": "LtmWorkspace.tsx",
           "symbol": "key handling"
         }
-      ]
+      ],
+      "fix": "Compute a reviewed-of-total figure from the counts already in the review summary and render it as a progress line above the queue.",
+      "effort": "small"
     },
     {
       "id": "conflicts-are-absent-from-review",
@@ -1120,7 +1193,9 @@
           "file": "MemoryVault.tsx",
           "symbol": "conflict block"
         }
-      ]
+      ],
+      "fix": "Render mutation.note.conflicts on the review row showing conflict.existing beside conflict.proposed.",
+      "effort": "medium"
     },
     {
       "id": "destructive-and-additive-accepts-look-alike",
@@ -1152,7 +1227,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "mutation row"
         }
-      ]
+      ],
+      "fix": "Label every mutation row with the disposition value dispositionForMutation() already computes so rewrites read differently from merges.",
+      "effort": "small"
     },
     {
       "id": "whole-draft-invariants-are-invisible-until-apply",
@@ -1176,7 +1253,9 @@
           "file": "reconciliation.ts",
           "symbol": "preflight()"
         }
-      ]
+      ],
+      "fix": "Expose preflight() through a dry-run review endpoint the queue calls on selection change so invariant failures land on the offending rows.",
+      "effort": "medium"
     },
     {
       "id": "rejecting-is-unrecoverable-while-undecided-is-safe",
@@ -1208,7 +1287,9 @@
           "file": "draft-projector.ts",
           "symbol": "uniqueLinks()"
         }
-      ]
+      ],
+      "fix": "Run filterAutoApplyDependencies() over the full pre-rejection mutation pool so a rejected dependency can still be auto-included.",
+      "effort": "small"
     },
     {
       "id": "applying-cannot-be-undone",
@@ -1245,7 +1326,9 @@
           "file": "mutation-transaction.ts",
           "symbol": "recoverLtmMutations()"
         }
-      ]
+      ],
+      "fix": "Stop publish() from remove()ing committed journals so the last N retained before-states can back a revert route.",
+      "effort": "large"
     },
     {
       "id": "fourteen-of-twenty-five-apply-failures-are-knowable-early",
@@ -1273,7 +1356,9 @@
           "file": "draft-projector.ts",
           "symbol": "mergeSection()"
         }
-      ]
+      ],
+      "fix": "Add a preview endpoint that runs preflight() and the mergeSection() cap checks over the current selection so knowable failures appear as row-level marks before submit.",
+      "effort": "medium"
     },
     {
       "id": "partial-apply-rewrites-the-draft",
@@ -1297,7 +1382,9 @@
           "file": "reconciliation.ts",
           "symbol": "applyInner()"
         }
-      ]
+      ],
+      "fix": "Have applyInner() mark applied mutations with an applied flag instead of replacing draft.mutations with only the skipped ones.",
+      "effort": "medium"
     },
     {
       "id": "weak-subject-matches-are-not-flagged",
@@ -1325,7 +1412,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "mutation row"
         }
-      ]
+      ],
+      "fix": "Thread match.basis from subject-identity.ts onto the mutation so the review row can badge every non-exact_name binding.",
+      "effort": "medium"
     },
     {
       "id": "auto-apply-is-unannounced",
@@ -1349,7 +1438,9 @@
           "file": "reconciliation.ts",
           "symbol": "lowRisk()"
         }
-      ]
+      ],
+      "fix": "List mutations that passed the lowRisk() gate in reconciliation.ts as an already-applied section in ReviewQueue.tsx.",
+      "effort": "medium"
     },
     {
       "id": "the-editor-is-unlabeled-and-partial",
@@ -1376,7 +1467,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "editedMutations assembly"
         }
-      ]
+      ],
+      "fix": "Add a visible Edit control on the mutation row that opens MutationEditor.",
+      "effort": "small"
     },
     {
       "id": "section-text-is-silently-truncated",
@@ -1404,7 +1497,9 @@
           "file": "draft-projector.ts",
           "symbol": "mergeSection()"
         }
-      ]
+      ],
+      "fix": "Replace boundedTrim in the editor with a live character counter against the 20,000-character cap that blocks save rather than cutting text.",
+      "effort": "small"
     },
     {
       "id": "link-targets-are-invisible",
@@ -1435,7 +1530,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "MutationEditor"
         }
-      ]
+      ],
+      "fix": "Resolve an add_link mutation's target id to its note title in the row using the id-to-title lookup the queue already applies elsewhere.",
+      "effort": "small"
     },
     {
       "id": "no-usage-signal-on-what-is-being-replaced",
@@ -1466,7 +1563,9 @@
           "file": "ActivityView.tsx",
           "symbol": "recall workflow view"
         }
-      ]
+      ],
+      "fix": "Increment a cumulative recallCount beside lastInjectedAt in usage.ts so review rows can show how often the text being replaced has been used.",
+      "effort": "medium"
     },
     {
       "id": "caps-are-cliffs",
@@ -1499,7 +1598,9 @@
           "file": "ReviewQueue.tsx",
           "symbol": "maxLength / boundedTrim"
         }
-      ]
+      ],
+      "fix": "Return each target note's current section length, contribution count and keyword count in the draft review response so rows show cap pressure before apply.",
+      "effort": "medium"
     },
     {
       "id": "saturation-is-the-steady-state",
@@ -1527,7 +1628,9 @@
           "file": "draft-projector.ts",
           "symbol": "mergeSection()"
         }
-      ]
+      ],
+      "fix": "Add a compaction pass that rewrites additive sections as they approach their caps instead of only unioning contributions in mergeSection().",
+      "effort": "large"
     },
     {
       "id": "stored-dedup-cannot-fire",
@@ -1559,7 +1662,9 @@
           "file": "measurement",
           "symbol": "ported tokenize/jaccardSimilarity run against sections of growing size"
         }
-      ]
+      ],
+      "fix": "Have existingSectionCandidates() emit one candidate per stored contribution instead of one blob per section.",
+      "effort": "small"
     },
     {
       "id": "tokenizer-hides-most-of-a-long-section",
@@ -1586,7 +1691,9 @@
           "file": "measurement",
           "symbol": "ported tokenize() truncation effect across section sizes"
         }
-      ]
+      ],
+      "fix": "Drop the .slice(0, 500) truncation in tokenize() so the whole section participates in similarity scoring.",
+      "effort": "small"
     },
     {
       "id": "dedup-never-crosses-sections-or-notes",
@@ -1609,7 +1716,9 @@
           "file": "dedup.ts",
           "symbol": "deduplicateUnits()"
         }
-      ]
+      ],
+      "fix": "Key the deduplicateUnits() candidate map on note id alone so comparison spans every section of a note.",
+      "effort": "small"
     },
     {
       "id": "semantic-duplication-is-unchecked-by-design",
@@ -1641,7 +1750,9 @@
           "file": "measurement",
           "symbol": "embedding sweep over corpus bullets at cosine ~0.88"
         }
-      ]
+      ],
+      "fix": "Call the existing embedding-adapter from deduplicateUnits() to compare candidates by cosine similarity alongside the lexical check.",
+      "effort": "medium"
     },
     {
       "id": "identity-sections-mix-five-claim-kinds",
@@ -1670,7 +1781,9 @@
           "file": "draft-projector.ts",
           "symbol": "mergeSection()"
         }
-      ]
+      ],
+      "fix": "Split the character identity section into separate section keys per claim kind so each carries its own cap and retrieval budget.",
+      "effort": "large"
     },
     {
       "id": "keyword-cap-has-no-cap-aware-affordance",
@@ -1702,7 +1815,9 @@
           "file": "review-app.cjs",
           "symbol": "operator prune-and-retry"
         }
-      ]
+      ],
+      "fix": "Show a live count against the 30-keyword limit in MemoryVault's TokenEditor that blocks adding past the cap.",
+      "effort": "small"
     },
     {
       "id": "split-identities-never-merge",
@@ -1735,7 +1850,9 @@
           "file": "dedup.ts",
           "symbol": "deduplicateUnits()"
         }
-      ]
+      ],
+      "fix": "Add a merge action that folds one note's sections, links and subjects into another, using identity-repair's blockers() as the precheck.",
+      "effort": "medium"
     },
     {
       "id": "ids-derive-from-subject-strings-unstated",
@@ -1763,7 +1880,9 @@
           "file": "subject-identity.ts",
           "symbol": "loadTrustedLtmSubjectCatalog()"
         }
-      ]
+      ],
+      "fix": "State in the import UI copy that note ids derive from the subject string, so names must be normalised before ingest.",
+      "effort": "small"
     },
     {
       "id": "no-path-to-correct-a-stored-claim",
@@ -1791,7 +1910,9 @@
           "file": "MemoryVault.tsx",
           "symbol": "TokenEditor"
         }
-      ]
+      ],
+      "fix": "Add per-contribution delete and replace controls to the vault note editor backed by PATCH /notes/:id so a stored claim can be corrected without re-ingesting the source.",
+      "effort": "medium"
     },
     {
       "id": "compression-depth-is-not-recorded",
@@ -1819,7 +1940,9 @@
           "file": "ltmMemoryChunkSchema",
           "symbol": "createdAt / updatedAt only"
         }
-      ]
+      ],
+      "fix": "Add a compressionDepth field to ltmSectionSchema and ltmMemoryChunkSchema carried from the source's summarisation pass count.",
+      "effort": "medium"
     },
     {
       "id": "derived-notes-accumulate-low-durability-content",
@@ -1843,7 +1966,9 @@
           "file": "measurement",
           "symbol": "manual audit of one real identity note"
         }
-      ]
+      ],
+      "fix": "Classify routines, schedules and logistics at extraction and route them to a separate low-durability section key instead of the identity section.",
+      "effort": "medium"
     },
     {
       "id": "projection-errors-cannot-name-the-object",
@@ -1875,7 +2000,9 @@
           "file": "identity-repair.ts",
           "symbol": "blockers()"
         }
-      ]
+      ],
+      "fix": "Thread current.id and mutation.sectionKey from applyMutation into mergeSection() in draft-projector.ts and name them in the projection_limit_exceeded message.",
+      "effort": "small"
     },
     {
       "id": "storage-contract-error-dumps-schema",
@@ -1908,7 +2035,9 @@
           "file": "schema.ts",
           "symbol": "ltmNoteSchema"
         }
-      ]
+      ],
+      "fix": "Map the caught validator issues in projectLtmDraftMutationGroup() to a readable line naming the field and the cap it exceeded instead of appending the raw issue array.",
+      "effort": "small"
     },
     {
       "id": "auth-failure-reads-as-a-generic-error",
@@ -1945,7 +2074,9 @@
           "file": "MemorySettings.tsx",
           "symbol": "load error rendering"
         }
-      ]
+      ],
+      "fix": "Have request() in api.ts inspect the response status and return getPrivilegedActionErrorMessage with PRIVILEGED_ACCESS_HINT for 403 so the views name the ADMIN_SECRET remedy.",
+      "effort": "small"
     },
     {
       "id": "status-diagnostics-are-fetched-and-dropped",
@@ -1979,7 +2110,9 @@
           "file": "LongTermMemoryDetail.tsx",
           "symbol": "status consumption"
         }
-      ]
+      ],
+      "fix": "Render indexes.errors, indexes.warnings, the dirty flag, the generation timestamp and embeddingsAvailable from the already-fetched /status payload in LongTermMemoryDetail.tsx.",
+      "effort": "small"
     },
     {
       "id": "the-answers-are-scattered-and-one-is-off-by-default",
@@ -2014,7 +2147,9 @@
           "file": "LongTermMemoryNavigation.tsx",
           "symbol": "tab destinations"
         }
-      ]
+      ],
+      "fix": "Promote ActivityView.tsx to a Diagnostics destination in LongTermMemoryNavigation.tsx that also embeds rejected suggestions, integrity results and the last-injection readout with debug recording on by default.",
+      "effort": "medium"
     },
     {
       "id": "vault-health-is-split-and-thin",
@@ -2041,7 +2176,9 @@
           "file": "MemorySettings.tsx",
           "symbol": "maintenance integrity"
         }
-      ]
+      ],
+      "fix": "Expand the health popover in LongTermMemoryDetail.tsx to render note counts by type, embedded chunk counts, index errors and warnings, the dirty flag and the generation timestamp from the same /status response.",
+      "effort": "small"
     },
     {
       "id": "character-memories-are-an-untyped-card-global-store",
@@ -2078,7 +2215,9 @@
           "file": "character-commands.ts",
           "symbol": "MEMORY_RE"
         }
-      ]
+      ],
+      "fix": "Declare characterMemories as a typed field in characterExtensionsSchema so the three local re-declarations share one validated shape.",
+      "effort": "medium"
     },
     {
       "id": "card-memories-cross-chat-scope-is-undocumented",
@@ -2110,7 +2249,9 @@
           "file": "scenes.md",
           "symbol": "scene conclusion docs"
         }
-      ]
+      ],
+      "fix": "Document in scenes.md that scene-conclusion memories are card-global and enter every chat with that character until local midnight.",
+      "effort": "small"
     },
     {
       "id": "rangeless-summary-entries-order-by-creation-time",
@@ -2138,7 +2279,9 @@
           "file": "chat.ts",
           "symbol": "ChatSummaryEntry"
         }
-      ]
+      ],
+      "fix": "Fall back to the first messageIds index for position in sortChatSummaryEntries() when rangeStartIndex is absent.",
+      "effort": "small"
     },
     {
       "id": "unsummarised-day-details-emit-in-key-order",
@@ -2162,7 +2305,9 @@
           "file": "conversation-history-runtime.ts",
           "symbol": "collectConversationKeyDetails()"
         }
-      ]
+      ],
+      "fix": "Sort the day-details keys chronologically in collectConversationKeyDetails() before emitting them.",
+      "effort": "small"
     },
     {
       "id": "backfilling-a-consolidated-week-does-nothing",
@@ -2186,7 +2331,9 @@
           "file": "conversation-history-runtime.ts",
           "symbol": "dayToWeek skip"
         }
-      ]
+      ],
+      "fix": "Reject the day-summary write with an explicit error when dayToWeek already covers that date.",
+      "effort": "small"
     },
     {
       "id": "two-summary-subsystems-are-unaware-of-each-other",
@@ -2214,7 +2361,9 @@
           "file": "conversation-history-runtime.ts",
           "symbol": "dayToWeek consolidation"
         }
-      ]
+      ],
+      "fix": "Unify roleplay summaryEntries and the conversation day map behind one summary store with a shared ordering key.",
+      "effort": "large"
     },
     {
       "id": "roleplay-summaries-never-compress",
@@ -2242,7 +2391,9 @@
           "file": "conversation-history-runtime.ts",
           "symbol": "dayToWeek consolidation"
         }
-      ]
+      ],
+      "fix": "Consolidate older automated summaryEntries as they approach MAX_AUTOMATED_CHAT_SUMMARY_ENTRIES, mirroring the dayToWeek consolidation, instead of discarding the excess.",
+      "effort": "medium"
     },
     {
       "id": "a-number-kept-its-value-and-lost-its-subject",
@@ -2266,7 +2417,9 @@
           "file": "measurement",
           "symbol": "entry-by-entry comparison of summary text against source"
         }
-      ]
+      ],
+      "fix": "Require the summariser prompt to restate the subject of any quantity in the same clause as the figure.",
+      "effort": "small"
     },
     {
       "id": "firsts-were-asserted-where-the-source-did-not",
@@ -2290,7 +2443,9 @@
           "file": "measurement",
           "symbol": "entry-by-entry comparison of summary text against source"
         }
-      ]
+      ],
+      "fix": "Forbid the summariser prompt from asserting a first unless the source text states it.",
+      "effort": "small"
     },
     {
       "id": "numbers-and-superlatives-are-where-drift-changes-meaning",
@@ -2314,7 +2469,9 @@
           "file": "measurement",
           "symbol": "entry-by-entry comparison of summary text against source"
         }
-      ]
+      ],
+      "fix": "Mark evidence units containing bare quantities or the words first, only or never as review-required so they never auto-apply.",
+      "effort": "small"
     },
     {
       "id": "chunk-boundary-artifacts-become-durable-claims",
@@ -2343,7 +2500,9 @@
           "file": "measurement",
           "symbol": "occurrence count of boundary phrases across corpus entries"
         }
-      ]
+      ],
+      "fix": "Cut the summariser's chunker on scene boundaries so continuation and status filler is never emitted as content.",
+      "effort": "medium"
     },
     {
       "id": "planning-notes-are-recorded-as-events",
@@ -2366,7 +2525,9 @@
           "file": "measurement",
           "symbol": "manual read of corpus entries against story order"
         }
-      ]
+      ],
+      "fix": "Have the summariser tag out-of-character planning entries with an explicit marker so extraction can skip them.",
+      "effort": "medium"
     },
     {
       "id": "bullets-bundle-several-facts",
@@ -2389,7 +2550,9 @@
           "file": "measurement",
           "symbol": "manual read of corpus bullets against the one-claim contract"
         }
-      ]
+      ],
+      "fix": "Split a multi-fact bullet into separate evidence units in evidence-unit-extraction rather than producing one muddled unit or dropping it.",
+      "effort": "medium"
     },
     {
       "id": "long-entries-degrade-toward-the-end",
@@ -2413,7 +2576,9 @@
           "file": "measurement",
           "symbol": "tokenizer count over the source corpus file"
         }
-      ]
+      ],
+      "fix": "Split source entries above a token threshold into separate extraction inputs in source-processing so no single entry runs long enough to degrade.",
+      "effort": "medium"
     },
     {
       "id": "contradictions-between-entries-have-no-automatic-resolution",
@@ -2441,7 +2606,9 @@
           "file": "MemoryVault.tsx",
           "symbol": "conflict block"
         }
-      ]
+      ],
+      "fix": "Surface mutation.note.conflicts in review with existing beside proposed so the reviewer arbitrates before both versions are stored.",
+      "effort": "medium"
     },
     {
       "id": "proto-facets-dont-teach",
@@ -2465,7 +2632,9 @@
           "file": "review-app.cjs",
           "symbol": "operator review workbench facet panel"
         }
-      ]
+      ],
+      "fix": "Give data-model facets a distinct visual treatment from convenience facets in the review-app.cjs facet panel.",
+      "effort": "small"
     },
     {
       "id": "proto-nits",
@@ -2489,7 +2658,9 @@
           "file": "review-app.cjs",
           "symbol": "operator review workbench"
         }
-      ]
+      ],
+      "fix": "Fix the listed defects in review-app.cjs by scoping hotkeys away from copy, making collapse-all and the stored-content block actually collapse, dismissing the facet panel on escape or click-away, linking cross-references, and moving the clear button to the start of the facet row.",
+      "effort": "medium"
     }
   ],
   "removed": [
