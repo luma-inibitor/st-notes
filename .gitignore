@@ -1,1 +1,7 @@
 _tmp*
+
+# Output from marinara/scripts (drive-browser.mjs, start-mock-provider.mjs):
+# screenshots, persistent browser profiles, and captured provider requests.
+# These land here rather than in the Engine checkout because the scripts
+# resolve their output root from their own location.
+.tmp/
