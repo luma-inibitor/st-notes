@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Long-Term Memory — journey wireframes</title>
+<style>
+:root{
+  --bg:#f4f4f5; --panel:#ffffff; --ink:#18181b; --dim:#71717a; --faint:#a1a1aa;
+  --line:#d4d4d8; --line-strong:#a1a1aa; --fill:#e4e4e7; --fill-2:#eeeeef;
+  --accent:#3f3f46; --note-bg:#fffbeb; --note-line:#f59e0b; --note-ink:#78350f;
+  --bad:#7f1d1d; --bad-bg:#fef2f2; --bad-line:#fca5a5;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#18181b; --panel:#232327; --ink:#f4f4f5; --dim:#a1a1aa; --faint:#71717a;
+  --line:#3f3f46; --line-strong:#52525b; --fill:#2c2c31; --fill-2:#27272b;
+  --accent:#d4d4d8; --note-bg:#2a2413; --note-line:#a16207; --note-ink:#fcd34d;
+  --bad:#fca5a5; --bad-bg:#2a1516; --bad-line:#7f1d1d;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans)}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
+h3{font-size:15px;margin:0 0 10px;color:var(--dim);font-weight:600}
+.sub{color:var(--dim);margin:0 0 28px;max-width:70ch}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px;padding:0;list-style:none}
+.toc a{display:block;padding:6px 11px;border:1px solid var(--line);border-radius:999px;
+  background:var(--panel);color:var(--ink);text-decoration:none;font-size:13px}
+.toc a:hover{border-color:var(--line-strong)}
+.journey{margin:0 0 56px;padding:22px 0 0;border-top:2px solid var(--line)}
+.jhead{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.jnum{font:600 12px/1 var(--mono);color:var(--faint);letter-spacing:.08em}
+.goal{color:var(--dim);max-width:70ch;margin:0 0 18px}
+.goal em{color:var(--ink);font-style:normal;font-weight:600}
+
+/* flow rail */
+.flow{display:flex;gap:0;flex-wrap:wrap;align-items:stretch;margin:0 0 22px}
+.step{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--dim)}
+.step b{color:var(--ink);font-weight:600}
+.step+.step::before{content:"→";margin:0 12px;color:var(--faint)}
+
+/* frames */
+.frames{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.frame{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  display:flex;flex-direction:column}
+.frame > figcaption{display:flex;gap:8px;align-items:center;padding:8px 12px;
+  border-bottom:1px solid var(--line);background:var(--fill-2);font-size:12px;color:var(--dim)}
+.frame > figcaption .n{font:600 11px/1 var(--mono);color:var(--faint)}
+.frame > figcaption .t{color:var(--ink);font-weight:600}
+.screen{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
+
+/* greybox primitives */
+.bar{height:26px;border:1px solid var(--line);border-radius:6px;background:var(--fill);
+  display:flex;align-items:center;padding:0 8px;font-size:11px;color:var(--dim);gap:8px}
+.bar.tall{height:auto;min-height:26px;padding:6px 8px;display:block;line-height:1.4}
+.row{display:flex;gap:8px;align-items:center}
+.col{display:flex;flex-direction:column;gap:8px}
+.grow{flex:1}
+.box{border:1px solid var(--line);border-radius:6px;background:var(--fill-2);padding:8px;font-size:11.5px}
+.box.solid{background:var(--fill)}
+.rail{width:34%;min-width:120px}
+.ph{height:8px;border-radius:3px;background:var(--line);opacity:.55}
+.ph.s{width:35%} .ph.m{width:60%} .ph.l{width:85%} .ph.f{width:100%}
+.chip{display:inline-block;padding:1px 7px;border:1px solid var(--line-strong);border-radius:999px;
+  font:600 10px/1.7 var(--mono);color:var(--dim);background:var(--panel)}
+.chip.on{background:var(--accent);color:var(--panel);border-color:var(--accent)}
+.chip.warn{border-color:var(--note-line);color:var(--note-ink);background:var(--note-bg)}
+.chip.bad{border-color:var(--bad-line);color:var(--bad);background:var(--bad-bg)}
+.btn{display:inline-block;padding:4px 10px;border:1px solid var(--line-strong);border-radius:6px;
+  font-size:11.5px;background:var(--panel);color:var(--ink)}
+.btn.pri{background:var(--accent);color:var(--panel);border-color:var(--accent)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.tab{padding:3px 9px;border-radius:6px 6px 0 0;font-size:11.5px;color:var(--dim)}
+.tab.on{background:var(--fill);color:var(--ink);font-weight:600}
+.list{display:flex;flex-direction:column;gap:6px}
+.item{border:1px solid var(--line);border-radius:6px;padding:7px 8px;background:var(--panel);
+  display:flex;gap:8px;align-items:flex-start;font-size:11.5px}
+.item .cb{width:12px;height:12px;border:1px solid var(--line-strong);border-radius:3px;flex:none;margin-top:2px}
+.item .cb.on{background:var(--accent);border-color:var(--accent)}
+.meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.meter > i{display:block;height:100%;background:var(--line-strong);width:50%}
+.meter.warn > i{background:var(--note-line)}
+.meter.bad > i{background:var(--bad-line)}
+.w5{width:5%}.w10{width:10%}.w15{width:15%}.w20{width:20%}.w25{width:25%}.w30{width:30%}
+.w35{width:35%}.w40{width:40%}.w45{width:45%}.w50{width:50%}.w55{width:55%}.w60{width:60%}
+.w65{width:65%}.w70{width:70%}.w75{width:75%}.w80{width:80%}.w85{width:85%}.w90{width:90%}
+.w95{width:95%}.w96{width:96%}.w98{width:98%}.w100{width:100%}
+.input{border:1px solid var(--line-strong);border-radius:6px;background:var(--panel);
+  padding:6px 8px;font-size:11.5px;color:var(--ink);min-height:26px}
+.input.area{min-height:52px}
+.input.ph-text{color:var(--faint)}
+.empty{border:1px dashed var(--line-strong);border-radius:6px;padding:14px 10px;text-align:center;
+  color:var(--dim);font-size:11.5px}
+.mono{font-family:var(--mono);font-size:11px}
+.dim{color:var(--dim)} .faint{color:var(--faint)}
+.sp{height:2px}
+
+/* annotations */
+.note{margin-top:10px;border-left:3px solid var(--note-line);background:var(--note-bg);
+  color:var(--note-ink);padding:8px 10px;border-radius:0 6px 6px 0;font-size:12px}
+.note b{font-weight:700}
+.note code{font-family:var(--mono);font-size:11px}
+.fx{display:inline-block;font:600 10px/1.6 var(--mono);border:1px solid currentColor;
+  border-radius:4px;padding:0 5px;margin-right:5px;opacity:.85}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim);
+  border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--panel);margin-bottom:32px}
+.legend b{color:var(--ink)}
+@media (max-width:640px){ .frames{grid-template-columns:1fr} .rail{display:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Long-Term Memory — journey wireframes</h1>
+<p class="sub">Greybox layouts for six user journeys. Structure and information hierarchy only:
+no visual design, no final copy. Every frame is achievable without an engine change unless its
+annotation says otherwise. Amber notes tie a frame to the findings it answers.</p>
+
+<div class="legend">
+  <span><b>Greybox</b> shape only, not styling</span>
+  <span><span class="chip">chip</span> state or facet</span>
+  <span><span class="chip warn">warn</span> pressure or degraded</span>
+  <span><span class="chip bad">bad</span> failure</span>
+  <span><b class="mono">F-id</b> finding this frame answers</span>
+</div>
+
+<ul class="toc">
+  <li><a href="#j1">1 · First run</a></li>
+  <li><a href="#j2">2 · Teach it</a></li>
+  <li><a href="#j3">3 · Curate</a></li>
+  <li><a href="#j4">4 · Browse and correct</a></li>
+  <li><a href="#j5">5 · Why didn't it remember</a></li>
+  <li><a href="#j6">6 · Keep it healthy</a></li>
+</ul>
+
+<section class="journey" id="j1">
+  <div class="jhead"><span class="jnum">JOURNEY 1</span><h2>First run</h2></div>
+  <p class="goal"><em>"I want this character to remember things about me."</em>
+  Switch it on and reach visible proof it worked, without needing to know what a draft is.</p>
+
+  <div class="flow">
+    <span class="step"><b>Enable</b> in chat settings</span>
+    <span class="step"><b>See</b> what it can learn from now</span>
+    <span class="step"><b>Accept</b> a handful, modes stated</span>
+    <span class="step"><b>Observe</b> it used in a reply</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">1.1</span><span class="t">Enable, with an immediate next step</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="chip on">on</span> Long-Term Memory</div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>Ready to learn from</b></span></div>
+          <div class="sp"></div>
+          <div class="list">
+            <div class="item"><span class="grow">Character card <span class="faint">· 1 source</span></span><span class="btn">Import</span></div>
+            <div class="item"><span class="grow">Chat summaries <span class="faint">· none yet</span></span><span class="chip">later</span></div>
+          </div>
+        </div>
+        <div class="box solid mono">Nothing is stored until you accept it.</div>
+      </div>
+      <div class="note"><span class="fx">F2</span><span class="fx">F3</span>
+      Counts are shown for <b>every</b> source, including the empty one, with when it fills.
+      The current build opens on chat summaries, which is necessarily empty on a new chat, and
+      says nothing about the tab that does have something.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">1.2</span><span class="t">What it proposes, in plain nouns</span></figcaption>
+      <div class="screen">
+        <div class="bar">4 things learned from the character card</div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Works nights at a clinic <span class="faint">· about Wren</span></span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Afraid of open water <span class="faint">· about Wren</span></span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Lives in the harbour district <span class="faint">· about the world</span></span></div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow">Use these in</span>
+            <span class="chip on">this chat</span><span class="chip">roleplay</span><span class="chip">game</span></div>
+        </div>
+        <div class="row"><span class="btn pri">Remember these</span><span class="btn">Not now</span></div>
+      </div>
+      <div class="note"><span class="fx">F1</span><span class="fx">F8</span><span class="fx">F9</span>
+      No drafts, no mutations, no evidence units. Mode eligibility is stated here and
+      defaulted from the originating chat, which is the single control that decides whether any
+      of this is ever recallable. Today it is read-only text in review and only editable later
+      in a different workspace, and an import defaults to roleplay regardless of where you are.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">1.3</span><span class="t">Proof, two turns later</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Memory</span><span class="chip">this turn</span></div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>2 memories used</b> · 112 tokens</span></div>
+          <div class="sp"></div>
+          <div class="ph l"></div><div class="ph m"></div>
+          <div class="sp"></div>
+          <div class="row faint mono">14:22 · turn 6</div>
+        </div>
+        <div class="box solid"><span class="dim">Nothing dropped this turn.</span></div>
+      </div>
+      <div class="note"><span class="fx">F7</span>
+      A timestamp and a turn reference, so the number can be read as <b>this turn</b> rather than
+      as the last time anything worked. The current readout has no negative state and no
+      timestamp, so it holds a stale count indefinitely when injection is dead.</div>
+    </figure>
+
+  </div>
+</section>
+
+<section class="journey" id="j2">
+  <div class="jhead"><span class="jnum">JOURNEY 2</span><h2>Teach it</h2></div>
+  <p class="goal"><em>"Read all of this and tell me what you found."</em>
+  Pick the material, say who it is about, run the pass, and read the outcome without
+  opening the review queue to learn what the run cost.</p>
+
+  <div class="flow">
+    <span class="step"><b>Choose</b> material, counts per kind</span>
+    <span class="step"><b>Set</b> scope, roster checked first</span>
+    <span class="step"><b>Run</b> with reported progress</span>
+    <span class="step"><b>Read</b> kept and dropped</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">2.1</span><span class="t">What there is to learn from</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Material</span><span class="chip">97 sources</span></div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Character cards <span class="faint">· 41</span></span><span class="chip">ready</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Lorebooks <span class="faint">· 33</span></span><span class="chip">ready</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Chat summaries <span class="faint">· 23 of 60 chats</span></span><span class="chip warn">37 unsummarised</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Raw transcripts <span class="faint">· not a source kind</span></span><span class="chip bad">n/a</span></div>
+        </div>
+        <div class="box solid mono">Selected 74 · one run, concurrency 4</div>
+        <div class="row"><span class="btn pri">Continue</span><span class="btn">Select all</span></div>
+      </div>
+      <div class="note"><span class="fx">F3</span><span class="fx">F28</span><span class="fx">F30</span>
+      Every kind carries a count, including the kind that cannot be ingested at all, so the
+      ceiling on what a chat can teach is stated before a run rather than inferred from a thin
+      result. Selection feeds one batched run. Today re-extraction posts one source per request
+      and disables itself while in flight, so 74 sources means 74 clicks.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">2.2</span><span class="t">Scope, checked before the model call</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Who this run may write about</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Trusted subjects</span><span class="chip bad">0 in roster</span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="dim">Built from the chats in scope. This scope carries none.</span></div>
+        </div>
+        <div class="box solid">
+          <div class="row"><span class="grow">Add to scope</span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="chip">chat</span><span class="chip">group</span><span class="chip">character id</span><span class="chip">persona</span></div>
+        </div>
+        <div class="row"><span class="btn">Run without the roster</span><span class="btn pri">Add a chat</span></div>
+      </div>
+      <div class="note"><span class="fx">F17</span><span class="fx">F18</span>
+      The roster size is shown before the run starts, because an empty roster enforces exactly as
+      a full one does and rejects every candidate as <code>untrusted_subject</code> after the
+      model call is paid for. Persona is an add control here alongside chat, group and character
+      id. In the current build the roster is never displayed, persona can only arrive from the
+      API, and the stock "All available" target passes no scope, which is the configuration that
+      produces the empty roster.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">2.3</span><span class="t">A long run, reporting itself</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Extracting</span><span class="chip warn">running</span><span class="btn">Stop</span></div>
+        <div class="meter"><i class="w50"></i></div>
+        <div class="row mono faint">37 of 74 sources · 12m elapsed · polled every 3s</div>
+        <div class="box">
+          <div class="row"><span class="grow">Last completed</span><span class="chip">18 kept</span></div>
+          <div class="sp"></div>
+          <div class="ph l"></div><div class="ph m"></div>
+        </div>
+        <div class="box solid"><span class="dim">2 sources returned truncated output and were retried at a lower unit count.</span></div>
+      </div>
+      <div class="note"><span class="fx">F26</span><span class="fx">F23</span><span class="fx">F24</span>
+      Per-source completion is written to the package's own store as the run proceeds and the
+      panel polls a status route for it, since nothing can be pushed to the client. Truncation is
+      named on the row it happened to instead of discarding the whole response. Today the import
+      is one synchronous request that returns only a terminal report, an <code>operationId</code>
+      is minted with no route to query it, and a run lasting tens of minutes is indistinguishable
+      from a hang. The status route is a new path, so it lands at a release boundary rather than
+      at runtime.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">2.4</span><span class="t">What was kept, what was lost</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Run finished</span><span class="chip warn">partial</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>1,142 candidates</b> · 838 kept · 304 dropped</span></div></div>
+        <div class="list">
+          <div class="item"><span class="grow">Subject could not be matched <span class="faint">· 141</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Restates something already stored <span class="faint">· 96</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">No evidence in the source text <span class="faint">· 44</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Section already at its cap <span class="faint">· 23</span></span><span class="btn">Review</span></div>
+        </div>
+        <div class="row"><span class="btn pri">Open review · 838</span><span class="btn">Recover a dropped one</span></div>
+      </div>
+      <div class="note"><span class="fx">F21</span><span class="fx">F19</span><span class="fx">F20</span>
+      The summary states totals, kept and dropped, and groups the drops into one row per cause
+      with a count, so forty instances of one problem are read once. Recovery is reachable from
+      the summary. Today the badge reports requested, wrote, succeeded, failed, cancelled and
+      missing, none of which is the size of the loss; the rejected panel is a collapsed
+      <code>&lt;details&gt;</code> scoped to one selected source; and the eight draft block codes
+      render as humanised enum names.</div>
+    </figure>
+
+  </div>
+</section>
+
+<section class="journey" id="j3">
+  <div class="jhead"><span class="jnum">JOURNEY 3</span><h2>Curate</h2></div>
+  <p class="goal"><em>"There are a thousand of these. Let me work through them in the order that makes sense to me."</em>
+  Compose a cross-section, work it to exhaustion, apply it, compose the next.</p>
+
+  <div class="flow">
+    <span class="step"><b>Compose</b> a slice from facets</span>
+    <span class="step"><b>Pivot</b> group and sort</span>
+    <span class="step"><b>Edit</b> in place</span>
+    <span class="step"><b>Resolve</b> conflicts</span>
+    <span class="step"><b>Apply</b> with preflight</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">3.1</span><span class="t">Facets, grouped by where they come from</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Facets</span><span class="btn">Clear</span></div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>Computed here</b></span><span class="chip warn">heuristic</span></div>
+          <div class="sp"></div>
+          <div class="list">
+            <div class="item"><span class="cb on"></span><span class="grow">Restates the vault <span class="faint">· 61</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Near-duplicate in this batch <span class="faint">· 75</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Reworded restatement <span class="faint">· 35</span></span><span class="chip bad">off</span></div>
+          </div>
+        </div>
+        <div class="box solid">
+          <div class="row"><span class="grow"><b>From the model</b></span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="chip">risk</span><span class="chip">importance</span><span class="chip on">weak match 9</span><span class="chip">drop reason</span></div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>Yours</b></span><span class="chip">4 saved slices</span></div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F31</span><span class="fx">F42</span><span class="fx">F50</span><span class="fx">F51</span><span class="fx">F52</span><span class="fx">F53</span>
+      Facets sit in three bands so a shingle heuristic is never mistaken for a schema field, and
+      each carries a live count. Restatement is computed against every stored contribution rather
+      than one section blob, across a whole note rather than one section, over the full text
+      rather than a 500-token prefix; the embedding pass reports itself unavailable rather than
+      returning a silent zero. <code>match.basis</code> is threaded onto the mutation so a claim
+      bound by a fuzzy spelling variation can be pulled out of the pile. The current queue has no
+      filter, search, sort or pivot control of any kind.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.2</span><span class="t">One list, two independent controls</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">1,142 claims · 340 shown · 61 selected</span><span class="chip">418 of 1,142 reviewed</span></div>
+        <div class="row"><span class="btn">group by: target note</span><span class="btn">sort by: risk</span></div>
+        <div class="box solid">
+          <div class="row"><span class="grow"><b>Character A</b> <span class="faint">· 41 claims</span></span><span class="chip warn">trait 19.2k / 20k</span></div>
+          <div class="sp"></div>
+          <div class="meter warn"><i class="w96"></i></div>
+        </div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line <span class="faint">· restates vault 0.71</span></span><span class="chip">merges</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line <span class="faint">· new</span></span><span class="chip bad">overwrites</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Claim text, one line <span class="faint">· weak match</span></span><span class="chip">merges</span></div>
+        </div>
+        <div class="box"><div class="row"><span class="grow faint mono">selection and edits held across regroup and reload</span></div></div>
+      </div>
+      <div class="note"><span class="fx">F32</span><span class="fx">F33</span><span class="fx">F34</span><span class="fx">F36</span>
+      Group-by and sort act on one list, the filter set survives a pivot, and a reviewed-of-total
+      figure says how far the pass has come. Every row states whether accepting it appends to a
+      section or replaces it. Today selection resets on any change of chat, source or draft, which
+      confines a batch to one draft even though the apply path already groups by draft; selection
+      and unsubmitted edits live only in component state and a reload discards them; and the
+      summary counts only what remains.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.3</span><span class="t">A row opened for editing</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Editing claim</span><span class="chip">merges into trait</span><span class="btn">Close</span></div>
+        <div class="input area">Claim text, editable in place</div>
+        <div class="meter warn"><i class="w96"></i></div>
+        <div class="row mono faint">19,240 of 20,000 characters in the projected section</div>
+        <div class="box solid">
+          <div class="row"><span class="grow"><b>Evidence</b> <span class="faint">· from lorebook entry 12</span></span></div>
+          <div class="sp"></div>
+          <div class="ph l"></div><div class="ph m"></div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow">Links to</span><span class="chip">Timeline: harbour arrival</span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="chip">keywords 24 / 30</span><span class="chip">importance 3</span></div>
+        </div>
+        <div class="row"><span class="btn pri">Save edit</span><span class="btn">Accept as written</span><span class="btn">Drop</span></div>
+      </div>
+      <div class="note"><span class="fx">F44</span><span class="fx">F45</span><span class="fx">F46</span>
+      Edit is a labelled control on the row, not a panel below the diagnostics, and it covers link,
+      keyword, status and subject mutations as well as text. The character counter is live against
+      the 20,000 cap and blocks save at the limit. A link mutation resolves its target id to a
+      title using the lookup the queue already applies elsewhere. Today the editor silently trims
+      at the cap with no counter and no marker at the cut, renders nothing for four of the seven
+      mutation kinds, and a link row never shows what it points at.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.4</span><span class="t">A conflict, with three ways out</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Conflict on <span class="mono">trait</span></span><span class="chip bad">contradicts stored</span></div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>Stored</b></span><span class="chip">recalled 84 times · last 2d ago</span></div>
+          <div class="sp"></div>
+          <div class="ph l"></div>
+        </div>
+        <div class="box solid">
+          <div class="row"><span class="grow"><b>Proposed</b> <span class="faint">· from chat summary, turn 240</span></span></div>
+          <div class="sp"></div>
+          <div class="ph m"></div>
+        </div>
+        <div class="row"><span class="btn">Keep stored</span><span class="btn">Replace</span><span class="btn pri">Keep both, in order</span></div>
+        <div class="box"><span class="dim">Keeping both files the stored line as earlier and the proposed line as later.</span></div>
+      </div>
+      <div class="note"><span class="fx">F35</span><span class="fx">F47</span>
+      The review row reads <code>mutation.note.conflicts</code> and shows existing beside proposed,
+      with a third option, because most contradictions in a long story are the relationship moving
+      rather than a factual dispute. The recall count on the stored text says how much the model has
+      been leaning on what is about to be overwritten. Today the queue never reads conflicts at all,
+      the vault renders only the proposed side, and the per-chunk counts are written to disk and
+      returned by no route.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.5</span><span class="t">Apply, preflighted and reported</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Apply 61 selected</span><span class="chip warn">2 would fail</span></div>
+        <div class="list">
+          <div class="item"><span class="grow">Section cap exceeded on one note <span class="faint">· 1 row marked</span></span><span class="btn">Show</span></div>
+          <div class="item"><span class="grow">Link target not in this batch <span class="faint">· 1 row marked</span></span><span class="btn">Show</span></div>
+          <div class="item"><span class="grow">Dropped rows still available as dependencies <span class="faint">· 3</span></span><span class="chip">auto-included</span></div>
+        </div>
+        <div class="box solid"><div class="row"><span class="cb on"></span><span class="grow">Take a restore point first <span class="faint">· there is no undo</span></span></div></div>
+        <div class="meter warn"><i class="w75"></i></div>
+        <div class="row mono faint">46 of 61 applied · 13 remaining · 2 skipped and marked</div>
+      </div>
+      <div class="note"><span class="fx">F37</span><span class="fx">F38</span><span class="fx">F39</span><span class="fx">F40</span><span class="fx">F41</span>
+      A preflight route runs the same projection code the server applies, so knowable failures land
+      on the offending rows before submit instead of arriving as an atomic whole-draft error;
+      computing this in the browser would fork the projector, so it stays on a route. Dependency
+      recovery searches the pre-rejection pool, applied rows are flagged rather than deleted from
+      the draft, and progress counts against the batch rather than a shrinking draft. The restore
+      point is a backup export, which already exists and is already routed. Real undo needs the
+      commit journals retained past <code>publish()</code>, which is a larger change and is not
+      assumed here.</div>
+    </figure>
+
+  </div>
+</section>
+
+<section class="journey" id="j4">
+  <div class="jhead"><span class="jnum">JOURNEY 4</span><h2>Browse and correct</h2></div>
+  <p class="goal"><em>"It said something about me that is wrong. Find it and fix it."</em>
+  Locate one stored memory among hundreds, read where it came from, and change it in place.</p>
+
+  <div class="flow">
+    <span class="step"><b>Filter</b> the vault down</span>
+    <span class="step"><b>Open</b> the memory</span>
+    <span class="step"><b>Correct</b> the claim</span>
+    <span class="step"><b>Resolve</b> a stored conflict</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">4.1</span><span class="t">Vault browser, same facets as review</span></figcaption>
+      <div class="screen">
+        <div class="row">
+          <div class="rail box">
+            <div class="mono dim">type</div>
+            <div class="ph l"></div><div class="ph m"></div>
+            <div class="sp"></div>
+            <div class="mono dim">subject · status</div>
+            <div class="ph f"></div><div class="ph s"></div>
+            <div class="sp"></div>
+            <div class="mono dim">mode · cap pressure</div>
+            <div class="ph m"></div><div class="ph l"></div>
+          </div>
+          <div class="col grow">
+            <div class="input ph-text">search memories</div>
+            <div class="bar">161 memories · 24 shown <span class="chip">source notes hidden</span></div>
+            <div class="row"><span class="chip">group by subject</span><span class="chip on">sort by size</span></div>
+            <div class="list">
+              <div class="item"><span class="grow">Wren · identity <span class="faint">· 19.2k / 20k</span></span><span class="chip warn">near cap</span></div>
+              <div class="item"><span class="grow">Wren · timeline <span class="faint">· 41 contributions</span></span><span class="chip">roleplay</span></div>
+              <div class="item"><span class="grow">Harbour district · world <span class="faint">· 3.1k / 20k</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F5</span><span class="fx">F55</span>
+      One list with type, subject, status, mode eligibility and cap pressure as filters, and source
+      notes excluded by default so the total matches what recall can actually reach. The current vault
+      offers a status filter and free-text search, counts source notes in every total, and renders them
+      first.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">4.2</span><span class="t">One memory, with provenance and use</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Wren · identity</span><span class="chip">roleplay</span><span class="chip">chat</span></div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>Works nights at a clinic</b></span><span class="faint mono">recalled 41×</span></div>
+          <div class="sp"></div>
+          <div class="row faint mono">from character card · imported 3 Mar</div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow">Afraid of open water</span><span class="faint mono">recalled 0×</span></div>
+          <div class="row faint mono">from chat summary · turn 88</div>
+        </div>
+        <div class="box solid"><div class="row"><span class="grow">Section length</span><span class="mono">19,240 / 20,000</span></div>
+          <div class="meter warn"><i class="w96"></i></div></div>
+      </div>
+      <div class="note"><span class="fx">F47</span><span class="fx">F58</span>
+      Each stored line names the contribution that produced it and how many times it has been injected,
+      both of which are already written to disk. Today the note editor is one free-form text area with
+      no link back to the evidence unit and no recall count on any route, so a line that has never been
+      used looks identical to one the model leans on every turn.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">4.3</span><span class="t">Correct it in place</span></figcaption>
+      <div class="screen">
+        <div class="bar">Editing one contribution</div>
+        <div class="input area ph-text">Works nights at the harbour clinic.</div>
+        <div class="input ph-text">keywords: clinic, nights, harbour</div>
+        <div class="row"><span class="grow mono dim">412 / 20,000 characters</span><span class="chip">18 / 30 keywords</span></div>
+        <div class="row"><span class="btn pri">Save</span><span class="btn">Stop using here</span><span class="btn">Forget</span></div>
+        <div class="box solid mono">Note id derives from the subject name. Renaming the subject creates a second note.</div>
+      </div>
+      <div class="note"><span class="fx">F45</span><span class="fx">F57</span><span class="fx">F58</span>
+      Per-contribution edit, scope removal and delete, backed by the existing note patch route, with a
+      live counter against the character and keyword caps instead of a silent trim. The current editor
+      cuts text at 20,000 characters with no counter and no marker, and correcting a wrong claim means
+      fixing the corpus and re-ingesting the source.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">4.4</span><span class="t">A stored conflict, with a third option</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Conflict on <span class="mono">identity</span></span><span class="chip bad">unresolved</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>Existing</b></span><span class="faint mono">recalled 41×</span></div>
+          <div class="ph l"></div></div>
+        <div class="box solid"><div class="row"><span class="grow"><b>Proposed</b></span><span class="faint mono">from turn 214</span></div>
+          <div class="ph m"></div></div>
+        <div class="row"><span class="btn">Keep existing</span><span class="btn">Take proposed</span><span class="btn pri">Keep both, in order</span></div>
+        <div class="box solid mono">Merge two notes for one subject: blocked, keyword union is 34 of 30.</div>
+      </div>
+      <div class="note"><span class="fx">F35</span><span class="fx">F56</span>
+      Existing and proposed sit side by side with the recall count on the text about to be overwritten,
+      and keeping both ordered is offered because most contradictions in a long story are the situation
+      moving rather than a dispute. Review never reads conflicts at all today, and the vault shows the
+      proposed value without ever displaying the existing one.</div>
+    </figure>
+
+  </div>
+</section>
+
+<section class="journey" id="j5">
+  <div class="jhead"><span class="jnum">JOURNEY 5</span><h2>Why didn't it remember</h2></div>
+  <p class="goal"><em>"It knew this yesterday. Why not now?"</em>
+  Read what recall did on a specific turn, then find out which part of the path is broken.</p>
+
+  <div class="flow">
+    <span class="step"><b>Check</b> the current turn</span>
+    <span class="step"><b>Scroll back</b> through earlier turns</span>
+    <span class="step"><b>Diagnose</b> in one place</span>
+    <span class="step"><b>Act</b> on a named cause</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">5.1</span><span class="t">This turn, with reasons and a negative state</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Memory · this turn</span><span class="faint mono">14:41 · turn 214</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>Nothing recalled this turn</b></span><span class="chip bad">0 used</span></div></div>
+        <div class="list">
+          <div class="item"><span class="grow">Over budget</span><span class="mono">3</span></div>
+          <div class="item"><span class="grow">Below score threshold</span><span class="mono">2</span></div>
+          <div class="item"><span class="grow">Not eligible in this chat mode</span><span class="mono">6</span></div>
+          <div class="item"><span class="grow">Preset assembled the prompt, no memory slot</span><span class="chip bad">skipped</span></div>
+        </div>
+        <div class="row"><span class="btn">Open diagnostics</span></div>
+      </div>
+      <div class="note"><span class="fx">F6</span><span class="fx">F7</span><span class="fx">F10</span><span class="fx">F8</span>
+      A zero record with a timestamp is written even when nothing is injected, and the four rejection
+      counts the budget pass already computes replace the single number the current readout shows with
+      no zero state and no timestamp. Placing this beside the message in the transcript is the one thing
+      a capability package cannot do, since conversation mounts are gated on a package kind this package
+      lacks and message content is sanitised through an allowlist, which is why the report lives in
+      settings and the workspace instead.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">5.2</span><span class="t">Recall history across turns</span></figcaption>
+      <div class="screen">
+        <div class="tabs"><span class="tab">Vault</span><span class="tab">Review</span><span class="tab on">Recall</span><span class="tab">Diagnostics</span></div>
+        <div class="list">
+          <div class="item"><span class="mono faint">t214</span><span class="grow">0 used · 11 dropped</span><span class="chip bad">skipped</span></div>
+          <div class="item"><span class="mono faint">t213</span><span class="grow">2 used · 4 dropped</span></div>
+          <div class="item"><span class="mono faint">t211</span><span class="grow">5 used · 1 dropped</span><span class="chip warn">no order</span></div>
+          <div class="item"><span class="mono faint">t208</span><span class="grow">0 used · 0 candidates</span></div>
+        </div>
+        <div class="box solid"><div class="row"><span class="grow mono dim">t211 · timeline bullets injected in relevance order</span><span class="btn">View</span></div></div>
+      </div>
+      <div class="note"><span class="fx">F12</span><span class="fx">F13</span><span class="fx">F11</span>
+      The receipt is appended per turn rather than overwritten once per chat, which is the package's own
+      code and turns a volatile reading into a record that can be read after the fact. Rows flag turns
+      where timeline events reached the model with no sequence and where ranking ran age-blind, since the
+      cooldown option is never passed and no lane derives a score from recency.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">5.3</span><span class="t">Diagnostics, assembled from what is known</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Diagnostics</span><span class="chip warn">degraded</span></div>
+        <div class="list">
+          <div class="item"><span class="grow">Semantic lane off <span class="faint">· embeddings unavailable on this install</span></span><span class="chip bad">dead</span></div>
+          <div class="item"><span class="grow">Index rebuild failed 2 Mar <span class="faint">· 14 notes saved, not searchable</span></span><span class="btn">Rebuild</span></div>
+          <div class="item"><span class="grow">18 memories not eligible in Conversation</span><span class="btn">Set modes</span></div>
+        </div>
+        <div class="box"><div class="row"><span class="grow mono dim">indexed chunks 4,102 · embedded 0 · dirty · generated 2 Mar 09:14</span></div></div>
+        <div class="box solid"><div class="row"><span class="grow">Integrity, rejected candidates and last injection</span><span class="chip on">here</span></div></div>
+      </div>
+      <div class="note"><span class="fx">F15</span><span class="fx">F16</span><span class="fx">F64</span><span class="fx">F65</span><span class="fx">F66</span>
+      One destination renders the fields the status response already carries, including the embedding
+      availability flag, index errors, the dirty flag and the generation timestamp, and it holds the
+      integrity results and rejected candidates that currently sit in three other components. A rebuild
+      that embedded nothing reports healthy today, and a failed index rebuild is a transient line in a
+      batch result that no component reads afterwards.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">5.4</span><span class="t">A permissions failure that names the remedy</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Memory settings</span><span class="chip bad">403</span></div>
+        <div class="empty">This install requires an admin secret for memory routes.</div>
+        <div class="box"><div class="row"><span class="grow mono">Set ADMIN_SECRET, or open from the local machine.</span></div>
+          <div class="sp"></div>
+          <div class="input ph-text">admin secret</div>
+          <div class="row"><span class="btn pri">Save secret</span><span class="btn">How to set it</span></div></div>
+        <div class="box solid mono">Projection limit: note <b>char_wren</b>, section <b>identity</b>, 20,431 of 20,000.</div>
+      </div>
+      <div class="note"><span class="fx">F63</span><span class="fx">F61</span>
+      The response status is read, so a 403 renders the privileged-access message the engine already
+      ships rather than a fixed loading error, and a cap failure names the note, the section and the
+      current size. Today four read views print the same generic string for any failure, and 35 identical
+      projection errors in one run named neither note nor section.</div>
+    </figure>
+
+  </div>
+</section>
+
+<section class="journey" id="j6">
+  <div class="jhead"><span class="jnum">JOURNEY 6</span><h2>Keep it healthy</h2></div>
+  <p class="goal"><em>"I want this to still work in six months."</em>
+  See pressure building before it becomes a failure, prune what has stopped earning its place, and read
+  vault state in one view.</p>
+
+  <div class="flow">
+    <span class="step"><b>See</b> pressure as a gradient</span>
+    <span class="step"><b>Compact</b> a full section</span>
+    <span class="step"><b>Read</b> vault state in one place</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">6.1</span><span class="t">Cap pressure, before it is a wall</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Notes under pressure</span><span class="chip warn">7</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Wren · identity</span><span class="mono">19,240 / 20,000</span></div>
+          <div class="meter warn"><i class="w96"></i></div>
+          <div class="sp"></div>
+          <div class="row"><span class="grow">keywords</span><span class="mono">28 / 30</span></div>
+          <div class="meter warn"><i class="w95"></i></div>
+          <div class="sp"></div>
+          <div class="row"><span class="grow">contributions</span><span class="mono">91 / 100</span></div>
+          <div class="meter bad"><i class="w90"></i></div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow">Harbour district · world</span><span class="mono">6,180 / 20,000</span></div>
+          <div class="meter"><i class="w30"></i></div>
+        </div>
+        <div class="box solid"><div class="row"><span class="grow mono dim">identity holds traits, changes, dispositions, backstory and events against one cap</span></div></div>
+        <div class="row"><span class="btn pri">Compact</span><span class="btn">Split by claim kind</span></div>
+      </div>
+      <div class="note"><span class="fx">F48</span><span class="fx">F45</span><span class="fx">F54</span>
+      Section length, keyword count and contribution count are shown as filling meters on every note, all
+      three already computed at write time. Today no component renders a character counter, a keyword
+      count or the contributions field, so the first sign of a full note is an apply failing partway
+      through a batch. Splitting identity into separate section keys is a schema change and is marked
+      here rather than offered as a one-click action.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">6.2</span><span class="t">Compaction preview on an additive section</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Wren · identity · 91 contributions</span><span class="chip">preview</span></div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Restates an earlier line <span class="faint">· 0.91 similar</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Restates an earlier line <span class="faint">· 0.88 similar</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Schedule detail, never recalled <span class="faint">· 0 recalls</span></span><span class="chip">low durability</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Load-bearing history <span class="faint">· 41 recalls</span></span><span class="chip on">keep</span></div>
+        </div>
+        <div class="box"><div class="row"><span class="grow">After compaction</span><span class="mono">12,880 / 20,000 · 58 contributions</span></div>
+          <div class="meter"><i class="w65"></i></div></div>
+        <div class="row"><span class="btn pri">Apply compaction</span><span class="btn">Export backup first</span></div>
+      </div>
+      <div class="note"><span class="fx">F49</span><span class="fx">F50</span><span class="fx">F53</span><span class="fx">F60</span>
+      Additive sections union forever, so this pass compares each stored contribution against the others
+      by line and by embedding and shows what would be dropped as restatement or as low-durability
+      logistics before anything is written. Stored dedup currently compares a claim against the whole
+      section as one blob, which cannot reach its threshold once a section holds real content, and the
+      write path never calls an embedding function at all.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">6.3</span><span class="t">Vault state in one view</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Vault health</span><span class="chip warn">degraded</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Notes by type</span><span class="mono">character 84 · world 31 · timeline 46</span></div>
+          <div class="row"><span class="grow">Indexed chunks</span><span class="mono">4,102</span></div>
+          <div class="row"><span class="grow">Embedded chunks</span><span class="mono">0</span> <span class="chip bad">unavailable</span></div>
+          <div class="row"><span class="grow">Index state</span><span class="chip warn">dirty</span> <span class="faint mono">built 2 Mar 09:14</span></div>
+        </div>
+        <div class="list">
+          <div class="item"><span class="grow">Index error <span class="faint">· rebuild failed on 14 notes</span></span><span class="btn">Repair</span></div>
+          <div class="item"><span class="grow">Integrity check <span class="faint">· 3 orphaned links</span></span><span class="btn">Review</span></div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F64</span><span class="fx">F66</span><span class="fx">F65</span>
+      Every value here arrives in the status response that is already fetched on load, plus the integrity
+      results that live in a separate tab. The interface reads two of those fields, the total note count
+      and the indexed chunk count, and discards the rest, so a vault whose semantic lane is dead and
+      whose index is dirty reads as healthy.</div>
+    </figure>
+
+  </div>
+</section>
+
+</div>
+</body>
+</html>

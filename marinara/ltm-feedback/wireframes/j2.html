@@ -1,0 +1,107 @@
+<section class="journey" id="j2">
+  <div class="jhead"><span class="jnum">JOURNEY 2</span><h2>Teach it</h2></div>
+  <p class="goal"><em>"Read all of this and tell me what you found."</em>
+  Pick the material, say who it is about, run the pass, and read the outcome without
+  opening the review queue to learn what the run cost.</p>
+
+  <div class="flow">
+    <span class="step"><b>Choose</b> material, counts per kind</span>
+    <span class="step"><b>Set</b> scope, roster checked first</span>
+    <span class="step"><b>Run</b> with reported progress</span>
+    <span class="step"><b>Read</b> kept and dropped</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">2.1</span><span class="t">What there is to learn from</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Material</span><span class="chip">97 sources</span></div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Character cards <span class="faint">· 41</span></span><span class="chip">ready</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Lorebooks <span class="faint">· 33</span></span><span class="chip">ready</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Chat summaries <span class="faint">· 23 of 60 chats</span></span><span class="chip warn">37 unsummarised</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Raw transcripts <span class="faint">· not a source kind</span></span><span class="chip bad">n/a</span></div>
+        </div>
+        <div class="box solid mono">Selected 74 · one run, concurrency 4</div>
+        <div class="row"><span class="btn pri">Continue</span><span class="btn">Select all</span></div>
+      </div>
+      <div class="note"><span class="fx">F3</span><span class="fx">F28</span><span class="fx">F30</span>
+      Every kind carries a count, including the kind that cannot be ingested at all, so the
+      ceiling on what a chat can teach is stated before a run rather than inferred from a thin
+      result. Selection feeds one batched run. Today re-extraction posts one source per request
+      and disables itself while in flight, so 74 sources means 74 clicks.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">2.2</span><span class="t">Scope, checked before the model call</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Who this run may write about</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Trusted subjects</span><span class="chip bad">0 in roster</span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="dim">Built from the chats in scope. This scope carries none.</span></div>
+        </div>
+        <div class="box solid">
+          <div class="row"><span class="grow">Add to scope</span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="chip">chat</span><span class="chip">group</span><span class="chip">character id</span><span class="chip">persona</span></div>
+        </div>
+        <div class="row"><span class="btn">Run without the roster</span><span class="btn pri">Add a chat</span></div>
+      </div>
+      <div class="note"><span class="fx">F17</span><span class="fx">F18</span>
+      The roster size is shown before the run starts, because an empty roster enforces exactly as
+      a full one does and rejects every candidate as <code>untrusted_subject</code> after the
+      model call is paid for. Persona is an add control here alongside chat, group and character
+      id. In the current build the roster is never displayed, persona can only arrive from the
+      API, and the stock "All available" target passes no scope, which is the configuration that
+      produces the empty roster.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">2.3</span><span class="t">A long run, reporting itself</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Extracting</span><span class="chip warn">running</span><span class="btn">Stop</span></div>
+        <div class="meter"><i class="w50"></i></div>
+        <div class="row mono faint">37 of 74 sources · 12m elapsed · polled every 3s</div>
+        <div class="box">
+          <div class="row"><span class="grow">Last completed</span><span class="chip">18 kept</span></div>
+          <div class="sp"></div>
+          <div class="ph l"></div><div class="ph m"></div>
+        </div>
+        <div class="box solid"><span class="dim">2 sources returned truncated output and were retried at a lower unit count.</span></div>
+      </div>
+      <div class="note"><span class="fx">F26</span><span class="fx">F23</span><span class="fx">F24</span>
+      Per-source completion is written to the package's own store as the run proceeds and the
+      panel polls a status route for it, since nothing can be pushed to the client. Truncation is
+      named on the row it happened to instead of discarding the whole response. Today the import
+      is one synchronous request that returns only a terminal report, an <code>operationId</code>
+      is minted with no route to query it, and a run lasting tens of minutes is indistinguishable
+      from a hang. The status route is a new path, so it lands at a release boundary rather than
+      at runtime.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">2.4</span><span class="t">What was kept, what was lost</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Run finished</span><span class="chip warn">partial</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>1,142 candidates</b> · 838 kept · 304 dropped</span></div></div>
+        <div class="list">
+          <div class="item"><span class="grow">Subject could not be matched <span class="faint">· 141</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Restates something already stored <span class="faint">· 96</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">No evidence in the source text <span class="faint">· 44</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Section already at its cap <span class="faint">· 23</span></span><span class="btn">Review</span></div>
+        </div>
+        <div class="row"><span class="btn pri">Open review · 838</span><span class="btn">Recover a dropped one</span></div>
+      </div>
+      <div class="note"><span class="fx">F21</span><span class="fx">F19</span><span class="fx">F20</span>
+      The summary states totals, kept and dropped, and groups the drops into one row per cause
+      with a count, so forty instances of one problem are read once. Recovery is reachable from
+      the summary. Today the badge reports requested, wrote, succeeded, failed, cancelled and
+      missing, none of which is the size of the loss; the rejected panel is a collapsed
+      <code>&lt;details&gt;</code> scoped to one selected source; and the eight draft block codes
+      render as humanised enum names.</div>
+    </figure>
+
+  </div>
+</section>

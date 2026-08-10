@@ -1,0 +1,95 @@
+<section class="journey" id="j5">
+  <div class="jhead"><span class="jnum">JOURNEY 5</span><h2>Why didn't it remember</h2></div>
+  <p class="goal"><em>"It knew this yesterday. Why not now?"</em>
+  Read what recall did on a specific turn, then find out which part of the path is broken.</p>
+
+  <div class="flow">
+    <span class="step"><b>Check</b> the current turn</span>
+    <span class="step"><b>Scroll back</b> through earlier turns</span>
+    <span class="step"><b>Diagnose</b> in one place</span>
+    <span class="step"><b>Act</b> on a named cause</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">5.1</span><span class="t">This turn, with reasons and a negative state</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Memory · this turn</span><span class="faint mono">14:41 · turn 214</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>Nothing recalled this turn</b></span><span class="chip bad">0 used</span></div></div>
+        <div class="list">
+          <div class="item"><span class="grow">Over budget</span><span class="mono">3</span></div>
+          <div class="item"><span class="grow">Below score threshold</span><span class="mono">2</span></div>
+          <div class="item"><span class="grow">Not eligible in this chat mode</span><span class="mono">6</span></div>
+          <div class="item"><span class="grow">Preset assembled the prompt, no memory slot</span><span class="chip bad">skipped</span></div>
+        </div>
+        <div class="row"><span class="btn">Open diagnostics</span></div>
+      </div>
+      <div class="note"><span class="fx">F6</span><span class="fx">F7</span><span class="fx">F10</span><span class="fx">F8</span>
+      A zero record with a timestamp is written even when nothing is injected, and the four rejection
+      counts the budget pass already computes replace the single number the current readout shows with
+      no zero state and no timestamp. Placing this beside the message in the transcript is the one thing
+      a capability package cannot do, since conversation mounts are gated on a package kind this package
+      lacks and message content is sanitised through an allowlist, which is why the report lives in
+      settings and the workspace instead.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">5.2</span><span class="t">Recall history across turns</span></figcaption>
+      <div class="screen">
+        <div class="tabs"><span class="tab">Vault</span><span class="tab">Review</span><span class="tab on">Recall</span><span class="tab">Diagnostics</span></div>
+        <div class="list">
+          <div class="item"><span class="mono faint">t214</span><span class="grow">0 used · 11 dropped</span><span class="chip bad">skipped</span></div>
+          <div class="item"><span class="mono faint">t213</span><span class="grow">2 used · 4 dropped</span></div>
+          <div class="item"><span class="mono faint">t211</span><span class="grow">5 used · 1 dropped</span><span class="chip warn">no order</span></div>
+          <div class="item"><span class="mono faint">t208</span><span class="grow">0 used · 0 candidates</span></div>
+        </div>
+        <div class="box solid"><div class="row"><span class="grow mono dim">t211 · timeline bullets injected in relevance order</span><span class="btn">View</span></div></div>
+      </div>
+      <div class="note"><span class="fx">F12</span><span class="fx">F13</span><span class="fx">F11</span>
+      The receipt is appended per turn rather than overwritten once per chat, which is the package's own
+      code and turns a volatile reading into a record that can be read after the fact. Rows flag turns
+      where timeline events reached the model with no sequence and where ranking ran age-blind, since the
+      cooldown option is never passed and no lane derives a score from recency.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">5.3</span><span class="t">Diagnostics, assembled from what is known</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Diagnostics</span><span class="chip warn">degraded</span></div>
+        <div class="list">
+          <div class="item"><span class="grow">Semantic lane off <span class="faint">· embeddings unavailable on this install</span></span><span class="chip bad">dead</span></div>
+          <div class="item"><span class="grow">Index rebuild failed 2 Mar <span class="faint">· 14 notes saved, not searchable</span></span><span class="btn">Rebuild</span></div>
+          <div class="item"><span class="grow">18 memories not eligible in Conversation</span><span class="btn">Set modes</span></div>
+        </div>
+        <div class="box"><div class="row"><span class="grow mono dim">indexed chunks 4,102 · embedded 0 · dirty · generated 2 Mar 09:14</span></div></div>
+        <div class="box solid"><div class="row"><span class="grow">Integrity, rejected candidates and last injection</span><span class="chip on">here</span></div></div>
+      </div>
+      <div class="note"><span class="fx">F15</span><span class="fx">F16</span><span class="fx">F64</span><span class="fx">F65</span><span class="fx">F66</span>
+      One destination renders the fields the status response already carries, including the embedding
+      availability flag, index errors, the dirty flag and the generation timestamp, and it holds the
+      integrity results and rejected candidates that currently sit in three other components. A rebuild
+      that embedded nothing reports healthy today, and a failed index rebuild is a transient line in a
+      batch result that no component reads afterwards.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">5.4</span><span class="t">A permissions failure that names the remedy</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Memory settings</span><span class="chip bad">403</span></div>
+        <div class="empty">This install requires an admin secret for memory routes.</div>
+        <div class="box"><div class="row"><span class="grow mono">Set ADMIN_SECRET, or open from the local machine.</span></div>
+          <div class="sp"></div>
+          <div class="input ph-text">admin secret</div>
+          <div class="row"><span class="btn pri">Save secret</span><span class="btn">How to set it</span></div></div>
+        <div class="box solid mono">Projection limit: note <b>char_wren</b>, section <b>identity</b>, 20,431 of 20,000.</div>
+      </div>
+      <div class="note"><span class="fx">F63</span><span class="fx">F61</span>
+      The response status is read, so a 403 renders the privileged-access message the engine already
+      ships rather than a fixed loading error, and a cap failure names the note, the section and the
+      current size. Today four read views print the same generic string for any failure, and 35 identical
+      projection errors in one run named neither note nor section.</div>
+    </figure>
+
+  </div>
+</section>

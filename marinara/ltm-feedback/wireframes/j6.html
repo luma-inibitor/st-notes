@@ -1,0 +1,89 @@
+<section class="journey" id="j6">
+  <div class="jhead"><span class="jnum">JOURNEY 6</span><h2>Keep it healthy</h2></div>
+  <p class="goal"><em>"I want this to still work in six months."</em>
+  See pressure building before it becomes a failure, prune what has stopped earning its place, and read
+  vault state in one view.</p>
+
+  <div class="flow">
+    <span class="step"><b>See</b> pressure as a gradient</span>
+    <span class="step"><b>Compact</b> a full section</span>
+    <span class="step"><b>Read</b> vault state in one place</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">6.1</span><span class="t">Cap pressure, before it is a wall</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Notes under pressure</span><span class="chip warn">7</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Wren · identity</span><span class="mono">19,240 / 20,000</span></div>
+          <div class="meter warn"><i class="w96"></i></div>
+          <div class="sp"></div>
+          <div class="row"><span class="grow">keywords</span><span class="mono">28 / 30</span></div>
+          <div class="meter warn"><i class="w95"></i></div>
+          <div class="sp"></div>
+          <div class="row"><span class="grow">contributions</span><span class="mono">91 / 100</span></div>
+          <div class="meter bad"><i class="w90"></i></div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow">Harbour district · world</span><span class="mono">6,180 / 20,000</span></div>
+          <div class="meter"><i class="w30"></i></div>
+        </div>
+        <div class="box solid"><div class="row"><span class="grow mono dim">identity holds traits, changes, dispositions, backstory and events against one cap</span></div></div>
+        <div class="row"><span class="btn pri">Compact</span><span class="btn">Split by claim kind</span></div>
+      </div>
+      <div class="note"><span class="fx">F48</span><span class="fx">F45</span><span class="fx">F54</span>
+      Section length, keyword count and contribution count are shown as filling meters on every note, all
+      three already computed at write time. Today no component renders a character counter, a keyword
+      count or the contributions field, so the first sign of a full note is an apply failing partway
+      through a batch. Splitting identity into separate section keys is a schema change and is marked
+      here rather than offered as a one-click action.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">6.2</span><span class="t">Compaction preview on an additive section</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Wren · identity · 91 contributions</span><span class="chip">preview</span></div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Restates an earlier line <span class="faint">· 0.91 similar</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Restates an earlier line <span class="faint">· 0.88 similar</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Schedule detail, never recalled <span class="faint">· 0 recalls</span></span><span class="chip">low durability</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Load-bearing history <span class="faint">· 41 recalls</span></span><span class="chip on">keep</span></div>
+        </div>
+        <div class="box"><div class="row"><span class="grow">After compaction</span><span class="mono">12,880 / 20,000 · 58 contributions</span></div>
+          <div class="meter"><i class="w65"></i></div></div>
+        <div class="row"><span class="btn pri">Apply compaction</span><span class="btn">Export backup first</span></div>
+      </div>
+      <div class="note"><span class="fx">F49</span><span class="fx">F50</span><span class="fx">F53</span><span class="fx">F60</span>
+      Additive sections union forever, so this pass compares each stored contribution against the others
+      by line and by embedding and shows what would be dropped as restatement or as low-durability
+      logistics before anything is written. Stored dedup currently compares a claim against the whole
+      section as one blob, which cannot reach its threshold once a section holds real content, and the
+      write path never calls an embedding function at all.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">6.3</span><span class="t">Vault state in one view</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Vault health</span><span class="chip warn">degraded</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Notes by type</span><span class="mono">character 84 · world 31 · timeline 46</span></div>
+          <div class="row"><span class="grow">Indexed chunks</span><span class="mono">4,102</span></div>
+          <div class="row"><span class="grow">Embedded chunks</span><span class="mono">0</span> <span class="chip bad">unavailable</span></div>
+          <div class="row"><span class="grow">Index state</span><span class="chip warn">dirty</span> <span class="faint mono">built 2 Mar 09:14</span></div>
+        </div>
+        <div class="list">
+          <div class="item"><span class="grow">Index error <span class="faint">· rebuild failed on 14 notes</span></span><span class="btn">Repair</span></div>
+          <div class="item"><span class="grow">Integrity check <span class="faint">· 3 orphaned links</span></span><span class="btn">Review</span></div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F64</span><span class="fx">F66</span><span class="fx">F65</span>
+      Every value here arrives in the status response that is already fetched on load, plus the integrity
+      results that live in a separate tab. The interface reads two of those fields, the total note count
+      and the indexed chunk count, and discards the rest, so a vault whose semantic lane is dead and
+      whose index is dirty reads as healthy.</div>
+    </figure>
+
+  </div>
+</section>
