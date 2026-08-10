@@ -61,6 +61,9 @@ Claude helped assemble the links below; some descriptions might be goofy.
 - [Tavern Model Names](https://rentry.org/tavern-model-names) - CSS snippets for model name display
 - [ST discord: Custom CSS snippet compilation](./ST_discord_CSS_snippets.md)
 
+## 🍝 Marinara Engine
+- [Marinara Engine notes](./marinara/) - UX review notes on the Long-Term Memory agent, plus a local UI/UX exploration harness
+
 ## Unsorted
 - [LLM Settings](https://rentry.org/llm-settings) - Guide on LLM settings including Mythomax
 - [OnRMS](https://rentry.org/onrms) - Resource about LLMs with info on samplers
