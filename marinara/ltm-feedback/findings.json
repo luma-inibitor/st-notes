@@ -4,7 +4,7 @@
     "title": "Long-Term Memory findings",
     "ltmPackage": "1.1.6",
     "engine": "2.4.1",
-    "updatedAt": "2026-08-10T21:02:25.704Z",
+    "updatedAt": "2026-08-10T22:09:59.073Z",
     "tagVocabulary": [
       "UX",
       "ARCH",
@@ -45,14 +45,14 @@
         "UX",
         "ARCH"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "observed",
       "group": "Mental model and first run",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "default-source-tab-opens-empty",
@@ -61,14 +61,14 @@
       "tags": [
         "UX"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "observed",
       "group": "Mental model and first run",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "only-summaries-are-ingestible",
@@ -78,14 +78,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Mental model and first run",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "curation-and-recall-share-one-surface",
@@ -99,10 +99,10 @@
       "grade": "source",
       "group": "Mental model and first run",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "source-notes-counted-as-memories",
@@ -112,14 +112,14 @@
         "UX",
         "ARCH"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "Mental model and first run",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "preset-voids-injection",
@@ -134,10 +134,10 @@
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "injection-readout-has-no-negative-state",
@@ -148,14 +148,14 @@
         "ARCH",
         "BUG"
       ],
-      "severity": "critical",
+      "severity": "high",
       "grade": "observed",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "imports-are-born-roleplay-only",
@@ -170,10 +170,10 @@
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "mode-eligibility-invisible-at-accept",
@@ -182,14 +182,14 @@
       "tags": [
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "nothing-recalled-is-one-message",
@@ -198,14 +198,14 @@
       "tags": [
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "explain-data-mostly-never-leaves-the-process",
@@ -215,14 +215,14 @@
         "UX",
         "ARCH"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "recency-weighting-is-unreachable",
@@ -232,14 +232,20 @@
         "ARCH",
         "BUG"
       ],
-      "severity": "high",
+      "severity": "critical",
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
-      "annotations": [],
-      "edited": false
+      "annotations": [
+        {
+          "id": "ann-msnr600q-2gb9z",
+          "text": "marked critical on the assumption this isn't known to maintainers",
+          "createdAt": "2026-08-10T21:37:47.162Z"
+        }
+      ],
+      "edited": true
     },
     {
       "id": "no-chronology-between-event-memories",
@@ -249,14 +255,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "injected-lines-cannot-be-attributed",
@@ -265,14 +271,14 @@
       "tags": [
         "ARCH"
       ],
-      "severity": "medium",
+      "severity": "low",
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "embedding-lane-can-die-silently",
@@ -288,10 +294,10 @@
       "grade": "observed",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "index-rebuild-failure-invisible",
@@ -305,10 +311,10 @@
       "grade": "source",
       "group": "Does recall reach the model",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "empty-trusted-roster-still-enforces",
@@ -319,14 +325,20 @@
         "UX",
         "BUG"
       ],
-      "severity": "critical",
+      "severity": "medium",
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
-      "annotations": [],
-      "edited": false
+      "annotations": [
+        {
+          "id": "ann-msnrgaej-5e75w",
+          "text": "seems kinda niche",
+          "createdAt": "2026-08-10T21:45:47.179Z"
+        }
+      ],
+      "edited": true
     },
     {
       "id": "persona-scope-not-settable-in-ui",
@@ -336,14 +348,20 @@
         "UX",
         "ARCH"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
-      "annotations": [],
-      "edited": false
+      "annotations": [
+        {
+          "id": "ann-msnr8cl1-3gsvb",
+          "text": "i don't think i personally ran into this so marked low prio",
+          "createdAt": "2026-08-10T21:39:36.757Z"
+        }
+      ],
+      "edited": true
     },
     {
       "id": "rejected-candidates-are-easy-to-miss",
@@ -352,14 +370,14 @@
       "tags": [
         "UX"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "block-reasons-are-raw-enum-names",
@@ -372,10 +390,10 @@
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "completion-summary-omits-what-was-dropped",
@@ -384,14 +402,14 @@
       "tags": [
         "UX"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "null-for-optional-fails-the-whole-unit",
@@ -406,10 +424,10 @@
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "structured-output-needs-are-unstated",
@@ -424,10 +442,10 @@
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "truncated-output-discards-everything",
@@ -441,10 +459,10 @@
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "no-size-guard-before-the-model-call",
@@ -457,10 +475,10 @@
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "extraction-progress-is-unobservable",
@@ -471,14 +489,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "package-cannot-set-its-own-timeout",
@@ -488,14 +506,14 @@
         "ARCH",
         "BUG"
       ],
-      "severity": "medium",
+      "severity": "low",
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "re-extraction-is-one-at-a-time",
@@ -509,10 +527,10 @@
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "draft-freshness-flips-with-no-notification",
@@ -522,14 +540,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "bulk-gaps-are-specific",
@@ -543,10 +561,10 @@
       "grade": "source",
       "group": "Extraction",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "one-hard-coded-grouping-axis",
@@ -557,14 +575,14 @@
         "UX",
         "ARCH"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "selection-is-wiped-on-navigation",
@@ -574,14 +592,14 @@
         "UX",
         "BUG"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "in-progress-review-state-is-lost",
@@ -595,10 +613,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "no-review-progress-or-keyboard-path",
@@ -612,10 +630,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "conflicts-are-absent-from-review",
@@ -630,10 +648,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "destructive-and-additive-accepts-look-alike",
@@ -643,14 +661,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "whole-draft-invariants-are-invisible-until-apply",
@@ -660,14 +678,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "rejecting-is-unrecoverable-while-undecided-is-safe",
@@ -677,14 +695,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "critical",
+      "severity": "medium",
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "applying-cannot-be-undone",
@@ -693,14 +711,14 @@
       "tags": [
         "ARCH"
       ],
-      "severity": "critical",
+      "severity": "medium",
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "fourteen-of-twenty-five-apply-failures-are-knowable-early",
@@ -714,10 +732,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "partial-apply-rewrites-the-draft",
@@ -731,10 +749,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "weak-subject-matches-are-not-flagged",
@@ -744,14 +762,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "auto-apply-is-unannounced",
@@ -765,10 +783,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "the-editor-is-unlabeled-and-partial",
@@ -781,10 +799,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "section-text-is-silently-truncated",
@@ -798,10 +816,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "link-targets-are-invisible",
@@ -814,10 +832,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "no-usage-signal-on-what-is-being-replaced",
@@ -830,10 +848,10 @@
       "grade": "source",
       "group": "Review",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "caps-are-cliffs",
@@ -848,10 +866,10 @@
       "grade": "source",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "saturation-is-the-steady-state",
@@ -865,10 +883,10 @@
       "grade": "source",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "stored-dedup-cannot-fire",
@@ -878,14 +896,14 @@
         "ARCH",
         "SCALE"
       ],
-      "severity": "critical",
+      "severity": "high",
       "grade": "measured",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "tokenizer-hides-most-of-a-long-section",
@@ -898,10 +916,10 @@
       "grade": "source",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "dedup-never-crosses-sections-or-notes",
@@ -910,14 +928,14 @@
       "tags": [
         "ARCH"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "semantic-duplication-is-unchecked-by-design",
@@ -927,14 +945,14 @@
         "ARCH",
         "SCALE"
       ],
-      "severity": "critical",
+      "severity": "high",
       "grade": "measured",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "identity-sections-mix-five-claim-kinds",
@@ -949,10 +967,10 @@
       "grade": "reported",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "keyword-cap-has-no-cap-aware-affordance",
@@ -966,10 +984,10 @@
       "grade": "observed",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "split-identities-never-merge",
@@ -980,14 +998,14 @@
         "USER",
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "observed",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "ids-derive-from-subject-strings-unstated",
@@ -997,14 +1015,14 @@
         "ARCH",
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "no-path-to-correct-a-stored-claim",
@@ -1018,10 +1036,10 @@
       "grade": "source",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "compression-depth-is-not-recorded",
@@ -1031,14 +1049,14 @@
         "ARCH",
         "CORPUS"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "derived-notes-accumulate-low-durability-content",
@@ -1048,14 +1066,14 @@
         "SCALE",
         "MODEL"
       ],
-      "severity": "medium",
+      "severity": "low",
       "grade": "measured",
       "group": "What happens over months",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "projection-errors-cannot-name-the-object",
@@ -1065,14 +1083,14 @@
         "UX",
         "ARCH"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Errors and observability",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "storage-contract-error-dumps-schema",
@@ -1085,10 +1103,16 @@
       "grade": "observed",
       "group": "Errors and observability",
       "cluster": null,
-      "decision": null,
+      "decision": "rework",
       "mergeInto": null,
-      "annotations": [],
-      "edited": false
+      "annotations": [
+        {
+          "id": "ann-msnqvzoe-13479",
+          "text": "needs rewording. what's the \"storage-contract failure\"?",
+          "createdAt": "2026-08-10T21:30:00.158Z"
+        }
+      ],
+      "edited": true
     },
     {
       "id": "auth-failure-reads-as-a-generic-error",
@@ -1103,10 +1127,10 @@
       "grade": "source",
       "group": "Errors and observability",
       "cluster": null,
-      "decision": null,
+      "decision": "rework",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "status-diagnostics-are-fetched-and-dropped",
@@ -1116,14 +1140,20 @@
         "UX",
         "BUG"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "source",
       "group": "Errors and observability",
       "cluster": null,
-      "decision": null,
+      "decision": "rework",
       "mergeInto": null,
-      "annotations": [],
-      "edited": false
+      "annotations": [
+        {
+          "id": "ann-msnrf74j-4cfxl",
+          "text": "bruh the sentence structure here is whack. reword to simplify",
+          "createdAt": "2026-08-10T21:44:56.275Z"
+        }
+      ],
+      "edited": true
     },
     {
       "id": "the-answers-are-scattered-and-one-is-off-by-default",
@@ -1132,14 +1162,14 @@
       "tags": [
         "UX"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Errors and observability",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "vault-health-is-split-and-thin",
@@ -1152,10 +1182,10 @@
       "grade": "source",
       "group": "Errors and observability",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "character-memories-are-an-untyped-card-global-store",
@@ -1166,14 +1196,14 @@
         "ARCH",
         "BUG"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Marinara Engine",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "card-memories-cross-chat-scope-is-undocumented",
@@ -1187,10 +1217,10 @@
       "grade": "source",
       "group": "Marinara Engine",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "rangeless-summary-entries-order-by-creation-time",
@@ -1204,10 +1234,10 @@
       "grade": "source",
       "group": "Marinara Engine",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "unsummarised-day-details-emit-in-key-order",
@@ -1221,10 +1251,10 @@
       "grade": "source",
       "group": "Marinara Engine",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "backfilling-a-consolidated-week-does-nothing",
@@ -1234,14 +1264,14 @@
         "ENGINE",
         "USER"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "source",
       "group": "Marinara Engine",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "two-summary-subsystems-are-unaware-of-each-other",
@@ -1255,10 +1285,10 @@
       "grade": "source",
       "group": "Marinara Engine",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "roleplay-summaries-never-compress",
@@ -1272,10 +1302,10 @@
       "grade": "source",
       "group": "Marinara Engine",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "a-number-kept-its-value-and-lost-its-subject",
@@ -1285,14 +1315,14 @@
         "CORPUS",
         "MODEL"
       ],
-      "severity": "critical",
+      "severity": "medium",
       "grade": "reported",
       "group": "What the vault is fed",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "firsts-were-asserted-where-the-source-did-not",
@@ -1302,14 +1332,14 @@
         "CORPUS",
         "MODEL"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "reported",
       "group": "What the vault is fed",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "numbers-and-superlatives-are-where-drift-changes-meaning",
@@ -1319,14 +1349,14 @@
         "CORPUS",
         "MODEL"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "reported",
       "group": "What the vault is fed",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "chunk-boundary-artifacts-become-durable-claims",
@@ -1339,10 +1369,16 @@
       "grade": "measured",
       "group": "What the vault is fed",
       "cluster": null,
-      "decision": null,
+      "decision": "rework",
       "mergeInto": null,
-      "annotations": [],
-      "edited": false
+      "annotations": [
+        {
+          "id": "ann-msns9shs-1bxjg",
+          "text": "bruh this wording is ass",
+          "createdAt": "2026-08-10T22:08:43.648Z"
+        }
+      ],
+      "edited": true
     },
     {
       "id": "planning-notes-are-recorded-as-events",
@@ -1351,14 +1387,14 @@
       "tags": [
         "CORPUS"
       ],
-      "severity": "high",
+      "severity": "low",
       "grade": "reported",
       "group": "What the vault is fed",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "bullets-bundle-several-facts",
@@ -1371,10 +1407,10 @@
       "grade": "reported",
       "group": "What the vault is fed",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "long-entries-degrade-toward-the-end",
@@ -1388,10 +1424,10 @@
       "grade": "measured",
       "group": "What the vault is fed",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "contradictions-between-entries-have-no-automatic-resolution",
@@ -1401,14 +1437,14 @@
         "CORPUS",
         "ARCH"
       ],
-      "severity": "high",
+      "severity": "medium",
       "grade": "reported",
       "group": "What the vault is fed",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "proto-facets-dont-teach",
@@ -1422,10 +1458,10 @@
       "grade": "reported",
       "group": "Prototype workbench",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     },
     {
       "id": "proto-nits",
@@ -1439,10 +1475,10 @@
       "grade": "reported",
       "group": "Prototype workbench",
       "cluster": null,
-      "decision": null,
+      "decision": "keep",
       "mergeInto": null,
       "annotations": [],
-      "edited": false
+      "edited": true
     }
   ],
   "removed": [
