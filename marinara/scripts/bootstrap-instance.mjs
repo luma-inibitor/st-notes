@@ -16,9 +16,8 @@
 // See docs/development/ui-ux-exploration-harness.md.
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { fileURLToPath } from "node:url";
 
 const HELP = `Usage: node $HARNESS/bootstrap-instance.mjs [options]
 
@@ -30,6 +29,7 @@ Options:
   --embedding-model <id>   Embedding model id (default: text-embedding-3-small).
   --max-context <number>   Context window to record (default: 32000).
   --api-key <text>         Placeholder key stored on the connection (default: mock-key).
+  --repo-root <path>       Marinara Engine checkout that receives .env (default: current directory).
   --install <packageId>    Install this capability package from the official catalog.
   --admin-secret <secret>  Sent as X-Admin-Secret for non-loopback calls.
   --skip-env               Do not create or modify .env.
@@ -51,6 +51,7 @@ const { values } = parseArgs({
     "embedding-model": { type: "string" },
     "max-context": { type: "string" },
     "api-key": { type: "string" },
+    "repo-root": { type: "string" },
     install: { type: "string" },
     "admin-secret": { type: "string" },
     "skip-env": { type: "boolean", default: false },
@@ -66,7 +67,10 @@ if (values.help) {
   process.exit(0);
 }
 
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+// The Engine checkout, not the harness checkout: these scripts are meant to sit
+// outside the repository they drive, so .env belongs wherever the command was
+// run from rather than beside this file.
+const repoRoot = resolve(values["repo-root"] ?? process.cwd());
 const baseUrl = (values["base-url"] ?? process.env.BASE_URL ?? "http://127.0.0.1:7860").replace(/\/+$/, "");
 const mockUrl = (values["mock-url"] ?? "http://127.0.0.1:7877/v1").replace(/\/+$/, "");
 const connectionName = values.name ?? "Mock Local";

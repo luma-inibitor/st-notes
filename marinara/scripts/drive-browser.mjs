@@ -24,10 +24,10 @@
 //
 // See docs/development/ui-ux-exploration-harness.md.
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 import { createRequire } from "node:module";
 import { parseArgs } from "node:util";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { pathToFileURL } from "node:url";
 
 const HELP = `Usage: node $HARNESS/drive-browser.mjs <step-file.mjs> [options]
 
@@ -66,7 +66,10 @@ if (values.help || positionals.length === 0) {
   process.exit(values.help ? 0 : 1);
 }
 
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+// The Engine checkout, not the harness checkout: .tmp/ and the pnpm store both
+// belong to the repository being driven, which is the directory this was run
+// from rather than the one holding this file.
+const repoRoot = process.cwd();
 const stepFile = resolve(positionals[0]);
 const baseUrl = (values["base-url"] ?? process.env.BASE_URL ?? "http://127.0.0.1:7860").replace(/\/+$/, "");
 const profileDir = resolve(
