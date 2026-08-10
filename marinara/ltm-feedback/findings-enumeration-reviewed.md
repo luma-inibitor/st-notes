@@ -106,28 +106,28 @@ operator's account or a session without source access.
 
 66. **errors-name-rule-not-object** — i think this was specifci to my review app
 67. **schema-dump-as-error** — The storage-contract error does name the note, then delivers the actionable part as a raw schema-validation dump. `UX` · observed
-68. **instrumentation-no-consumer** — Five endpoints (`/rejected-suggestions`, `/debug-log`, `/last-injection/:chatId`, `/integrity`, `/status`) already know why memory is not working, and nothing assembles them into a surface a user can read. `UX` · source
-69. **no-vault-state-view** — There is no "what state is my memory in" view at all, which is why a 503-line read-only diagnostic had to be written to answer it. `UX` · observed
+68. **instrumentation-no-consumer** — i think the info is technically exposed in the frontend but it's kind of scattered and difficult to find
+69. **no-vault-state-view** — this isn't strictly true. i think it's mostly there in the ui but it's scattered and difficult to find. it doesn't meet the user where they are.
 
 ## Marinara Engine
 
 70. **backfill-into-consolidated-week-is-a-noop** — Writing a day summary for a day inside a consolidated week is skipped silently, so an unknown number of backfills over several months did nothing. `ENGINE` `USER` · source
 71. **two-summary-subsystems-dont-know-about-each-other** — Roleplay and Conversation summaries use different storage, formats, compression behaviour and date handling, and nothing reconciles them for a story told in both modes. `ENGINE` `ARCH` · source
 72. **no-roleplay-summary-compression** — Conversation summaries compress into weeks while roleplay summaries grow until a hard delete at 200 entries. `ENGINE` `ARCH` · source
-73. **card-memory-leakage** — Concluded scenes wrote global `characterMemories[]` entries onto the character card, leaking scene-local state into every chat using that card. `ENGINE` · observed
-74. **summary-order-derives-from-seq** — Entry ordering derives from a sequence number rather than narrative position, so a mis-sequenced input inverts the order of events within a day and propagates straight into the memory timeline. `ENGINE` `CORPUS` · observed
+73. **card-memory-leakage** — fact check against source?
+74. **summary-order-derives-from-seq** — fact check against source?
 
 ## What the vault is fed
 
-75. **summariser-drifts-quantified-claims** — A numeric estimate survived summarisation exactly while its referent was replaced by the dominant nearby theme, producing a claim that is superficially correct, internally consistent and completely wrong. `CORPUS` `MODEL` · reported
-76. **summariser-invents-superlatives** — "First time" attributions appeared on dates where the event did not occur, including the same event marked a first on two different dates. `CORPUS` `MODEL` · reported
-77. **superlatives-and-numbers-are-the-risk-class** — Paraphrase drift silently changes meaning rather than merely losing detail precisely on superlatives and bare quantities, which is where a memory system can least afford it. `CORPUS` `MODEL` · reported
+75. **summariser-drifts-quantified-claims** — reword. this is word salad
+76. **summariser-invents-superlatives** — idk what this means
+77. **superlatives-and-numbers-are-the-risk-class** — idk what this means
 78. **boilerplate-becomes-durable-claims** — One scene-continuation phrase appeared 37 times, frequently doubled into a key-detail bullet, and was therefore extracted as a claim carrying no durable fact. `CORPUS` · measured
-79. **chunk-filler-becomes-claims** — Status text like "scene ongoing" appeared as standalone bullets purely as an artifact of where the chunker cut, some with a real fact welded on so they could not be pattern-deleted. `CORPUS` · reported
+79. **chunk-filler-becomes-claims** — dupe of #78?
 80. **ooc-recorded-as-in-fiction-fact** — Out-of-character planning notes were summarised indistinguishably from events, and one planning entry's contents were later narrated, entering memory twice as plan and as event. `CORPUS` · reported
 81. **multi-fact-bullets** — The ingest contract is roughly one bullet per claim, but bullets bundling an event, its cause and its resulting state become one muddled claim or are dropped. `CORPUS` · reported
 82. **oversized-entries-degrade-toward-the-tail** — 17 of 97 entries exceeded the size threshold, and long entries visibly degrade as they go: dates and names get sloppier further in. `CORPUS` `MODEL` · measured
-83. **layered-summarisation-compounds-drift** — Summarise, summarise again, merge: every pass is a drift opportunity, and the final artifact carries no signal distinguishing near-verbatim claims from thrice-compressed ones. `CORPUS` · reported
+83. **layered-summarisation-compounds-drift** — dupe of #64?
 84. **cross-entry-contradictions** — When two source entries disagree the result is either a conflict requiring manual resolution or both versions retrieved and handed to the model together, and neither is recoverable automatically. `CORPUS` `ARCH` · reported
 
 ## Prototype workbench
