@@ -217,12 +217,13 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
 <section class="journey" id="j2">
   <div class="jhead"><span class="jnum">JOURNEY 2</span><h2>Import and extract</h2></div>
   <p class="goal"><em>"Read all of this and tell me what you found."</em>
-  Pick the material, say who it is about, run the pass, and read the outcome without
-  opening the review queue to learn what the run cost.</p>
+  Narrow the haystack, pick the material, confirm who the run may write about, and read the
+  outcome without opening the review queue to learn what it cost.</p>
 
   <div class="flow">
-    <span class="step"><b>Choose</b> material, counts per kind</span>
-    <span class="step"><b>Set</b> scope, roster checked first</span>
+    <span class="step"><b>Narrow</b> to find the material</span>
+    <span class="step"><b>Select</b> what to read</span>
+    <span class="step"><b>Confirm</b> the derived scope</span>
     <span class="step"><b>Run</b> with reported progress</span>
     <span class="step"><b>Read</b> kept and dropped</span>
   </div>
@@ -230,9 +231,11 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">2.1</span><span class="t">What there is to learn from</span></figcaption>
+      <figcaption><span class="n">2.1</span><span class="t">Narrow, then choose</span></figcaption>
       <div class="screen">
-        <div class="bar"><span class="grow">Material</span><span class="chip">97 sources</span></div>
+        <div class="input ph-text">Filter 60 chats and 41 characters</div>
+        <div class="row"><span class="chip on">6 chats</span><span class="chip on">2 characters</span><span class="chip">clear</span></div>
+        <div class="bar"><span class="grow">Material in this filter</span><span class="chip">97 sources</span></div>
         <div class="list">
           <div class="item"><span class="cb on"></span><span class="grow">Character cards <span class="faint">· 41</span></span><span class="chip">ready</span></div>
           <div class="item"><span class="cb on"></span><span class="grow">Lorebooks <span class="faint">· 33</span></span><span class="chip">ready</span></div>
@@ -240,38 +243,38 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
           <div class="item"><span class="cb"></span><span class="grow">Raw transcripts <span class="faint">· not a source kind</span></span><span class="chip bad">n/a</span></div>
         </div>
         <div class="box solid mono">Selected 74 · one run, concurrency 4</div>
-        <div class="row"><span class="btn pri">Continue</span><span class="btn">Select all</span></div>
       </div>
       <div class="note"><span class="fx">F3</span><span class="fx">F28</span><span class="fx">F30</span>
-      Every kind carries a count, including the kind that cannot be ingested at all, so the
-      ceiling on what a chat can teach is stated before a run rather than inferred from a thin
-      result. Selection feeds one batched run. Today re-extraction posts one source per request
-      and disables itself while in flight, so 74 sources means 74 clicks.</div>
+      The filter is a finder and nothing else: it narrows a large library so the material is
+      reachable, and it does not decide anything about the run. Every kind carries a count,
+      including the kind that cannot be ingested at all, so the ceiling on what a chat can teach
+      is stated up front. Today re-extraction posts one source per request and disables itself
+      while in flight, so 74 sources means 74 clicks.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">2.2</span><span class="t">Scope, checked before the model call</span></figcaption>
+      <figcaption><span class="n">2.2</span><span class="t">Scope derived from the selection</span></figcaption>
       <div class="screen">
-        <div class="bar"><span class="grow">Who this run may write about</span></div>
+        <div class="bar"><span class="grow">Who this run may write about</span><span class="chip">derived</span></div>
         <div class="box">
-          <div class="row"><span class="grow">Trusted subjects</span><span class="chip bad">0 in roster</span></div>
+          <div class="row"><span class="grow">From your 74 sources</span></div>
           <div class="sp"></div>
-          <div class="row"><span class="dim">Built from the chats in scope. This scope carries none.</span></div>
+          <div class="row"><span class="chip on">6 chats</span><span class="chip on">2 characters</span><span class="chip on">1 persona</span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="grow">Trusted subjects</span><span class="chip">9 in roster</span></div>
         </div>
         <div class="box solid">
-          <div class="row"><span class="grow">Add to scope</span></div>
-          <div class="sp"></div>
-          <div class="row"><span class="chip">chat</span><span class="chip">group</span><span class="chip">character id</span><span class="chip">persona</span></div>
+          <div class="row"><span class="grow faint">If the roster were empty this run would be blocked, not started.</span></div>
         </div>
-        <div class="row"><span class="btn">Run without the roster</span><span class="btn pri">Add a chat</span></div>
+        <div class="row"><span class="btn pri">Extract 74</span><span class="btn">Edit scope</span></div>
       </div>
       <div class="note"><span class="fx">F17</span><span class="fx">F18</span>
-      The roster size is shown before the run starts, because an empty roster enforces exactly as
-      a full one does and rejects every candidate as <code>untrusted_subject</code> after the
-      model call is paid for. Persona is an add control here alongside chat, group and character
-      id. In the current build the roster is never displayed, persona can only arrive from the
-      API, and the stock "All available" target passes no scope, which is the configuration that
-      produces the empty roster.</div>
+      Scope is computed from the material selected rather than chosen as a browsing mode, which
+      is the distinction the current build collapses: its import target both narrows the list and
+      builds the scope, so the widest target passes no scope, produces an empty roster, and
+      rejects every candidate as <code>untrusted_subject</code> after the model call is paid for.
+      The roster count is stated before the run and a zero blocks it. Persona is editable here,
+      where today it can only arrive through the API.</div>
     </figure>
 
     <figure class="frame">
