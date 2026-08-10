@@ -11,6 +11,30 @@ support, which is used throughout as evidence about what the work actually
 requires. Where a proposal cites that tool, it is citing observed behaviour under
 real load, not a preference.
 
+## What the package can change on its own
+
+These proposals are scoped to what a capability package is permitted to do
+without an engine change, because a package maintainer may not own the engine and
+an engine-side ask is a far more expensive thing to land.
+
+That boundary is more generous than it looks. The package registers its own routes
+under its own prefix, owns its storage directory and its own schema, gets a
+revision-checked document store, can call a language model and an embedding model,
+and renders whatever it likes inside the two views the host mounts for it. Every
+derived signal, the whole facet engine, preflight, restore points, saved slices,
+chronology, compaction and ingest-time deduplication are the package's own code.
+
+Four constraints shape the designs below.
+
+- **Nothing can be pushed to the client.** There is no event channel of any kind,
+  so every live surface polls a route.
+- **New route paths need a restart.** They cannot appear after the server is
+  listening, which makes routes a release-boundary decision rather than a runtime
+  one.
+- **Every package route is privileged**, with no per-route exception.
+- **Nothing can render in the chat transcript.** This one costs a proposal, and
+  the cost is discussed where it lands.
+
 ## The structural fact everything follows from
 
 The package does two unrelated jobs and gives them one surface.
@@ -122,6 +146,13 @@ before anything is submitted: section and keyword caps, missing link targets,
 ungrounded change claims, duplicate creates, scope mismatches. Showing "2 would
 fail" with the reasons converts a mid-batch abort into a decision made up front.
 
+This belongs on a route, not in the browser. The tempting version computes it
+client side from the review payload, but projection accumulates an overlay that
+assumes every mutation in the draft applies in order, so an arbitrary subset
+projects differently. Getting that right in the client means porting the projector
+into the browser, where it will diverge from the real one the next time cap logic
+changes. A preflight route calling the same projection code cannot drift.
+
 *Progress against the batch, never the draft.* A partial apply keeps the draft
 pending and rewrites its mutation list to only the skipped items, so the draft is
 a shrinking denominator. Reporting progress against it tells the reviewer nothing
@@ -165,26 +196,62 @@ memories and currently inflate every count the interface shows.
 
 ## 3. The recall report
 
-The curation loop gets a workspace. The recall loop gets a line in the chat, where
-its results actually appear.
+The curation loop gets a workspace. The recall loop needs somewhere to report, and
+the obvious place is unavailable: a capability package cannot render in the chat
+transcript. The conversation mounts are gated on a package kind this package does
+not have, they sit outside the message list in any case, and message content is
+sanitised through an allowlist that strips embedded capability elements. There is
+no version of this that is not a break-on-upgrade hack.
 
-At rest it states what happened on this turn, including when nothing happened.
-Opened, it shows what was used, what was dropped, and why. Every input already
-exists: the injection receipt is verified against the dispatched prompt, and the
-budget layer types a rejection reason for every discarded candidate alongside lane
-scores, tier and estimated tokens.
+So the report is built where the package does have surfaces, and the design
+compensates for the distance rather than pretending it does not exist.
 
-Three properties it must have that the current readout does not:
+### Keep a per-turn history, not just a last state
+
+The receipt is currently written one per chat and overwritten every turn, which is
+why nothing can be said about any turn but the most recent. That is the package's
+own code, not an engine limit. Appending instead of overwriting, keyed by
+timestamp and message count, turns the recall loop from a single volatile reading
+into a record that can be read after the fact.
+
+This is what makes an out-of-band report viable. A strip beside the message would
+have been ambient; a history is something a reader consults when they notice
+something wrong, which is the moment that actually matters.
+
+### Three surfaces, in order of proximity
+
+**The chat settings card**, which is already mounted and already renders this
+package. It carries the current turn: what was used, what was dropped and why, and
+the three properties the present readout lacks.
 
 - **A negative state.** "Nothing recalled this turn" is a different fact from the
   last successful count, and the absence of that distinction is what lets a dead
   injection path look healthy indefinitely.
-- **A timestamp.** Without one, no reading of the number is safe.
+- **A timestamp**, without which no reading of the number is safe.
 - **Reasons, not just a count.** "18 used, 3 over budget, 2 below threshold, 1 not
-  enabled here" is four numbers already computed on every turn.
+  enabled here" is four numbers already computed on every turn, discarded unless a
+  debug setting the package itself owns happens to be on.
 
-The correction controls belong on the used rows, because the moment a wrong
-memory is noticed is the moment it is quoted back at the reader.
+**A recall tab in the package's own workspace**, showing the history across turns.
+The tab rail is a hardcoded array inside the package, so a fifth destination is a
+small change. This is where a reader goes when they want to know why something was
+forgotten three messages ago, and it is the surface a transcript strip could never
+have provided.
+
+**Correction controls wherever a memory appears**, since they cannot be attached to
+the quoted line. On the recall rows, in the vault, and on review rows: edit, stop
+using here, forget.
+
+### What this costs, stated plainly
+
+The argument for a transcript strip was that the moment a wrong memory is noticed
+is the moment it is quoted back at the reader. Every placement available to a
+package fails that test: the reader has to leave the conversation, open a drawer or
+a workspace, and carry the problem with them. The history makes that trip
+worthwhile rather than futile, but it does not make it unnecessary.
+
+The engine change that would fix it is small and specific, and it is named at the
+end of this document.
 
 ---
 
@@ -232,8 +299,16 @@ deployment needs a pass that rewrites a section against a durability test rather
 than appending to it forever.
 
 **Semantic duplication.** The write path never calls an embedding function, so
-restatement is accepted unconditionally. The retrieval half already embeds; the
-missing piece is comparing a candidate against the lines a note already holds.
+restatement is accepted unconditionally. Nothing prevents it from doing so: the
+runtime host hands the package an embedding adapter, capped at 128 texts and
+200,000 characters per call, and the missing piece is comparing a candidate
+against the lines a note already holds.
+
+One caution shapes the design. That adapter is hard-wired to a single local model
+and returns nothing when its native binding is unavailable, which is a real
+condition on some platforms. A deduplication feature built on it will therefore be
+silently absent on exactly the installs that already have a dead retrieval lane, so
+it has to report its own availability rather than fail open.
 
 **Identity sections.** One section accumulates stable traits, changes to those
 traits, dispositions, backstory and events, which is why the characters with the
@@ -251,12 +326,36 @@ operator does not want it prioritised.
 
 ---
 
+## The two asks that need the engine
+
+Everything above is the package's own to build. Two things are not, and they are
+worth stating separately so they can be weighed on their own terms.
+
+**A per-message mount, or any surface inside the transcript.** Today the
+conversation mounts are chosen by a package's declared `kind` rather than by the
+slot it asks for, they render outside the message list, and no message identifier
+reaches a package's runtime service. The smallest useful change is a mount inside
+the message renderer, selected by declared slot, receiving the message id, with
+that id threaded into the call that records what was injected. Without it, no
+capability package can explain itself where its effects are visible, and this
+applies to every agent package, not only this one.
+
+**One normalised summary read.** Roleplay and Conversation summaries differ in
+storage, format, compression and date handling, and a package can only paper over
+that downstream. Either unify the model or expose a single normalised read for
+packages.
+
+A third, smaller gap is worth filing on its own: personal extensions get a
+host-backed client storage API and capability packages do not, which is why
+user-scoped interface state has to travel through a package's own routes or sit in
+browser storage.
+
 ## Open questions
 
-- How much of the derived-signal work belongs server side. Computing restatement
-  against stored lines during review is cheap, but doing it at ingest would stop
-  the duplicates from being proposed at all.
-- Whether saved slices are worth persisting server side or are a client
-  convenience.
-- Whether the recall report belongs in the transcript or in chat settings, which
-  depends on what the engine lets a capability package render.
+- Whether restatement detection belongs at review time or at ingest. Review time
+  is cheap and immediate; ingest stops the duplicate being proposed at all, at the
+  cost of doing the work before anyone has asked for it.
+- Whether saved slices are worth a route and a document record, or are better left
+  as browser-local convenience.
+- How much recall history to retain, and whether it is pruned by age, by turn
+  count, or not at all.
