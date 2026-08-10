@@ -4,7 +4,7 @@
     "title": "Long-Term Memory findings",
     "ltmPackage": "1.1.6",
     "engine": "2.4.1",
-    "updatedAt": "2026-08-10T23:06:44.063Z",
+    "updatedAt": "2026-08-10T23:27:09.402Z",
     "tagVocabulary": [
       "UX",
       "ARCH",
@@ -1537,7 +1537,7 @@
     {
       "id": "no-usage-signal-on-what-is-being-replaced",
       "order": 47,
-      "statement": "Nothing shows how often a memory has actually been recalled.",
+      "statement": "Per-chunk recall counts are recorded and never surfaced.",
       "tags": [
         "UX"
       ],
@@ -1547,9 +1547,15 @@
       "cluster": "Reviewing without seeing consequences",
       "decision": "keep",
       "mergeInto": null,
-      "annotations": [],
+      "annotations": [
+        {
+          "id": "ann-msnv2nh5-17ce0",
+          "text": "Corrected: an earlier pass reported that no cumulative recall counter existed anywhere. It does, per chunk, in the usage store. The finding is that it is never exposed, which makes the fix small rather than medium.",
+          "createdAt": "2026-08-10T23:27:09.402Z"
+        }
+      ],
       "edited": true,
-      "description": "No cumulative recall counter exists in the client, the server or the schema. `usage.ts` writes `lastInjectedAt` and `retention.ts` reads it, but only to make pruning decisions, never as a displayed figure; `LastInjectionSummary.tsx` shows the most recent recall and `ActivityView.tsx` the latest recall workflow, so nothing accumulates across runs. A reviewer accepting a mutation that overwrites a stored section cannot tell whether that text has been feeding the model on every generation or has never been recalled once.",
+      "description": "Usage tracking already counts recall per chunk: `ltmUsageChunkSchema` carries `retrievalCount`, `injectionCount`, `totalInjectedTokens`, `lastRetrievedAt` and `lastInjectedAt`, and `usage.ts` increments the first two on every injection. Nothing reads them except `retention.ts`, which consults `lastInjectedAt` for pruning decisions, and no route returns them, so no interface can show them. A reviewer accepting a mutation that overwrites a stored section cannot tell whether that text has been feeding the model on every generation or has never been recalled once, even though the count exists on disk.",
       "evidence": [
         {
           "file": "usage.ts",
@@ -1564,8 +1570,8 @@
           "symbol": "recall workflow view"
         }
       ],
-      "fix": "Increment a cumulative recallCount beside lastInjectedAt in usage.ts so review rows can show how often the text being replaced has been used.",
-      "effort": "medium"
+      "fix": "Return `retrievalCount` and `injectionCount` from the usage store on note and review responses so the counts already being written can be displayed.",
+      "effort": "small"
     },
     {
       "id": "caps-are-cliffs",

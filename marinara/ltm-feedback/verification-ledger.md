@@ -210,6 +210,34 @@ claims turned out to describe those rather than the package.
 | The transaction journal is deleted at commit | `confirmed` | `commitLtmMutation()` writes the before-state journal, and `publish()` calls `remove()` to unlink it after the commit lands. `recoverLtmMutations()` is the only reader, replaying incomplete transactions on boot, so the journal is crash-recovery scaffolding and never history. | `mutation-transaction.ts` → `commitLtmMutation()`, `publish()`, `recoverLtmMutations()` |
 | The Sources screen defaults to the chat-summaries tab | `confirmed` | The tab state initialises to `"chats"` and the tab ordering puts it first. | `SourcesWorkspace.tsx` → `sourceTabs`, initial tab state |
 
+## Corrections found after the first pass
+
+| Claim | Verdict | What is actually true | Where |
+|---|---|---|---|
+| No cumulative recall counter exists in client, server or schema | `refuted` | Per-chunk usage tracking exists and is written on every injection: `ltmUsageChunkSchema` carries `retrievalCount`, `injectionCount`, `totalInjectedTokens`, `lastRetrievedAt` and `lastInjectedAt`, and `usage.ts` increments the counts. The only reader is `retention.ts`, for pruning, and no route returns any of it. The finding is exposure, not absence, which makes the fix small. | `schema.ts` → `ltmUsageChunkSchema`; `usage.ts` → `recordLongTermMemoryInjection`; `retention.ts` |
+
+## What a capability package is allowed to do
+
+Establishes which design proposals are achievable without an engine change.
+
+| Question | Answer | Where |
+|---|---|---|
+| What the activation context provides | Exactly four members: the **raw Fastify instance**, `dataDir`, the package record, and `api`. `api` offers `registerTurnGameEngine`, `registerConversationCommand`, `registerService`, `registerPromptContext`, `registerPrivilegedRoutes`, plus `api.runtime`. | `capability-module-runtime.service.ts` → `activateOne` |
+| What the runtime host provides | `embeddings` (`embed()`), `getAgentConfig()`, `isDebugAgentsEnabled()`, `json.parseJsonish`, `languageModels`, `logger`, `persistence` (chats, messages, documents, snapshots, `withChatLock`, `transaction`), `resources` (characters, personas, lorebooks). No config store, no scheduler, no event bus, no HTTP client. | `capability-runtime.ts`; `createCapabilityRuntimeHost` |
+| Can a package call embeddings | **Yes.** The host hands over an embedding adapter, capped at 128 texts and 200,000 characters per call. It is hard-wired to the one local space id, and returns `null` when the native binding is missing, so a feature built on it degrades silently on those installs. | `capability-embedding.service.ts`; `PackageEmbeddingAdapter` |
+| Route registration constraints | Prefix must be at or below `/api/<packageId>`. The plugin receives a **fake Fastify instance** implementing only the five verbs, so no hooks, decorators or sub-registration. New route paths cannot appear after the server is listening, so adding one needs an engine restart. Per-route `options` such as `bodyLimit` do pass through. | `capability-route-registration.service.ts` → `createRouteCollector` |
+| Route authentication | Uniform and non-negotiable: every package route gets an `onRequest` calling `requirePrivilegedAccess`. There is no per-route public or differently-authenticated option. | `capability-route-registration.service.ts`; `privileged-gate.ts` |
+| Server to client push | **None.** No event bus, no SSE helper, no websocket anywhere in the client. Polling a package route is the only pattern. | absence across `packages/client/src` |
+| Background work | No sanctioned API. Bare Node timers and promises work because the module runs in-process, and progress must be self-managed behind a polled route. | `capability-module-runtime.service.ts` |
+| Language model options | Seven: `temperature`, `maxTokens`, `debugMode`, `reasoningEffort`, `verbosity`, `signal`, `responseFormat`. No tools, no streaming, no stop sequences, no multimodal. | `CapabilityLanguageModelCompletionOptions` |
+| Package storage | Three tiers: files under `dataDir` with no helpers or quota, a `capabilityDocuments` store scoped by package id with revision-based optimistic locking, and real multi-statement DB transactions. No raw DB handle, no table creation. | `capability-persistence.service.ts` → `CapabilityDocumentStore` |
+| Client-side storage API for packages | **Does not exist.** Personal extensions get a host-backed store; capability packages do not. A package's client reaches storage only through its own routes, or uses `localStorage` directly. | `personal-extensions.routes.ts` versus `capability-packages.routes.ts` |
+| Generation hooks | Four, all asymmetric: `registerPromptContext` (receives only `chatId`, `chatMeta`, `mode`, with a 2 second deadline, cannot veto), `registerService` (inert unless the engine already looks the key up, from five hardcoded sites), `registerConversationCommand`, and `registerTurnGameEngine`. There is **no post-turn or message-lifecycle hook**. | `capability-prompt-context.service.ts`; `getCapabilityService` call sites |
+| Can a package render in the chat transcript | **No, and it is closed at two layers.** The conversation surface mounts are selected by `manifest.kind` containing `turn-game` or `conversation-calls`, and this package's kind is `agent`; both mounts sit outside the message list regardless. Message content is sanitised through a fixed tag allowlist with data attributes disabled, so an embedded capability element is stripped. Only a personal extension, a different product surface with console-equivalent authority, can inject between messages. | `ConversationView.tsx`; `ChatMessage.tsx` → `sanitizeChatHtml`; `PersonalExtensionInjector.tsx` |
+| Is there anything to key a per-message report to | No. The runtime service contract passes `chatId` and `messages` but no message id, and the injection receipt is stored one per chat and overwritten each turn. | `long-term-memory-runtime.ts`; `usage.ts` → receipt path |
+| Can a package add a top-level navigation destination | No generic registry: the app shell hardcodes a package id for its workspace mount. The package's own four-tab rail is an array inside the package, so a fifth tab there is trivial. | `AppShell.tsx`; `LongTermMemoryNavigation.tsx` |
+| Styling reach beyond the package's own element | Only `contributions.gameSurface.surfaceClass`, which is unavailable to an agent-detail package. | capability contribution schema |
+
 ## Open — under investigation
 
 Nothing outstanding. All claims raised so far carry a verdict above.
