@@ -58,6 +58,21 @@ const DEFAULT_SEVERITY = ['critical', 'high', 'medium', 'low'];
 const DEFAULT_GRADE = ['source', 'observed', 'measured', 'reported'];
 const DEFAULT_DECISION = ['keep', 'cut', 'rework', 'merge'];
 
+// What each severity level means, shown in the ? cheatsheet and as tooltips on
+// severity chips and severity selectors. Edit here to reword.
+// This may eventually move into meta.severityRubric in the data file; until then
+// the app is the only place it lives.
+const SEVERITY_RUBRIC = {
+  critical: 'Really bad bugs and fundamental functionality issues.',
+  high: 'Problems that feel like betrayal: the UI straight up lies to you, or constraints most people will hit.',
+  medium: 'Workaroundable by hitting the API; misleading but not incorrect UI; constraints only a power user will hit; confusing UX.',
+  low: 'Fixable with better prompting, possibly model-dependent, possibly user skill issue, or surmountable by poking around a clunky UI.',
+};
+
+// Shift+<letter> sets a decision on the cursor row. Values must exist in
+// meta.decisionVocabulary or the key is ignored.
+const DECISION_KEYS = { K: 'keep', C: 'cut', R: 'rework', M: 'merge' };
+
 function fixtureDoc() {
   const now = new Date().toISOString();
   const mk = (id, order, statement, tags, severity, grade, group) => ({
@@ -863,6 +878,15 @@ function CLIENT() {
     var known = ['critical', 'high', 'medium', 'low'];
     return inArr(known, s) ? 'sev-' + s : 'sev-other';
   }
+  function sevRubric(s) {
+    return has(SEVERITY_RUBRIC, s) ? SEVERITY_RUBRIC[s] : '';
+  }
+  // tooltip text for anything that names a severity
+  function sevTitle(s, suffix) {
+    var r = sevRubric(s);
+    if (!r) return suffix || '';
+    return s + ' — ' + r + (suffix ? '\n\n' + suffix : '');
+  }
   function toast(msg, kind, ms) {
     var box = $('#toasts');
     var el = document.createElement('div');
@@ -1223,15 +1247,28 @@ function CLIENT() {
       ['a', 'Expand and focus the add-annotation box'],
       ['x', 'Toggle selection of the cursor row'],
       ['1 – 4', 'Set severity: critical, high, medium, low'],
+      ['Shift+K', 'Decision: keep — then move to the next row'],
+      ['Shift+C', 'Decision: cut — then move to the next row'],
+      ['Shift+R', 'Decision: rework — then move to the next row'],
+      ['Shift+M', 'Decision: merge — then move to the next row'],
+      ['0', 'Clear the decision (back to none); the cursor stays put'],
       ['/', 'Focus the search box'],
       ['?', 'This cheatsheet'],
       ['Escape', 'Close the topmost thing (modal, popover, editor, selection)']
     ];
+    var vocab = meta().severityVocabulary.filter(function (v) { return sevRubric(v); });
+    var rubric = vocab.length
+      ? '<h2 style="margin:14px 0 8px;font-size:15px">What the severities mean</h2>' +
+        '<table class="keys">' + vocab.map(function (v) {
+          return '<tr><td><span class="chip ' + sevClass(v) + '">' + esc(v) + '</span></td><td>' + esc(sevRubric(v)) + '</td></tr>';
+        }).join('') + '</table>'
+      : '';
     openModal('Keyboard shortcuts',
       '<table class="keys">' + rows.map(function (r) {
         return '<tr><td><kbd>' + esc(r[0]) + '</kbd></td><td>' + esc(r[1]) + '</td></tr>';
       }).join('') + '</table>' +
-      '<p class="sub">Shortcuts never fire while you are typing in a text box, and never when Cmd, Ctrl or Alt is held — copy, paste and select-all work normally.</p>' +
+      '<p class="sub">Severity and decision keys act on the cursor row. Shortcuts never fire while you are typing in a text box, and never when Cmd, Ctrl or Alt is held — copy, paste and select-all work normally.</p>' +
+      rubric +
       '<div class="actions"><button class="btn" data-close data-autofocus>Close</button></div>',
       { key: 'cheatsheet' });
   }
@@ -1372,7 +1409,7 @@ function CLIENT() {
       '<button type="button" class="btn sm" data-bulk="clearsel">Clear selection</button>' +
       '<span style="border-left:1px solid var(--border);height:20px"></span>' +
       '<label>severity <select data-bulkval="severity"><option value="">…</option>' +
-      m.severityVocabulary.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join('') +
+      m.severityVocabulary.map(function (v) { return '<option value="' + esc(v) + '" title="' + esc(sevRubric(v)) + '">' + esc(v) + '</option>'; }).join('') +
       '</select></label>' +
       '<label>decision <select data-bulkval="decision"><option value="">…</option>' +
       m.decisionVocabulary.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join('') +
@@ -1428,7 +1465,7 @@ function CLIENT() {
 
   function chipsHtml(f) {
     var out = '';
-    out += '<button type="button" class="chip ' + sevClass(f.severity) + '" data-chip="severity" data-val="' + esc(f.severity) + '" title="Filter by severity">' + esc(f.severity) + '</button>';
+    out += '<button type="button" class="chip ' + sevClass(f.severity) + '" data-chip="severity" data-val="' + esc(f.severity) + '" title="' + esc(sevTitle(f.severity, 'Filter by severity')) + '">' + esc(f.severity) + '</button>';
     out += '<button type="button" class="chip" data-chip="grade" data-val="' + esc(f.grade) + '" title="Filter by grade">' + esc(f.grade) + '</button>';
     f.tags.forEach(function (t) {
       out += '<button type="button" class="chip" data-chip="tag" data-val="' + esc(t) + '" title="Filter by tag">' + esc(t) + '</button>';
@@ -1465,8 +1502,8 @@ function CLIENT() {
       '<div class="field"><span class="flabel"></span>' +
       '<input type="text" data-tagin="' + esc(f.id) + '" list="dl-tags" placeholder="add tag (new tags allowed)" size="18">' +
       '<button type="button" class="btn sm" data-addtag="' + esc(f.id) + '">Add tag</button></div>' +
-      '<div class="field"><span class="flabel">severity</span><select data-edit="severity" data-id="' + esc(f.id) + '">' +
-      m.severityVocabulary.map(function (v) { return '<option value="' + esc(v) + '"' + (f.severity === v ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('') +
+      '<div class="field"><span class="flabel">severity</span><select data-edit="severity" data-id="' + esc(f.id) + '" title="' + esc(sevTitle(f.severity)) + '">' +
+      m.severityVocabulary.map(function (v) { return '<option value="' + esc(v) + '"' + (f.severity === v ? ' selected' : '') + ' title="' + esc(sevRubric(v)) + '">' + esc(v) + '</option>'; }).join('') +
       '</select>' +
       '<span class="flabel">grade</span><select data-edit="grade" data-id="' + esc(f.id) + '">' +
       m.gradeVocabulary.map(function (v) { return '<option value="' + esc(v) + '"' + (f.grade === v ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('') +
@@ -1619,6 +1656,16 @@ function CLIENT() {
     if (row) row.scrollIntoView({ block: 'nearest' });
   }
 
+  // Decision keys act on the cursor row only — the same scope as the 1–4
+  // severity keys, which never look at the selection. Setting a decision then
+  // advances so a triage pass keeps moving; clearing one stays put.
+  function setDecisionFromKey(dec) {
+    var id = state.cursor;
+    if (!id) return;
+    setField(id, 'decision', dec);
+    if (dec != null) moveCursor(1);
+  }
+
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       if (handleEscape()) { e.preventDefault(); e.stopPropagation(); }
@@ -1653,6 +1700,13 @@ function CLIENT() {
     if (k >= '1' && k <= '4') {
       var sev = meta().severityVocabulary[parseInt(k, 10) - 1];
       if (sev) { e.preventDefault(); setField(state.cursor, 'severity', sev); }
+      return;
+    }
+    if (k === '0') { e.preventDefault(); setDecisionFromKey(null); return; }
+    if (e.shiftKey && has(DECISION_KEYS, k)) {
+      var dec = DECISION_KEYS[k];
+      if (inArr(meta().decisionVocabulary, dec)) { e.preventDefault(); setDecisionFromKey(dec); }
+      return;
     }
   }, true);
 
@@ -1925,7 +1979,12 @@ function CLIENT() {
 }
 
 function renderPage() {
-  const js = '(' + CLIENT.toString() + ')();';
+  // CLIENT is stringified, so it cannot close over server constants: hand them
+  // over as globals the client function reads.
+  const js =
+    'var SEVERITY_RUBRIC = ' + JSON.stringify(SEVERITY_RUBRIC) + ';\n' +
+    'var DECISION_KEYS = ' + JSON.stringify(DECISION_KEYS) + ';\n' +
+    '(' + CLIENT.toString() + ')();';
   return (
     '<!doctype html>\n<html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
