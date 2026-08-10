@@ -201,6 +201,15 @@ claims turned out to describe those rather than the package.
 | — the real weakness, which is the inverse | `confirmed` | Entries *lacking* `rangeStartIndex` — every automated entry and most manual ones, i.e. `sourceMode` of `last` or `agent` — collapse to `Number.MAX_SAFE_INTEGER` and are therefore ordered by creation time rather than narrative position. `messageCount` and `messageIds` exist on those entries and could pin position; neither is consulted by the sort. Separately, un-summarized day details are emitted in raw object-key order, an unrelated ordering soft spot. | `chat-summary-entries.ts` → `sortChatSummaryEntries`; `conversation-history-runtime.ts` → `collectConversationKeyDetails` |
 | Mis-ordering propagates into the memory timeline | `refuted` | LTM reads `summaryEntries` raw and unsorted, relying on the persisted order the engine already sorted, and re-sorts conversation summaries by date. Each entry becomes an independent source note carrying `message_range:<range>` evidence, candidate order is overridden by the user's selection order, extraction is per-source, and timeline order derives from `timeline_event` note content and links. **Source array position has no load-bearing effect on the resulting timeline.** | LTM `interop.ts` → `summaries()`, `conversationSummaryEntries`; `evidence-unit-extraction.ts`; `evidence-unit-validation.ts` |
 
+## Detail confirmed while writing descriptions
+
+| Claim | Verdict | What is actually true | Where |
+|---|---|---|---|
+| A failed post-apply index rebuild is reported nowhere | `partial` | Draft status is written before the rebuild runs, and a failure records `indexRebuildStatus: "failed"` with `indexRebuildError` on the draft and returns normally. The review queue does surface it once, as a transient batch-result line: `"Changes were saved, but the index rebuild failed: {{value1}}"`. No component reads the persisted status afterward, so the signal exists for one render and then disappears while the memory stays unretrievable. | `reconciliation.ts` → `applyInner()`, `rebuildLongTermMemoryIndexes`; `ReviewQueue.tsx` batch result line |
+| The storage-contract error is a raw schema dump | `confirmed`, mechanism identified | It is an `ltmNoteSchema.parse` failure on the projected note, with the resulting issue array interpolated straight into the message. | `draft-projector.ts` → `projectLtmDraftMutationGroup()` |
+| The transaction journal is deleted at commit | `confirmed` | `commitLtmMutation()` writes the before-state journal, and `publish()` calls `remove()` to unlink it after the commit lands. `recoverLtmMutations()` is the only reader, replaying incomplete transactions on boot, so the journal is crash-recovery scaffolding and never history. | `mutation-transaction.ts` → `commitLtmMutation()`, `publish()`, `recoverLtmMutations()` |
+| The Sources screen defaults to the chat-summaries tab | `confirmed` | The tab state initialises to `"chats"` and the tab ordering puts it first. | `SourcesWorkspace.tsx` → `sourceTabs`, initial tab state |
+
 ## Open — under investigation
 
 Nothing outstanding. All claims raised so far carry a verdict above.
