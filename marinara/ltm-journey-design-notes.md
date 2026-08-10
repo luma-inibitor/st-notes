@@ -52,7 +52,7 @@ and J3's shortcut.
    maintenance nags.
 2. **Memories** — what it knows. Dense rows grouped by subject. Source records on
    their own tab.
-3. **Teach it** — sources and import, named by the goal rather than the mechanism.
+3. **Sources** — the material the vault is built from, and the import path.
 
 Settings becomes a gear, not a fourth peer tab.
 
