@@ -350,6 +350,20 @@
   .noresult{border:1px dashed var(--stroke);border-radius:10px;padding:26px;text-align:center;
     color:var(--ink-3);font-family:var(--mono);font-size:.8rem}
 
+  /* the three accountability tables share one column rhythm, so the eye
+     can move between them without re-measuring */
+  #deviations .dev-table{table-layout:fixed;width:100%}
+  #deviations .dev-table th:nth-child(1),#deviations .dev-table td:nth-child(1){width:13%}
+  #deviations .dev-table th:nth-child(2),#deviations .dev-table td:nth-child(2){width:21%}
+  #deviations .dev-table th:nth-child(3),#deviations .dev-table td:nth-child(3){width:20%}
+  #deviations .dev-table th:nth-child(4),#deviations .dev-table td:nth-child(4){width:46%}
+  #deviations .dev-table td:first-child{white-space:normal;overflow-wrap:anywhere}
+  #deviations .dev-table td{overflow-wrap:anywhere}
+  @media (max-width:760px){
+    #deviations .dev-table{table-layout:auto}
+    #deviations .dev-table th:nth-child(n),#deviations .dev-table td:nth-child(n){width:auto}
+  }
+
   .theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);
     font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
     background:var(--sheet);border:1px solid var(--stroke);border-radius:999px;padding:7px 13px;
