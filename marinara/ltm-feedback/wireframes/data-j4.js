@@ -8,14 +8,7 @@ STATES.j4 = [
     caption:"The vault runs the same facet engine as review, over what it stores rather than what review proposes: type, subjects, status, available modes and limits. It holds source notes out of the default view, so the header reads <b>118 memories and 43 source notes hidden</b> and the count names what recall can actually reach. Today free-text search works well, but every total silently counts the 43 audit records, and they sort to the top.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="chat-row">Salt road, part 2</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">Memory Vault</span><span class="ico">?</span></div>'+
           '<div class="rail"><span class="rt on">Memory Vault<span class="b">118</span></span><span class="rt">Review Queue<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+
@@ -75,13 +68,7 @@ STATES.j4 = [
     caption:"The package already writes two facts to disk that no screen shows, so this frame puts them on the memory: which contribution each stored line came from, and how many times recall has injected that line. The line with <b>0 recalls</b> carries a caveat, because this vault's semantic lane is dead and the index rebuild failed on 14 notes, so zero means unreachable rather than unused. Today the editor gives you one free-form text area, links nothing back to the evidence unit, and no route returns a recall count.",
     desk:
       '<div class="dev"><div class="dev-desk drawer">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">Wren</span></div>'+
           '<div class="rail"><span class="rt on">Memory Vault<span class="b">118</span></span><span class="rt">Review Queue<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+
@@ -135,14 +122,7 @@ STATES.j4 = [
     caption:"Editing, scope removal and delete all ride the memory patch route the package already exposes. The frame labels the two figures against the twenty thousand cap apart, <b>412 characters in this contribution</b> against <b>19,240 of 20,000 in the projected section</b>, so the same denominator never means two things. Today the editor trims at 20,000 without a counter and without marking what it cut, and the only sanctioned fix for a wrong claim is to correct the corpus and run the source through extraction again.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="chat-row">Salt road, part 2</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">Memory editor</span></div>'+
           '<div class="rail"><span class="rt on">Memory Vault<span class="b">118</span></span><span class="rt">Review Queue<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+
@@ -200,14 +180,7 @@ STATES.j4 = [
     caption:"The frame sets both values facing each other and puts the recall count on the one the proposal would overwrite, so you can weigh the loss before you take it. A third button keeps both in order, because most contradictions in a long story are the situation moving on. Review reads none of this run's <b>47 claims that rewrite a stored value</b> as conflicts, and the vault prints the proposed text without ever putting the existing text beside it.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="chat-row">Salt road, part 2</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">Conflicts</span></div>'+
           '<div class="rail"><span class="rt on">Memory Vault<span class="b">118</span></span><span class="rt">Review Queue<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+

@@ -3,12 +3,7 @@ STATES.j2 = [
     num: "01", label: "Narrow, then choose", feas: "package", fx: [3, 28, 30],
     caption: 'The filter <b>finds, and nothing else</b>: it narrows 60 chats and 41 characters until the material is reachable, and it decides nothing about the run. Every kind carries a count, including the kind the package can never ingest, so the screen states the ceiling on what a chat can teach up front.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side">' +
-        '<div class="side-title">Sources</div>' +
-        '<div class="chat-row">All chats · 60</div>' +
-        '<div class="chat-row">All characters · 41</div>' +
-        '<div class="chat-row on">Search: harbour</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>LONG-TERM MEMORY</span></div>' +
         '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span>' +
@@ -59,12 +54,7 @@ STATES.j2 = [
     num: "02", label: "Scope derived from the selection", feas: "package", fx: [17, 18],
     caption: 'The package <b>derives the trusted-subject roster from the 74 selected sources and counts it before any model call</b>. Today the import target both narrows the list and builds the scope, so the widest target passes no scope, produces an empty roster, and rejects every candidate as untrusted only after you have paid for the call. Here a zero blocks the run instead of starting it, and this screen lets you edit the persona.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side">' +
-        '<div class="side-title">Sources</div>' +
-        '<div class="chat-row">All chats · 60</div>' +
-        '<div class="chat-row">All characters · 41</div>' +
-        '<div class="chat-row on">Search: harbour</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>LONG-TERM MEMORY</span></div>' +
         '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span>' +
@@ -103,12 +93,7 @@ STATES.j2 = [
     num: "03", label: "A long run, reporting itself", feas: "restart", fx: [26, 23, 24],
     caption: 'The package writes per-source completion to its own store as the run proceeds, and the panel <b>polls a status route</b> for it, because nothing can push to the client. It names truncation on the source that hit it and retries, instead of throwing the response away. Today one synchronous request returns a single terminal report, so a run of tens of minutes looks exactly like a hang.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side">' +
-        '<div class="side-title">Sources</div>' +
-        '<div class="chat-row">All chats · 60</div>' +
-        '<div class="chat-row">All characters · 41</div>' +
-        '<div class="chat-row on">Search: harbour</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>EXTRACTING</span><span class="ico wide">t+12m</span></div>' +
         '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span>' +
@@ -148,12 +133,7 @@ STATES.j2 = [
     num: "04", label: "What was kept, what was lost", feas: "package", fx: [21, 19, 20, 22],
     caption: 'Totals first, then <b>one row per cause summing to 304</b>, so the reader takes ninety-six instances of one problem in once and starts recovery here. The largest single cause is a schema defect rather than a judgement: the schema declares optional fields optional and never nullable, so an explicit null throws the whole claim away. Review opens on the 838 that survived; this screen recovers the rejected candidates rather than queueing them.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side">' +
-        '<div class="side-title">Sources</div>' +
-        '<div class="chat-row">All chats · 60</div>' +
-        '<div class="chat-row">All characters · 41</div>' +
-        '<div class="chat-row on">Search: harbour</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>SOURCE IMPORT COMPLETE</span><span class="ico wide">24m</span></div>' +
         '<div class="rail"><span class="rt">Memory Vault</span><span class="rt new">Review Queue<span class="b">838</span></span>' +

@@ -8,14 +8,7 @@ STATES.j3 = [
     caption:"The rail splits into three bands: signals the package computes, values the model returned, and slices the reviewer saved. Every entry carries a live count against the <b>838 mutations</b> in the queue. The reworded-restatement lane names why it cannot count instead of returning a zero, which on this vault would read as a clean result. Today the queue offers no facets and no counts of any kind.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="chat-row">Salt road, part 2</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">vault-01</span><span class="ico">?</span></div>'+
           '<div class="rail">'+
@@ -83,14 +76,7 @@ STATES.j3 = [
     caption:"Group-by and sort act on one list, and the facet set survives a pivot, so the reviewer composes a slice once and works it to exhaustion. One active facet means the shown count equals that facet count: <b>838 mutations, 61 shown</b>. The list marks a stale row where it sits rather than at apply time, and it names the band that reached the vault without review, so the queue never implies it holds the whole run. Today any change of chat, source or draft throws the selection away.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="chat-row">Salt road, part 2</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">vault-01</span></div>'+
           '<div class="rail"><span class="rt">Memory Vault</span><span class="rt on">Review Queue<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+
@@ -149,13 +135,7 @@ STATES.j3 = [
     caption:"The row opens into an editor on the row itself, and the facet rail steps aside because the reviewer is reading one claim, not filtering eight hundred. Two counters carry different labels, <b>412 characters in this contribution</b> and <b>19,240 of 20,000 in the projected section</b>, so one denominator never means two things; only the section total earns a meter. The editor resolves the link target's id to a title. Today the editor sits below the diagnostics, trims at the cap without a counter or a marker at the cut, and renders four of the seven mutation kinds as nothing.",
     desk:
       '<div class="dev"><div class="dev-desk drawer">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">editing</span></div>'+
           '<div class="rail"><span class="rt">Memory Vault</span><span class="rt on">Review Queue<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+
@@ -212,14 +192,7 @@ STATES.j3 = [
     caption:"Stored and proposed face each other, and the recall count sits on the text the proposal would overwrite, so the reviewer can weigh the loss before taking it. A third option files both in order, because most contradictions in a long story record the situation moving rather than a factual dispute. Today the queue never reads <b>mutation.note.conflicts</b>, and no route returns the per-chunk recall counts the package already writes to disk.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="chat-row">Salt road, part 2</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">conflict</span></div>'+
           '<div class="rail"><span class="rt">Memory Vault</span><span class="rt on">Review Queue<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+
@@ -274,14 +247,7 @@ STATES.j3 = [
     caption:"A preview route runs the same projection code the server applies, so the queue marks the <b>2 rows that would fail</b> before submit rather than surfacing one whole-draft error afterwards. Progress counts against the batch: <b>46 of 61 applied, 13 remaining, 2 skipped and marked</b>. The restore point reuses the backup export the package already ships, because nothing here can undo an accept. The preview needs a new route, so it lands at a release boundary.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="chat-row">Salt road, part 2</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">applying</span></div>'+
           '<div class="rail"><span class="rt">Memory Vault</span><span class="rt on">Review Queue<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+
@@ -336,13 +302,7 @@ STATES.j3 = [
     caption:"The same route and the same row component at the median size: <b>12 mutations from one character card</b>. The facet rail, the group-by and the sort all drop away, because six facets cost more surface than the work they filter. Scale decides the interface, not the loop. A queue built only for 838 makes the common case feel like the rare one.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
-        '<div class="side">'+
-          '<div class="side-title">Chats</div>'+
-          '<div class="chat-row">Harbour arrival</div>'+
-          '<div class="chat-row">Lantern week</div>'+
-          '<div class="side-title">Workspace panes</div>'+
-          '<div class="chat-row on">Long-Term Memory</div>'+
-        '</div>'+
+        '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>'+
         '<div class="main">'+
           '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">one card</span></div>'+
           '<div class="rail"><span class="rt">Memory Vault</span><span class="rt on">Review Queue<span class="b">12</span></span><span class="rt">Sources</span><span class="rt">Memory Settings</span></div>'+

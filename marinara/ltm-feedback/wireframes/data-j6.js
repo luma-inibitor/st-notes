@@ -6,11 +6,7 @@ STATES.j6 = [
     fx: [48, 45, 54],
     caption: 'Three pressures on one note, and the package already computes all three at write time: characters, keywords and contributions. This is the Maintenance surface, so it says <i>notes</i> where the vault says <i>memories</i>; the product splits its own vocabulary that way and we match the surface rather than smoothing it over. The amber stays uniform on purpose, and a low-pressure note sits below it so the screen reads as a gradient rather than a wall. <b>Nothing on this vault has reached a limit</b>, so nothing takes the failure colour; red waits for a limit something actually hits. The product has no word for approaching a cap, only for the cap itself, so these frames extend its <i>Limits</i> vocabulary. Today the build renders none of the three and truncates section text at the cap in silence, which makes the first sign of a full note an apply that fails partway through a batch. Splitting identity into separate section keys means a schema change, so the frame marks it rather than offering it as one click.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side"><div class="side-title">Chats</div>' +
-      '<div class="chat-row">Wren · harbour arc</div>' +
-      '<div class="chat-row">Scene drafts</div>' +
-      '<div class="chat-row on">Worldbuilding</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>MEMORY SETTINGS · MAINTENANCE<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span><span class="rt">Sources</span>' +
@@ -60,11 +56,7 @@ STATES.j6 = [
     fx: [49, 50, 53, 60],
     caption: 'Additive sections union forever, so something has to compact them. The product ships no maintenance action that compacts and no verb for one, so this frame draws the pass as a Vault Maintenance action called <b>Merge restated lines</b>, previews it the way the product previews its other destructive work, and applies it through <b>Run selected maintenance</b>. Every removal justifies itself one way only, by <b>naming another line in the same section that already says it</b>, and the frame shows both lines before you agree to anything. A recall count of zero never counts as a reason: this vault\'s semantic lane is dead and its index rebuild failed on 14 notes, so zero describes reachability rather than worth, and deletion has no undo behind it. For the same reason index health gates the pass, and Reindex recall data takes the primary slot while the index stays dirty. Today stored deduplication compares a claim against the whole section as one blob, which cannot cross its threshold once the section holds real content.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side"><div class="side-title">Chats</div>' +
-      '<div class="chat-row">Wren · harbour arc</div>' +
-      '<div class="chat-row">Scene drafts</div>' +
-      '<div class="chat-row on">Worldbuilding</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>MERGE RESTATED LINES · PREVIEW<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span><span class="rt">Sources</span>' +
@@ -108,11 +100,7 @@ STATES.j6 = [
     fx: [64, 66, 65],
     caption: 'One canonical health view: vault counts, index state, embedding availability and integrity, in one place under one action name. The current build already fetches everything on this screen. The status response it requests once on load carries the embedding flag, the dirty flag, the index errors and the build timestamp, and the integrity results sit one tab away, so this frame costs <b>a render, not a request</b>. The state word is the product\'s own index-health label, <b>Vault degraded</b>. Today the client reads two of those fields and drops the rest on the floor, which is how a vault with a dead semantic lane and a dirty index reports itself as healthy. Journey 5 links here instead of drawing these fields a second time under a second name.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side"><div class="side-title">Chats</div>' +
-      '<div class="chat-row">Wren · harbour arc</div>' +
-      '<div class="chat-row">Scene drafts</div>' +
-      '<div class="chat-row on">Worldbuilding</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>VAULT HEALTH<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span><span class="rt">Sources</span>' +

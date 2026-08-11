@@ -6,11 +6,7 @@ STATES.j5 = [
     fx: [7, 10, 11, 8],
     caption: 'The drawer shows the recall record for the turn that just ran, and opening it from Chat Settings keeps the conversation on screen beside it. It reports <b>3 injected and 11 rejected</b>, splits the eleven across the three reasons the budget pass already computes, and stamps a time and a turn reference on them. Two of those reasons carry the product\'s own rejection labels, Budget and Score threshold. The third is mode ineligibility, which the budget pass computes but never labels, so the panel borrows the memory field it comes from, Available modes. The package writes a record on every turn, including turns that inject nothing. Today the build prints one last-injection count per chat that keeps showing an old number when the newest turn injected nothing, so five different recall outcomes read as the same absence. This report cannot sit inside the transcript: conversation mounts key off a package kind this package lacks, and a fixed allowlist strips capability elements out of message HTML.',
     desk: '<div class="dev"><div class="dev-desk drawer">' +
-      '<div class="side"><div class="side-title">Chats</div>' +
-      '<div class="chat-row on">Wren · harbour arc</div>' +
-      '<div class="chat-row">Scene drafts</div>' +
-      '<div class="chat-row">Worldbuilding</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>WREN · HARBOUR ARC<span class="ico hot">M</span></div>' +
       '<div class="msgs">' +
@@ -59,11 +55,7 @@ STATES.j5 = [
     fx: [6, 7, 10],
     caption: 'The same turn, on an install where a prompt-assembling preset owns placement and carries no memory section. Recall selected three memories and assembled them, and then <b>the preset threw all three away</b> before the send, because the prompt it built had no memory slot. The eleven the budget pass rejected earlier never mattered. Only engine code can write this record: the preset discards inside the engine\'s own prompt assembly, and nothing there writes anything down today. This is the single most important negative state in the document. Without this line, the turn looks exactly like memory having nothing to say, which is the reading the current build gives it.',
     desk: '<div class="dev"><div class="dev-desk drawer">' +
-      '<div class="side"><div class="side-title">Chats</div>' +
-      '<div class="chat-row on">Wren · harbour arc</div>' +
-      '<div class="chat-row">Scene drafts</div>' +
-      '<div class="chat-row">Worldbuilding</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>WREN · HARBOUR ARC<span class="ico hot">M</span></div>' +
       '<div class="msgs">' +
@@ -112,11 +104,7 @@ STATES.j5 = [
     fx: [12, 13, 11, 7],
     caption: 'The package appends a record per turn instead of overwriting one per chat, and a Recall History tab <b>added</b> to the workspace rail reads them, rather than taking a seat from Memory Vault, Review Queue, Sources or Memory Settings. The product ships one readout for the most recent recall and no plural noun for a run of them, so this tab extends <i>recall workflow</i> into a history. The gap at <b>t212</b> gets a row of its own reading "no record written", because an unexplained gap looks exactly like the silent injection failure this history exists to catch. Two rows carry known weaknesses: timeline events that arrived with no sequence, and ranking that ran age-blind, since nothing passes the cooldown option and no lane scores recency. Reading the history needs a new route.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side"><div class="side-title">Chats</div>' +
-      '<div class="chat-row on">Wren · harbour arc</div>' +
-      '<div class="chat-row">Scene drafts</div>' +
-      '<div class="chat-row">Worldbuilding</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>LONG-TERM MEMORY<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span><span class="rt">Sources</span>' +
@@ -155,11 +143,7 @@ STATES.j5 = [
     fx: [8, 15, 16, 65],
     caption: 'The path from a turn to a memory to a reason. Recall passed over "Wren distrusts the dockmaster" on t214, and the frame walks down three causes in order: the import left it available in Roleplay only, the index rebuild failed on the 14 notes that include it, and the semantic lane is dead because the rebuild reported success after embedding nothing. One shipped maintenance action fixes the second, and both this journey and journey 6 call it by its label, <b>Reindex recall data</b>. Journey 6 draws the vault-wide state once and this frame <b>links to it rather than repeating it</b>. Today these three facts sit in three separate components with no path between them, and a memory can save successfully and stay invisible to recall without a word on screen.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side"><div class="side-title">Chats</div>' +
-      '<div class="chat-row on">Wren · harbour arc</div>' +
-      '<div class="chat-row">Scene drafts</div>' +
-      '<div class="chat-row">Worldbuilding</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>DIAGNOSTICS<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span><span class="rt">Sources</span>' +
@@ -203,11 +187,7 @@ STATES.j5 = [
     fx: [63],
     caption: 'A permissions failure that names its own remedy. This install demands an admin secret for memory routes, and the engine already ships copy naming both ways out, so nobody has to write anything new here. The views simply never reach it: Memory Vault, Review Queue, Sources and Memory Settings all took a 403, and all four printed <b>the same generic loading string</b> without reading the response status, so an authentication problem with a documented fix surfaces as "Memories could not load." One failure per screen. A projection-limit error belongs with the memory that overflowed and cannot co-occur with a 403 that stopped every read.',
     desk: '<div class="dev"><div class="dev-desk">' +
-      '<div class="side"><div class="side-title">Chats</div>' +
-      '<div class="chat-row on">Wren · harbour arc</div>' +
-      '<div class="chat-row">Scene drafts</div>' +
-      '<div class="chat-row">Worldbuilding</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>LONG-TERM MEMORY<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Memory Vault</span><span class="rt">Review Queue</span><span class="rt">Sources</span>' +

@@ -3,13 +3,7 @@ STATES.j1 = [
     num: "01", label: "Enable, and what is readable", feas: "package", fx: [2, 3],
     caption: 'The drawer opens on <b>three rows and three different reasons for a zero</b>: one kind has material now, one will have material after a longer session, and one never will, because a transcript is not a source kind. The current build opens on the summaries tab, which is empty by construction on a new chat, and gives no way to tell the three apart.',
     desk: '<div class="dev"><div class="dev-desk drawer">' +
-      '<div class="side">' +
-        '<div class="side-title">Chats</div>' +
-        '<div class="chat-row on">Wren · conversation</div>' +
-        '<div class="chat-row">Wren · roleplay</div>' +
-        '<div class="chat-row">Harbour district</div>' +
-        '<div class="chat-row">Notes to self</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
         '<div class="msgs">' +
@@ -53,13 +47,7 @@ STATES.j1 = [
     num: "02", label: "The read, and what it spends", feas: "package", fx: [23, 24],
     caption: 'A first run costs <b>a model call</b>, and the drawer says so instead of presenting memories as though they simply appeared. The row names the extraction connection and marks whether it can hold the structured-output schema, so the reader learns that at the point of use. Today they find out by paying for a whole run and reading the rejection breakdown afterwards.',
     desk: '<div class="dev"><div class="dev-desk drawer">' +
-      '<div class="side">' +
-        '<div class="side-title">Chats</div>' +
-        '<div class="chat-row on">Wren · conversation</div>' +
-        '<div class="chat-row">Wren · roleplay</div>' +
-        '<div class="chat-row">Harbour district</div>' +
-        '<div class="chat-row">Notes to self</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
         '<div class="msgs">' +
@@ -105,13 +93,7 @@ STATES.j1 = [
     num: "03", label: "What the build does today", feas: "today", fx: [8, 9],
     caption: 'This draws <b>present behaviour, not a proposal</b>. The import stamps a character card Roleplay only, so following every documented step in a conversation chat leaves four saved memories and nothing injected. Nothing shows Available modes while you accept; only the Memory editor, in another part of the workspace, lets you change it afterwards.',
     desk: '<div class="dev"><div class="dev-desk drawer">' +
-      '<div class="side">' +
-        '<div class="side-title">Chats</div>' +
-        '<div class="chat-row on">Wren · conversation</div>' +
-        '<div class="chat-row">Wren · roleplay</div>' +
-        '<div class="chat-row">Harbour district</div>' +
-        '<div class="chat-row">Notes to self</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
         '<div class="msgs">' +
@@ -160,13 +142,7 @@ STATES.j1 = [
     num: "04", label: "Eligibility decided at acceptance", feas: "package", fx: [1, 9],
     caption: 'The eligibility default <b>follows the chat the material came from</b>, so this screen preselects Conversation and shows it at the moment of the decision rather than three screens away. The rows name things a reader already understands, so the seven pipeline nouns stop being a prerequisite for the first screen anyone sees.',
     desk: '<div class="dev"><div class="dev-desk drawer">' +
-      '<div class="side">' +
-        '<div class="side-title">Chats</div>' +
-        '<div class="chat-row on">Wren · conversation</div>' +
-        '<div class="chat-row">Wren · roleplay</div>' +
-        '<div class="chat-row">Harbour district</div>' +
-        '<div class="chat-row">Notes to self</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
         '<div class="msgs">' +
@@ -211,13 +187,7 @@ STATES.j1 = [
     num: "05", label: "Proof, two turns later", feas: "package", fx: [7],
     caption: 'A count, <b>a timestamp and a turn reference</b>, so the figure reads as this turn rather than as the last time anything worked. The present readout carries neither, and holds its last successful count indefinitely once injection stops.',
     desk: '<div class="dev"><div class="dev-desk drawer">' +
-      '<div class="side">' +
-        '<div class="side-title">Chats</div>' +
-        '<div class="chat-row on">Wren · conversation</div>' +
-        '<div class="chat-row">Wren · roleplay</div>' +
-        '<div class="chat-row">Harbour district</div>' +
-        '<div class="chat-row">Notes to self</div>' +
-      '</div>' +
+      '<div class="side"><div class="side-title">Chats</div><div class="chat-row on">Wren · conversation</div><div class="chat-row">Wren · roleplay</div><div class="chat-row">Harbour district</div><div class="chat-row">Notes to self</div></div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
         '<div class="msgs">' +
