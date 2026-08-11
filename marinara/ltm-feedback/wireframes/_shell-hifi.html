@@ -120,7 +120,7 @@
   .dev{background:var(--frame);border:1px solid var(--stroke);border-radius:10px;overflow:hidden;
     position:relative;font-size:11px;line-height:1.35;color:var(--ink-2);box-shadow:var(--shadow)}
   .dev-desk{display:grid;grid-template-columns:104px minmax(0,1fr);height:412px}
-  .dev-desk.drawer{grid-template-columns:104px minmax(0,1fr) 186px}
+  .dev-desk.drawer{grid-template-columns:96px minmax(0,1fr) 224px}
   .dev-phone{display:flex;flex-direction:column;height:412px}
 
   .side{border-right:1px solid var(--stroke-soft);background:var(--frame-2);padding:8px 7px;
@@ -225,7 +225,8 @@
   .drawer-head{padding:6px 8px;border-bottom:1px solid var(--stroke-soft);font-family:var(--mono);
     font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
     display:flex;align-items:center;gap:6px}
-  .drawer-body{padding:8px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+  .drawer-body{padding:8px;display:flex;flex-direction:column;gap:6px;overflow:hidden;min-width:0}
+  .drawer-body *{min-width:0;overflow-wrap:anywhere}
 
   .kv{display:flex;gap:6px;font-size:9px;color:var(--ink-2)}
   .kv .k{color:var(--ink-3);font-family:var(--mono);font-size:8.5px}
@@ -247,6 +248,19 @@
   .to ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:5px}
   .to li{font-size:.83rem;color:var(--ink-2)}
   .to.win h4{color:var(--good)} .to.cost h4{color:var(--warn)} .to.build h4{color:var(--accent-2)}
+
+  .dev-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:14px}
+  .dev-table th{text-align:left;font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--stroke);
+    padding:0 12px 8px 0;vertical-align:bottom;font-weight:700}
+  .dev-table td{border-bottom:1px solid var(--stroke-soft);padding:10px 12px 10px 0;
+    color:var(--ink-2);vertical-align:top}
+  .dev-table td:first-child{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+  .dev-table td b{color:var(--ink);font-weight:650}
+  .dev-table td.ours{color:var(--accent)}
+  .tablewrap{overflow-x:auto}
+  .subhead{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent-2);margin:32px 0 0}
 
   .theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);
     font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
@@ -301,7 +315,7 @@
         <p>
           It registers arbitrary routes under its own prefix, owns its storage directory and its
           schema, gets a revision-checked document store, and can call both a language model and
-          an embedding model. Every derived signal, the facet engine, preflight, restore points
+          an embedding model. Every derived signal, the facet engine, apply preview, restore points
           and compaction are all in reach.
         </p>
         <p class="src">capability-module-runtime.service.ts · activateOne</p>
@@ -409,6 +423,85 @@
       <div class="flowrail" data-flow="j6"></div>
       <div class="tradeoffs" data-trade="j6"></div>
     </div>
+  </section>
+
+  <section id="deviations">
+    <div class="sec-head">
+      <p class="eyebrow">Accountability</p>
+      <h2>Where these drawings use words the product does not</h2>
+      <p class="prose">
+        Everything inside a device frame uses the package's own shipped strings, checked against
+        its locale file and its derived enum labels. The captions beside the frames are our
+        commentary and stay in our voice. This table lists every place the frames depart from the
+        product's vocabulary, and why. If a row looks wrong to you, the frame is wrong, not the
+        table.
+      </p>
+    </div>
+
+    <p class="subhead">The product has a word, and we deliberately avoid it</p>
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Where</th><th>Product's word</th><th>What we drew</th><th>Why</th></tr>
+      <tr><td>J1, all states</td><td><b>Draft</b>, <b>mutation</b>, evidence unit</td>
+        <td class="ours">plain claim text</td>
+        <td>This is the finding, not an oversight. None of the three nouns is defined anywhere a user can reach, and the first run is the one surface that has to be legible without them. Journeys 2 and 3 use <b>mutations</b> and <b>draft</b> verbatim, because by then the reader is in the review queue, where the product uses those words.</td></tr>
+      <tr><td>J1, accept step</td><td><b>Rewrite memory</b>, <b>Merge into memory</b></td>
+        <td class="ours">no disposition shown</td>
+        <td>Same reason. Disposition is a pipeline concept, and the first accept step shows only the text and the modes.</td></tr>
+    </table></div>
+
+    <p class="subhead">The product has no word for it</p>
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Where</th><th>Nearest shipped</th><th>What we drew</th><th>Why</th></tr>
+      <tr><td>J3, J4, J6</td><td><b>Evidence</b>, <b>Add to section</b></td><td class="ours">contribution</td>
+        <td>No user-facing noun exists for one stored line inside a section. <b>Evidence</b> is a different field on the same record. The word also has to stay distinct from "the projected section", so one denominator never carries two meanings.</td></tr>
+      <tr><td>J3, J4, J6</td><td><b>Limits:</b>, <b>Budget</b></td><td class="ours">near a limit, over the limit</td>
+        <td>The product ships the caps and a binary budget rejection, and nothing for approaching one. Extended from <b>Limits</b> rather than coining a phrase.</td></tr>
+      <tr><td>J2, scope</td><td><b>Subjects</b>, <code>untrusted_subject</code></td><td class="ours">trusted subjects, roster</td>
+        <td>"Trusted subject" appears only inside a rejection reason. No surface lists them and none counts them, which is the finding.</td></tr>
+      <tr><td>J3, facets</td><td><b>Duplicate text</b>, <b>Deduplications</b></td><td class="ours">restates the vault</td>
+        <td>The product's duplicate vocabulary describes an exact-text compare, which is the mechanism the finding says cannot fire here. Reusing it verbatim would assert the opposite of what the frame shows.</td></tr>
+      <tr><td>J3, saved slices</td><td><b>Recall style</b> presets</td><td class="ours">save this slice</td>
+        <td>Filters are not persistable in the product, and its only preset vocabulary belongs to recall settings rather than to a review selection.</td></tr>
+      <tr><td>J3, J4, conflicts</td><td><b>Conflicts</b>, a vault field</td><td class="ours">keep existing, take proposed, keep both</td>
+        <td>The product records conflicts and ships no way to resolve one. Its severities carry no display labels at all. Every button here is ours, and deliberately not mapped onto <b>Accept</b> and <b>Skip</b>, which are review-queue verbs and would misrepresent a vault action.</td></tr>
+      <tr><td>J3, apply</td><td><b>Export backup</b></td><td class="ours">take a restore point first</td>
+        <td>Export, preview and import all exist, and nothing frames them as something to do before a bulk action.</td></tr>
+      <tr><td>J5, history</td><td><b>Latest recall workflow</b>, <b>activity record</b></td><td class="ours">record, Recall History</td>
+        <td>The product writes one readout for the most recent recall and keeps nothing per turn. Extended from <b>activity record</b>. A destination called simply <b>Recall</b> would collide with the settings tab of that name.</td></tr>
+      <tr><td>J5, dropped reasons</td><td><b>Budget</b>, <b>Score threshold</b></td><td class="ours">Available modes</td>
+        <td>The budget pass computes mode ineligibility, and its enum has no value for it, so no label was ever derived. The row borrows the exact name of the field that causes it instead of inventing a reason.</td></tr>
+      <tr><td>J5, discarded turn</td><td><b>{n} selected</b></td><td class="ours">assembled, discarded at assembly</td>
+        <td>This step happens during engine prompt assembly, which writes no record at all today. That is why the state is marked as needing an engine change.</td></tr>
+      <tr><td>J6, compaction</td><td><b>Merge into memory</b>, <b>Run selected maintenance</b></td><td class="ours">Merge restated lines</td>
+        <td>No maintenance action compacts anything. Rather than coin a verb, the pass becomes one more Vault Maintenance action, using the product's nearest verb and its existing run-and-preview framing.</td></tr>
+      <tr><td>J4, J6</td><td>none; the counts ship on disk</td><td class="ours">recalled 21 times</td>
+        <td>Per-chunk recall counts increment on every injection and no route returns them, so nobody ever wrote a string for them.</td></tr>
+      <tr><td>J4, recall tags</td><td>none</td><td class="ours">unreachable</td>
+        <td>Ours, and it is the finding: the product shows the same zero for a memory nobody needed and a memory the index cannot see.</td></tr>
+      <tr><td>J1, sources</td><td>none</td><td class="ours">later, not a source kind</td>
+        <td>No shipped string separates "none yet, but there will be" from "none, ever". Three causes of a zero, one word for all of them.</td></tr>
+    </table></div>
+
+    <p class="subhead">Two shipped words collided, and we picked one</p>
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Where</th><th>The collision</th><th>What we drew</th><th>Why</th></tr>
+      <tr><td>Everywhere</td><td><b>Skip</b> against <b>Rejected</b></td><td class="ours">both, kept apart</td>
+        <td>The product keeps two negatives distinct and an earlier draft of these frames merged them. <b>Skip</b> is the reviewer's action on a mutation. <b>Rejected</b> and <b>Suggestions that weren't saved</b> belong to extraction candidates that never became a draft.</td></tr>
+      <tr><td>Every rail</td><td>desktop <b>Memory Vault</b> against mobile <b>Memories</b></td><td class="ours">both, by viewport</td>
+        <td>The product ships long and short label sets and picks by width. These frames now do the same; earlier they used a form the product never renders.</td></tr>
+      <tr><td>J3, J4 against J6</td><td><b>memory</b> against <b>note</b></td><td class="ours">both, by surface</td>
+        <td>The record is a memory everywhere a user browses and a note in maintenance copy. That inconsistency is shipped, so each frame matches the surface it depicts instead of smoothing it over.</td></tr>
+      <tr><td>J3, apply</td><td><b>Preview</b> against <b>Integrity check</b></td><td class="ours">preview</td>
+        <td>Preview is the product's word for a dry run, so the frames use it rather than a coined synonym.</td></tr>
+      <tr><td>J5, J6</td><td>index repair</td><td class="ours">Reindex recall data</td>
+        <td>One shipped action name, used identically in both journeys, so the same fix never appears under two verbs.</td></tr>
+    </table></div>
+
+    <p class="prose">
+      One convention, stated so nobody mistakes it for a claim: device title bars are drawn in
+      uppercase as wireframe chrome. Every string inside a pane matches the product's own
+      capitalisation.
+    </p>
   </section>
 
 </div>
