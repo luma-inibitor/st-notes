@@ -1,0 +1,391 @@
+{
+  "character": {
+    "name": "Sella Vane",
+    "description": "An ash-diver from the lower terraces of Kholvar: rope-scarred hands, a diver's hood, and a lamp she trusts more than most people. She goes down the flues for the guilds and comes back up knowing things they would rather she did not.",
+    "personality": "Dry, watchful, allergic to ceremony. Says the useful half of a sentence and lets you find the rest.",
+    "scenario": "Kholvar, under ashfall. A sworn writer has been sent to verify an ash-claim that should not exist.",
+    "first_mes": "\"You're the writer, then.\" *She doesn't offer a hand — hers are black to the wrist.* \"Keep your papers under your coat. Ash gets into the ink and then nobody can prove anything, which is generally the point.\""
+  },
+  "characters": [
+    {
+      "name": "Brother Ostrek",
+      "description": "A flame-priest of the Kept Ember who has not lit anything in two years. Broad, slow-spoken, carries a censer he no longer fills. He came down from the high terraces to atone for something he will not name and has been useful ever since, in the manner of a man who wants to be tired.",
+      "personality": "Gentle, stubborn, guilty. Argues theology with himself out loud when nervous.",
+      "scenario": "Kholvar, under ashfall."
+    }
+  ],
+  "persona": {
+    "name": "Kesh Ambrose",
+    "description": "A sworn writer — a notary of the ledger-guilds, licensed to witness claims, verify seals, and be extremely unwelcome. Carries a writ case, a seal glass, and no weapon worth the name."
+  },
+  "chat": {
+    "name": "The Ashfall Contract",
+    "mode": "game"
+  },
+  "game": {
+    "party": ["Sella Vane", "Brother Ostrek"],
+    "preferences": "Investigation over combat. Let refusals cost something.",
+    "setupConfig": {
+      "genre": "Fantasy, Mystery",
+      "setting": "Kholvar, a mining city built on the flank of a mountain that has been quietly burning for ninety years. Ash falls day and night. Every right to dig, breathe, or be buried is written down, sealed, and sold by the ledger-guilds.",
+      "tone": "Grim, wry, procedural",
+      "difficulty": "Normal",
+      "playerGoals": "Verify Ash-Claim 41, find out who forged it, and survive being the person who asked.",
+      "gmMode": "standalone",
+      "rating": "sfw",
+      "language": "English",
+      "enableCustomWidgets": true,
+      "customHudWidgets": [
+        {
+          "id": "ashfall",
+          "type": "progress_bar",
+          "label": "Ashfall",
+          "icon": "🌋",
+          "position": "hud_left",
+          "accent": "#b4643c",
+          "config": { "max": 6, "startingValue": 2, "value": 2 }
+        },
+        {
+          "id": "lamp_oil",
+          "type": "gauge",
+          "label": "Lamp Oil",
+          "icon": "🪔",
+          "position": "hud_left",
+          "accent": "#e2b33c",
+          "config": { "max": 100, "startingValue": 80, "value": 80 }
+        },
+        {
+          "id": "sella_trust",
+          "type": "relationship_meter",
+          "label": "Sella",
+          "icon": "🪢",
+          "position": "hud_right",
+          "accent": "#6f9fb5",
+          "config": { "max": 10, "startingValue": 4, "value": 4 }
+        },
+        {
+          "id": "leads",
+          "type": "list",
+          "label": "Leads",
+          "icon": "🔍",
+          "position": "hud_right",
+          "config": { "items": ["Ash-Claim 41 is sealed by a dead provost"] }
+        }
+      ]
+    },
+    "world": {
+      "worldOverview": "Kholvar sits on the flank of a mountain that has been burning underneath itself for ninety years. Nobody calls it an eruption. The ash comes down soft and constant, greys the laundry, sweetens the water, and fills the flues that run under the city like the works of a clock. Men go down into those flues on ropes to cut ash-glass and haul it up to the terraces, and men come back up short a finger or short a brother, and the ledger-guilds write both facts down in the same hand.\n\nEverything here is a document. A claim to dig, a claim to breathe the clean air of the upper terraces, a claim to a grave that will not be dug over in ten years — all of it sealed in wax the colour of old blood and filed in Ledger Hall. The city trusts the seal more than it trusts any person, which has made forgery the only crime in Kholvar that anyone bothers to hang for.",
+      "storyArc": "SECRET. Ash-Claim 41 grants a private syndicate the right to cut in Flue Nine, where the ash-glass is richest and the air kills slowly. It carries the seal of Provost Ceril Marr, who died fourteen months before the claim was filed. The syndicate is not forging seals so much as buying the man who makes them, and the pressure will move from paperwork to people the moment the party can prove it. It ends either with the press destroyed and a provost in irons, or with the party's own writ turned against them.",
+      "plotTwists": [
+        "SECRET twist 1: the forged seals are cut by Halden Marr's own seal-cutter on Halden's authority — he began it to keep his dead father's claims alive for the widows, and the syndicate found out and now owns him.",
+        "SECRET twist 2: Sella has been down Flue Nine before, under a different name on a different crew, and two of the men whose deaths are recorded there were left by her when the air turned. She will confess it if trusted, and lie about it if pushed."
+      ],
+      "startingMap": {
+        "name": "Kholvar, Lower Terraces",
+        "description": "A stepped city of soot-grey stone above a network of burning flues, in permanent light ashfall.",
+        "regions": [
+          {
+            "id": "region_1",
+            "name": "Cinder Gate",
+            "description": "The lower gate and its permanent queue of claimants, drovers, and people selling tea to both.",
+            "type": "town",
+            "connectedTo": ["region_2", "region_3"],
+            "discovered": true
+          },
+          {
+            "id": "region_2",
+            "name": "Ledger Hall",
+            "description": "Where every claim in Kholvar is sealed, filed, and quietly amended.",
+            "type": "building",
+            "connectedTo": ["region_1"],
+            "discovered": true
+          },
+          {
+            "id": "region_3",
+            "name": "The Flues",
+            "description": "Hot stone shafts under the city where ash-glass is cut on ropes and the air is measured in minutes.",
+            "type": "dungeon",
+            "connectedTo": ["region_1", "region_4"],
+            "discovered": true
+          },
+          {
+            "id": "region_4",
+            "name": "Ashfields",
+            "description": "The grey slope above the flue mouths, where spoil is dumped and nothing has grown since the fire started.",
+            "type": "wilderness",
+            "connectedTo": ["region_3", "region_5"],
+            "discovered": false
+          },
+          {
+            "id": "region_5",
+            "name": "Drover Camp",
+            "description": "Tents and ox-lines at the head of the haul road, out of the guilds' sight and mostly out of their reach.",
+            "type": "camp",
+            "connectedTo": ["region_4"],
+            "discovered": false
+          }
+        ]
+      },
+      "startingNpcs": [
+        {
+          "name": "Provost Halden Marr",
+          "role": "quest_giver",
+          "emoji": "🗝️",
+          "description": "Ledger Hall's provost, forty and going grey at the temples in a way he checks for; speaks in the flat cadence of a man reading his own words back. Wants the claim verified quickly and by someone from outside the city, and cannot say why.",
+          "gender": "male",
+          "pronouns": "he/him",
+          "location": "region_2",
+          "reputation": 0
+        },
+        {
+          "name": "Widow Enna Trell",
+          "role": "ally",
+          "emoji": "🫖",
+          "description": "Runs the tea stall at Cinder Gate and has done since her husband went down Flue Nine; knows every claimant's face and how long each has been queueing. Trades information for the courtesy of being asked properly.",
+          "gender": "female",
+          "pronouns": "she/her",
+          "location": "region_1",
+          "reputation": 2
+        },
+        {
+          "name": "Fen Ostwick",
+          "role": "neutral",
+          "emoji": "🐂",
+          "description": "Foreman of the ash-drovers, all forearms and grievance; hauls whatever is on the docket and asks nothing, which he considers a virtue and everyone else considers a business model.",
+          "gender": "male",
+          "pronouns": "he/him",
+          "location": "region_5",
+          "reputation": 0
+        },
+        {
+          "name": "The Whistler",
+          "role": "antagonist",
+          "emoji": "🎭",
+          "description": "A syndicate fixer known only by the two flat notes he uses to call his people in the dark of the flues; polite, unhurried, and has never once been the man holding the knife.",
+          "location": "region_3",
+          "reputation": -3
+        }
+      ],
+      "partyArcs": [
+        {
+          "name": "Sella Vane",
+          "arc": "She left two men in Flue Nine when the air turned and has been paying for the rope she cut ever since, in small instalments nobody has asked her for. Being trusted with the truth would cost her less than being caught with it.",
+          "goal": "Get the names of the Flue Nine dead written into a ledger that will outlast the syndicate."
+        },
+        {
+          "name": "Brother Ostrek",
+          "arc": "He put out his own censer after a fire in the high terraces killed the people he was blessing, and has been looking for a penance heavy enough to feel like one. He will volunteer for the worst job in any room.",
+          "goal": "Light the ember again, in front of witnesses, without lying about why it went out."
+        }
+      ],
+      "characterCards": [
+        {
+          "name": "Sella Vane",
+          "shortDescription": "Ash-diver who knows the flues better than the maps that claim to.",
+          "class": "Diver",
+          "abilities": [
+            "Rope Sense — reads a shaft's condition from the way a line hangs",
+            "Bad Air — knows to the minute when a room has stopped being survivable"
+          ],
+          "strengths": ["Sure-footed on hot stone", "Unbribable about safety"],
+          "weaknesses": ["Lies fluently about her own history", "Will not go back down Flue Nine without a reason she believes"],
+          "extra": {
+            "voice": "clipped, dry, finishes other people's sentences with the worse version",
+            "personalStake": "two names she wants written down",
+            "temptation": "silence is cheaper than confession"
+          }
+        },
+        {
+          "name": "Brother Ostrek",
+          "shortDescription": "A flame-priest who has stopped lighting fires.",
+          "class": "Priest",
+          "abilities": ["Kept Ember — steadies a frightened crowd by speaking slowly", "Field medicine of the burn-ward kind"],
+          "strengths": ["Physically enormous", "Cannot be shamed into leaving"],
+          "weaknesses": ["Argues with himself under pressure", "Will take the dangerous job to punish himself"],
+          "extra": { "voice": "slow, formal, apologetic", "personalStake": "penance", "affiliation": "Order of the Kept Ember" }
+        },
+        {
+          "name": "Kesh Ambrose",
+          "shortDescription": "A sworn writer with a licence to witness and no licence to fight.",
+          "class": "Notary",
+          "abilities": ["Seal Glass — reads a wax seal's cutting marks", "Writ of Witness — compels a guild officer to answer on the record, once"],
+          "strengths": ["Every guild in Kholvar has to let them in the door"],
+          "weaknesses": ["Every guild in Kholvar wants them out of it"],
+          "extra": { "voice": "precise, procedural, funnier than the job allows", "title": "Sworn Writer of the Outer Register" }
+        }
+      ],
+      "artStylePrompt": "Muted charcoal-and-ember palette, soot-grey stone and falling ash, lantern-lit interiors, painterly grime, low contrast daylight, industrial fantasy etching feel.",
+      "blueprint": {
+        "campaignPlan": {
+          "openingSituation": "The writ names Ash-Claim 41 and the seal on it belongs to a provost fourteen months dead.",
+          "pressureClocks": [
+            { "name": "The syndicate notices you", "steps": 4, "current": 1, "failure": "Your writ is revoked and your escort is bought." },
+            { "name": "Flue Nine goes bad", "steps": 6, "current": 2, "failure": "The cut face collapses with a crew inside." }
+          ],
+          "factions": [
+            {
+              "name": "The Ledger-Guilds",
+              "goal": "Keep the seal worth more than the truth",
+              "method": "Paperwork, precedent, and the occasional hanging",
+              "secret": "Their provost is already bought."
+            },
+            {
+              "name": "The Ninefold Syndicate",
+              "goal": "Cut Flue Nine dry before anyone can prove they are there",
+              "method": "Forged claims and drovers who do not read",
+              "secret": "They own the seal-cutter, not the seals."
+            }
+          ],
+          "questSeeds": [
+            "Match the wax on Claim 41 to a press that should have been destroyed",
+            "Find out who has been paying the Flue Nine widows and why the payments stopped",
+            "Get Fen Ostwick to say on the record what he has been hauling at night"
+          ],
+          "encounterPrinciples": [
+            "Violence in Kholvar is a paperwork failure; let it arrive late and cost something",
+            "Bad air is the real monster — track time, not hit points"
+          ]
+        },
+        "hudWidgets": [
+          {
+            "id": "ashfall",
+            "type": "progress_bar",
+            "label": "Ashfall",
+            "icon": "🌋",
+            "position": "hud_left",
+            "accent": "#b4643c",
+            "config": { "max": 6, "startingValue": 2, "value": 2 }
+          },
+          {
+            "id": "lamp_oil",
+            "type": "gauge",
+            "label": "Lamp Oil",
+            "icon": "🪔",
+            "position": "hud_left",
+            "accent": "#e2b33c",
+            "config": { "max": 100, "startingValue": 80, "value": 80 }
+          },
+          {
+            "id": "sella_trust",
+            "type": "relationship_meter",
+            "label": "Sella",
+            "icon": "🪢",
+            "position": "hud_right",
+            "accent": "#6f9fb5",
+            "config": { "max": 10, "startingValue": 4, "value": 4 }
+          },
+          {
+            "id": "leads",
+            "type": "list",
+            "label": "Leads",
+            "icon": "🔍",
+            "position": "hud_right",
+            "config": { "items": ["Ash-Claim 41 is sealed by a dead provost"] }
+          }
+        ],
+        "introSequence": [
+          { "effect": "fade_from_black", "duration": 1200 },
+          { "effect": "vignette", "duration": 2000, "intensity": 0.35, "target": "background" }
+        ],
+        "visualTheme": { "palette": "dark_warm", "uiStyle": "parchment", "moodDefault": "mysterious" }
+      }
+    }
+  },
+  "messages": [
+    {
+      "role": "assistant",
+      "at": "-1d 19:02",
+      "content": "[bg: backgrounds:generated:cinder-gate-queue]\n[ambient: ambient:urban:crowd-murmur]\n[music: music:exploration:horror:tense:dark-forest]\n\nAsh comes down over Cinder Gate the way snow does in kinder countries. The queue for the claims window has been standing in it long enough that the shoulders of every coat have gone the same grey, and nobody bothers brushing it off any more.\n\nYour writ case is under your coat, where Sella told you to put it.\n\n[Sella Vane] [main] [wary]: \"Forty-one. That's the number on your paper, is it.\"\n\n[Brother Ostrek] [main] [uneasy]: \"It is a number like any other, sister. It has no opinion about us.\"\n\n[Sella Vane] [main] [flat]: \"Flue Nine is a number like any other. Ask the nine men in it.\"\n\n[Kesh Ambrose] [thought] [dry]: You think that whoever sent you a two-day journey to witness one claim did not do it because the paperwork was simple.\n\n[choices: \"Present the writ at the claims window\"|\"Buy tea from the widow and listen to the queue\"|\"Ask Sella what she is not saying about Flue Nine\"]"
+    },
+    { "role": "user", "at": "-1d 19:06", "content": "[choice: Buy tea from the widow and listen to the queue]" },
+    {
+      "role": "assistant",
+      "at": "-1d 19:09",
+      "content": "[sfx: sfx:ui:coin-pickup]\n\nEnna Trell's stall is three boards and a brazier, and it has the only warm queue in Kholvar. She reads your coat, your case, and your hands in that order, and pours before you ask.\n\n[Enna Trell] [main] [shrewd]: \"Outer Register. You'll be the one they sent for the forty-one.\" *She does not lower her voice, which is its own kind of protection.* \"Half this line has been standing here since the spring on claims that got amended. Amended. That's the word they use.\"\n\n[Enna Trell] [main] [quiet]: \"My man went down Nine. There was money after, for the widows — every quarter-day, regular, from nobody's name. Stopped in the winter. Ask them why it stopped and they look at their shoes.\"\n\n[reputation: npc=\"Widow Enna Trell\" action=\"treated with courtesy\"]\n[widget: leads, add: \"Widow payments stopped last winter\"]\n[Note: Quarter-day payments to the Flue Nine widows, unsigned, ceased at midwinter.]\n[state: dialogue]"
+    },
+    {
+      "role": "user",
+      "at": "-1d 19:14",
+      "content": "I write the widow's name and the word *amended* into the day-book where she can see me do it, which is the only currency I have on me. \"Mistress Trell — when the payments came, who brought them? Not whose name. Whose hands.\""
+    },
+    {
+      "role": "assistant",
+      "at": "-1d 19:18",
+      "content": "[Enna Trell] [main] [considering]: \"A drover's hands. Ox-scarred, ash to the elbow, and a bandage on the same thumb for a year.\" *She taps her own thumb.* \"Ostwick's crew, if you want it plain. I never said so.\"\n\n[Sella Vane] [main] [dry]: \"She never said so.\"\n\n[Brother Ostrek] [main] [thoughtful]: \"A syndicate that pays widows is a syndicate with a conscience, or a syndicate with a witness list. Both are worth walking uphill for.\"\n\n[widget: leads, add: \"Ostwick's drovers carried the widow money\"]\n[reputation: npc=\"Fen Ostwick\" action=\"named as a courier\"]\n[choices: \"Go up to Ledger Hall and present the writ\"|\"Go straight to the drover camp\"]"
+    },
+    { "role": "user", "at": "-1d 19:22", "content": "[choice: Go up to Ledger Hall and present the writ]" },
+    {
+      "role": "assistant",
+      "at": "-1d 19:27",
+      "content": "[bg: backgrounds:generated:ledger-hall-interior]\n[ambient: ambient:interior:eerie-atmosphere]\n[music: music:dialogue:slice_of_life:calm:town-peaceful]\n[sfx: sfx:ui:page-turn]\n\nLedger Hall is warm, dry, and smells of hot wax — the only building in Kholvar where the ash is somebody's full-time job to keep out. Provost Halden Marr receives you standing, which means he intends the meeting to be short.\n\n[Halden Marr] [main] [measured]: \"Sworn Writer. The claim is in order. You may witness the file, note the seal, and be on the evening cart.\"\n\n*He sets the folio down and does not open it.*\n\n[Kesh Ambrose] [thought] [dry]: You think that a man who wanted a claim verified would have opened the folio himself, and a man who wanted it witnessed would not have known which page it was on without looking.\n\n[state: dialogue]\n[choices: \"Read the seal under the glass, in front of him\"|\"Ask him whose hand cut the seal\"|\"Accept the file and read it elsewhere\"]"
+    },
+    { "role": "user", "at": "-1d 19:31", "content": "[choice: Read the seal under the glass, in front of him]" },
+    {
+      "role": "assistant",
+      "at": "-1d 19:36",
+      "content": "[skill_check: skill=\"Investigation\" dc=\"14\" rolls=\"12\" modifier=\"3\" total=\"15\" result=\"success\"]\n\nYou take out the seal glass and set it on the wax without asking, because the writ says you may, and because asking would give him somewhere to stand.\n\nThe seal is Ceril Marr's — the old provost's, with the double flue and the worn upper rim. It is also *sharp*. Fourteen months of a press sitting in a strongroom leaves the wax soft at the edges; this one bites. The press that cut it was cut recently, by somebody who had the original in front of them.\n\n[Halden Marr] [main] [very still]: \"My father's seal was struck from the register when he died.\"\n\n[Brother Ostrek] [main] [gentle]: \"Then somebody has been kind enough to strike it back on.\"\n\n[inventory: action=\"add\" item=\"Wax impression of Claim 41\" count=\"1\"]\n[widget: leads, add: \"The 41 press was cut new from Ceril Marr's original\"]\n[reputation: npc=\"Provost Halden Marr\" action=\"cornered on the record\"]\n[widget: ashfall, value: 3]"
+    },
+    {
+      "role": "user",
+      "at": "-1d 19:41",
+      "content": "\"Provost, I'm going to say the part you're waiting for so neither of us has to be clever about it.\" I close the glass. \"I don't think you forged this. I think you know the room the press is kept in, and I think you've known for a while, and I think the reason you sent for an outside writer is that you can't be the one to open that door.\"\n\n\"So. Where is it kept?\""
+    },
+    {
+      "role": "assistant",
+      "at": "-1d 19:47",
+      "content": "[sfx: sfx:ui:latch]\n\nHalden Marr sits down. That is the whole confession, really; everything after it is detail.\n\n[Halden Marr] [main] [tired]: \"Flue Nine. The old survey office at the second landing, behind the sealed door — the one my father condemned. There is a cutter's bench in it and a man who works at night and a fee that arrives whether I sign for it or not.\"\n\n[Halden Marr] [main] [quiet]: \"I started it. Two claims, for widows, to keep a dead man's word alive. Then somebody who was not me made it four, and then forty.\"\n\n[Sella Vane] [main] [very flat]: \"Second landing.\"\n\n[Kesh Ambrose] [thought] [wry]: You think you have never seen anyone go grey under ash-grey before.\n\n[inventory: action=\"add\" item=\"Provost's descent token\" count=\"1\"]\n[state: exploration]\n[choices: \"Go down tonight, while the cutter is at his bench\"|\"Wait for daylight and a guild escort\"]"
+    },
+    { "role": "user", "at": "-1d 19:52", "content": "[choice: Go down tonight, while the cutter is at his bench]" },
+    {
+      "role": "assistant",
+      "at": "-1d 19:58",
+      "content": "[bg: backgrounds:generated:flue-shaft-descent]\n[ambient: ambient:interior:dungeon-cave]\n[music: music:exploration:fantasy:calm:field-of-dreams]\n\nThe flue mouth breathes on you before you are ten feet down it — warm, sweetish, and wrong. Sella goes first on the rope with her lamp turned low, and Ostrek comes last, taking the weight of the line with his back braced against the stone like a man who has been waiting all week for something to hurt.\n\n[Sella Vane] [main] [low]: \"Second landing is four minutes down. Don't talk while the lamp is low, and if I put it out, you stand still and count.\"\n\n[Brother Ostrek] [main] [murmuring]: \"— and the ember is kept, and the ember is kept, and the ember —\"\n\n[Sella Vane] [main] [not unkind]: \"Brother. Count instead.\"\n\n[widget: lamp_oil, value: 62]\n[widget: sella_trust, value: 5]\n[state: exploration]"
+    },
+    {
+      "role": "user",
+      "at": "-1d 20:04",
+      "content": "I count. Four minutes is a long time on a rope with a writ case digging into your ribs.\n\nWhen we reach the landing I put my hand flat on the sealed door before touching the lamp — hot doors have opinions, and I would rather hear this one's now."
+    },
+    {
+      "role": "assistant",
+      "at": "-1d 20:10",
+      "content": "[skill_check: skill=\"Perception\" dc=\"12\" rolls=\"17\" modifier=\"2\" total=\"19\" result=\"success\"]\n\nThe door is cool. Cooler than the stone around it, which means the room behind it has been vented — recently, and not by accident.\n\nAnd from somewhere below the landing, two flat notes, a tone apart. Then, unhurried, two more.\n\n[Sella Vane] [main] [very quiet]: \"That's not a bird and it's not the flue. That's a man calling his people in.\"\n\n[Brother Ostrek] [main] [steady]: \"Then he does not know we are on this landing. He is calling them to somewhere else.\"\n\n[widget: leads, add: \"The Whistler works Flue Nine at night\"]\n[widget: lamp_oil, value: 55]\n[widget: ashfall, value: 4]\n[choices: \"Open the survey office now and take the press\"|\"Douse the lamp and follow the whistling down\"|\"Send Ostrek back up the rope with the impression\"]"
+    },
+    { "role": "user", "at": "-1d 20:16", "content": "[choice: Send Ostrek back up the rope with the impression]" },
+    {
+      "role": "assistant",
+      "at": "-1d 20:23",
+      "content": "[Brother Ostrek] [main] [wounded]: \"You send *me* up.\"\n\n[Kesh Ambrose] [thought] [dry]: You think you have just taken the worst job in the room away from a man who came here specifically to have it.\n\n\"Evidence that nobody carries out is a story,\" *is what you tell him, and it is even true.* He takes the wax impression in both hands like a relic, which, given his order, is roughly what it is to him.\n\n[Brother Ostrek] [main] [quiet]: \"I will put it in Enna Trell's hands, not the Hall's. If I am not back by the second bell, sister, come up loudly.\"\n\n[Sella Vane] [main] [dry]: \"I only come up loudly.\"\n\n*The rope goes taut and he is gone, and the landing is suddenly a much smaller place with two people on it.*\n\n[inventory: action=\"remove\" item=\"Wax impression of Claim 41\" count=\"1\"]\n[widget: sella_trust, value: 6]\n[reputation: npc=\"Widow Enna Trell\" action=\"trusted with the evidence\"]"
+    },
+    {
+      "role": "user",
+      "at": "-1d 20:29",
+      "content": "\"Sella.\" I keep my voice under the level of the whistling. \"Before we open that door. You've been down here before, and not on a guild ticket. I'm not writing it in anything. I'd just rather know what I'm standing on.\""
+    },
+    {
+      "role": "assistant",
+      "at": "-1d 20:36",
+      "content": "[music: music:travel_rest:fantasy:calm:old-tower-inn]\n\n*She holds the lamp still for long enough that the flame stops moving.*\n\n[Sella Vane] [main] [low]: \"Third crew, four years back. Unlicensed cut. The air went at the face and there were four of us on one line and the line was rated for two.\"\n\n[Sella Vane] [main] [flat]: \"I came up. Two of them didn't. Their names aren't in any ledger because the cut wasn't in any ledger. That's the whole of it, writer. You can put your hand on that.\"\n\n[Kesh Ambrose] [thought] [quiet]: You think she has said this before, in her head, several thousand times, and that this is the first time it has been out loud.\n\n[widget: sella_trust, value: 8]\n[widget: leads, add: \"Two unrecorded deaths in Flue Nine, four years ago\"]\n[Note: Sella Vane, third crew, unlicensed cut — two dead, unnamed in any register.]"
+    },
+    {
+      "role": "user",
+      "at": "-1d 20:42",
+      "content": "\"Then here's my professional opinion, for free.\" I get the day-book out again, in the dark, because that is apparently who I am. \"An unlicensed cut is still a cut. I can witness two deaths on the testimony of a survivor and file it with the Outer Register, and Kholvar can do absolutely nothing about it except be told.\"\n\n\"Give me the names when we're above ground. Now open the door.\""
+    },
+    {
+      "role": "assistant",
+      "at": "-1d 20:49",
+      "content": "[sfx: sfx:ui:latch]\n[ambient: ambient:nature:howling-wind]\n\nThe survey office has a cutter's bench, a rack of blanks, a lamp still warm, and half a cup of tea. Whoever works here left in a hurry and expects to come back.\n\nThe press is on the bench in a felt cradle: brass, new-cut, the double flue and the worn upper rim faithfully copied down to the wear. Beside it, a docket book of every claim it has struck. Forty-one is the eleventh entry. There are sixty-three.\n\n[Sella Vane] [main] [grim]: \"Sixty-three.\"\n\n*Below the landing, the two flat notes again — closer, and no longer unhurried.*\n\n[inventory: action=\"add\" item=\"Forged provost's press, Docket book (63 entries)\" count=\"2\"]\n[widget: leads, add: \"63 forged claims in the docket book\"]\n[widget: ashfall, value: 5]\n[widget: lamp_oil, value: 38]\n[map_update: new_location=\"Ashfields\" connected_to=\"The Flues\" node_emoji=\"🌫️\"]\n[choices: \"Take the press and run the spoil chute to the Ashfields\"|\"Stay, douse the lamp, and see the Whistler's face\"|\"Burn the docket book and leave the press\"]"
+    },
+    {
+      "role": "user",
+      "at": "-1d 20:55",
+      "content": "The chute. I have exactly one weapon in this city and it is a filing deadline — the press in a guild strongroom by morning is worth more than the Whistler's face is worth to me tonight.\n\n\"Sella. How bad is the spoil chute?\""
+    },
+    {
+      "role": "assistant",
+      "at": "-1d 21:02",
+      "content": "[skill_check: skill=\"Athletics\" dc=\"15\" rolls=\"9\" modifier=\"4\" total=\"13\" result=\"failure\"]\n[sfx: sfx:combat:metal-ring]\n\n[Sella Vane] [main] [already moving]: \"Bad. Go anyway.\"\n\nThe chute takes you the way a chute takes anyone who is carrying twelve pounds of brass and no free hand: fast, sideways, and with a great deal of noise. You come out onto the Ashfields in a slide of warm spoil with the press still in your arms and the docket book down the front of your coat, and your lamp is somewhere back in the shaft, going out.\n\nAbove and behind, at the flue mouth, someone whistles twice, very calmly, and gets an answer from the ridge.\n\n[Sella Vane] [main] [spitting ash]: \"They've got the haul road. That's Ostwick's road.\"\n\n[Kesh Ambrose] [thought] [dry]: You think that this would all be considerably simpler if you had ever learned to run.\n\n[widget: lamp_oil, value: 0]\n[widget: ashfall, value: 6]\n[state: exploration]\n[choices: \"Make for the drover camp and put it to Ostwick straight\"|\"Go to ground in the spoil and wait them out\"|\"Cut across the fields to the Cinder Gate lights\"]"
+    }
+  ]
+}

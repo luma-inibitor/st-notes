@@ -19,13 +19,18 @@ export HARNESS=/path/to/st-notes/marinara/scripts
 | --- | --- |
 | `start-mock-provider.mjs`                 | OpenAI-compatible provider that answers chat, embedding, and model requests. |
 | `bootstrap-instance.mjs`                  | Writes `.env`, creates and defaults the mock connection, installs a package. |
-| `seed-chat.mjs`                           | Creates a character, a chat, and its message history through the REST API.   |
+| `seed-chat.mjs`                           | Creates cards, a persona, a chat, a Game Mode world, and message history.    |
 | `drive-browser.mjs`                       | Playwright driver with a persistent profile and screenshot helpers.          |
 | `steps/example-tour.mjs`                  | Example step module for the driver.                                          |
+| `steps/fixture-tour.mjs`                  | Screenshots every chat seeded from the shipped fixtures.                     |
 | `responders/example-schema-responder.mjs` | Example of building a schema-valid reply for a structured-output agent.      |
-| `fixtures/example-chat.json`              | Example seed content.                                                        |
+| `fixtures/`                               | Seed content for all three chat modes. See [`fixtures/README.md`](scripts/fixtures/README.md). |
 
 Every script is Node ESM with no dependencies of its own and prints `--help`.
+
+Paths are resolved against the directory you run from, not against the scripts,
+so run them from the Engine checkout root. That is where `.env` is written and
+where `.tmp/uiux/` collects profiles, screenshots, and captured requests.
 
 ## Prerequisites
 
@@ -198,29 +203,74 @@ You want `"status": "active"` and `"readiness": "ready"`. `GET /api/health` repo
 
 ## Step 6: seed test content
 
+One fixture per chat mode ships with the harness. Seed all three and you have a
+populated instance in under a minute:
+
 ```bash
-node $HARNESS/seed-chat.mjs --file $HARNESS/fixtures/example-chat.json
+node $HARNESS/seed-chat.mjs --file $HARNESS/fixtures/conversation-late-shift.json
+node $HARNESS/seed-chat.mjs --file $HARNESS/fixtures/roleplay-stoke-moran.json
+node $HARNESS/seed-chat.mjs --file $HARNESS/fixtures/game-ashfall-contract.json
 ```
 
-The script prints `CHARACTER_ID` and `CHAT_ID`. It reuses a character with the same name unless you pass `--new-character`. Content can also come from flags:
+| Fixture | Mode | Messages | What it gives you |
+| --- | --- | --- | --- |
+| `conversation-late-shift.json` | conversation | 53 | Six days of texting: day dividers, relative timestamps, 3am messages, reactions, double-texting. |
+| `roleplay-stoke-moran.json`    | roleplay     | 37 | Long-prose turns across two sessions, adapted from *The Speckled Band* (public domain). |
+| `game-ashfall-contract.json`   | game         | 23 | A built world — node map, NPCs, party, HUD widgets — and turns carrying GM command tags. |
+| `example-chat.json`            | conversation | 13 | The minimal fixture shape. |
+
+The script prints `CHARACTER_ID`, `PERSONA_ID`, and `CHAT_ID`. It reuses cards
+with the same name unless you pass `--new-character`. Content can also come from
+flags:
 
 ```bash
 node $HARNESS/seed-chat.mjs --character Wren --chat "Memory test" \
   --message "user:Hello there" --message "assistant:Hello yourself."
 ```
 
-Two details of the API are easy to get wrong:
+Seed enough history that agents have real material. Extraction and summary
+agents behave very differently against three lines than against a dozen turns of
+specific, memorable detail — and the two long fixtures deliberately run past the
+client's history page size, so opening either one shows a **Load More** button
+and exercises paging rather than a single flat render.
 
-- `POST /api/characters` wraps its payload: `{ "data": { "name": ..., "description": ..., "first_mes": ... } }`. Card fields use SillyTavern v2 names, so it is `first_mes`, not `firstMessage`.
+The fixture format — extra cards, a persona, per-message timestamps and
+reactions, and the Game Mode `game` block — is documented in
+[`fixtures/README.md`](scripts/fixtures/README.md). Two parts of it matter most.
+
+**Timestamps.** A message may carry an `at`, either absolute or relative to the
+seeding run (`"-6d 23:41"`, `"-90m"`). Relative offsets keep a fixture fresh
+forever: a chat seeded today still reads as "Yesterday at 10:35 PM". Nothing to
+do with cosmetics — day dividers, presence, autonomous-message cadence, and the
+day-boundary summary bridge in Conversation Mode all key off message age, and a
+history stamped entirely with "now" exercises none of them. `POST
+/api/chats/<id>/messages` accepts `createdAt`/`updatedAt` overrides for this.
+
+**Game Mode needs a world.** A game chat with only messages comes up with an
+empty map, empty HUD, and no party, because that state lives in chat metadata
+written during world generation, not in the transcript. The `game` block in a
+fixture drives `POST /api/game/create` → `POST /api/game/setup/apply-json` →
+`POST /api/game/start`, which is the wizard's own path with the model call
+replaced by a hand-written payload. GM command tags in seeded turns are then
+replayed rather than executed: choice cards, scene cues, and skill-check rows
+render, but widget values and inventory stay as the world payload left them.
+
+Three details of the API are easy to get wrong:
+
+- `POST /api/characters` wraps its payload: `{ "data": { "name": ..., "description": ..., "first_mes": ... } }`. Card fields use SillyTavern v2 names, so it is `first_mes`, not `firstMessage`. Personas are separate, at `POST /api/characters/personas`, and take their fields unwrapped.
 - `POST /api/chats` takes `{ "name", "mode", "characterIds": [...] }`, where mode is `conversation`, `roleplay`, or `game`. Messages then go to `POST /api/chats/<id>/messages` as `{ "role", "content", "characterId" }`, with `role` being `user` or `assistant`.
 - `GET /api/characters` returns each card with its fields inside a JSON string under `data`, so there is no top-level `name` to match on. Parse `data` before comparing names. The unpaged call returns an array; adding `?limit=` returns `{ "items": [...] }`.
-
-Seed enough history that agents have real material. Extraction and summary agents behave very differently against three lines than against a dozen turns of specific, memorable detail.
 
 ## Step 7: drive the UI with Playwright
 
 ```bash
 node $HARNESS/drive-browser.mjs $HARNESS/steps/example-tour.mjs
+```
+
+To check that the seeded fixtures render, run the tour that visits all three:
+
+```bash
+node $HARNESS/drive-browser.mjs $HARNESS/steps/fixture-tour.mjs
 ```
 
 The driver launches Chromium with `launchPersistentContext` against `.tmp/uiux/profile`, so localStorage, the dismissed tutorial, the selected chat, and expanded accordions all survive between runs. That is what makes incremental exploration possible: each step file does one small thing and starts from where the last one stopped. Pass `--reset` for a clean profile. Screenshots, profiles, and captured requests all live under `.tmp/`, which is git-ignored.
@@ -306,6 +356,48 @@ Accordion and panel expansion state is remembered between page loads. A blind "c
 ### A text selector resolves to the wrong element
 
 `getByText()` can match an off-screen tooltip or a duplicate elsewhere in the DOM. Scope the match to the panel you mean by filtering on the bounding box, which is what the `minX` and `maxX` options of `clickText()` are for.
+
+### A seeded chat is not in the sidebar
+
+The chat list is split into **CONVO**, **RP**, and **GM** tabs, and only the
+selected tab's chats are in the DOM. Select the tab for the mode you seeded
+before looking for the chat. `steps/fixture-tour.mjs` does this for each fixture.
+
+### Playwright times out with "element is outside of the viewport"
+
+The layout keeps a second copy of some controls — the mode tabs, the Game Mode
+buttons — for narrow viewports, and a role or text selector can resolve to the
+off-screen one, which never becomes clickable. Filter candidates by their
+bounding box before clicking:
+
+```js
+const box = element.getBoundingClientRect();
+if (box.width === 0 || box.top > window.innerHeight || box.bottom < 0) continue;
+```
+
+### A tutorial sits in every screenshot and Escape does not close it
+
+Not everything that covers the screen is a dialog. The welcome tour and the Game
+Mode tutorial are both chrome popovers in `pointer-events-none` overlays: they
+never block a click, so nothing times out — they simply sit in front of the app
+in every screenshot until skipped, and they nest differently enough that no one
+container selector finds both. Match the button instead, anywhere in the
+document:
+
+```js
+const escape = [...document.querySelectorAll("button")].find(
+  (candidate) =>
+    candidate.getBoundingClientRect().width > 0 &&
+    /^(skip|skip tutorial|got it|dismiss)$/i.test((candidate.innerText || "").trim()),
+);
+escape?.click();
+```
+
+The welcome tour also mounts a second or two after the page settles, so one
+empty look is not proof that nothing is coming. `steps/fixture-tour.mjs` polls
+until two consecutive checks come back clear. A separate Game Mode tutorial
+appears the first time a game surface mounts, so run the same sweep again after
+opening a game chat.
 
 ### The agent runs but its output is rejected
 
