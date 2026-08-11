@@ -262,6 +262,47 @@
   .subhead{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
     color:var(--accent-2);margin:32px 0 0}
 
+  /* findings */
+  .cluster{margin-top:34px}
+  .chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:10px;
+    border-bottom:1px solid var(--stroke)}
+  .cmeta{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);margin-left:auto}
+  .finding{border-bottom:1px solid var(--stroke-soft);padding:18px 0}
+  .finding:last-child{border-bottom:0}
+  .fhead{display:flex;gap:10px;align-items:baseline}
+  .fnum{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);flex:none;padding-top:2px}
+  .fhead h4{font-size:1rem;font-weight:650;color:var(--ink);line-height:1.35}
+  .fchips{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0 9px 30px}
+  .fchip{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;
+    border:1px solid var(--stroke);border-radius:999px;padding:1px 7px;color:var(--ink-3)}
+  .fchip.sev-critical{border-color:var(--bad);color:var(--bad)}
+  .fchip.sev-high{border-color:var(--warn);color:var(--warn)}
+  .fchip.eff{border-color:var(--accent);color:var(--accent)}
+  .fchip.tag-bug{border-color:var(--accent-2);color:var(--accent-2)}
+  .fdesc{margin-left:30px;color:var(--ink-2);font-size:.93rem;max-width:76ch}
+  .evrow{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 0 30px}
+  .ev{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:4px;padding:2px 7px}
+  .ev b{color:var(--ink-2);font-weight:600}
+  .ffix{margin:11px 0 0 30px;color:var(--ink-2);font-size:.9rem;max-width:76ch;
+    border-left:2px solid var(--accent);padding-left:11px}
+  .fixlabel{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+  .fnote{margin:9px 0 0 30px;font-size:.85rem;color:var(--ink-3);font-style:italic;max-width:74ch}
+  .filterbar{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:6px}
+  .flabel{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .fbtn{font-family:var(--mono);font-size:.7rem;border:1px solid var(--stroke-soft);border-radius:999px;
+    padding:4px 11px;background:var(--frame-2);color:var(--ink-2);cursor:pointer}
+  .fbtn:hover{border-color:var(--stroke);color:var(--ink)}
+  .fbtn.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+  .fcount{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);margin-left:auto}
+  .rollup td:nth-child(1){white-space:nowrap}
+  .rollup td:nth-child(4),.rollup td:nth-child(5),.rollup td:nth-child(6){
+    font-family:var(--mono);font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+  .rollup a{color:var(--accent);text-decoration:none}
+  .finding.hidden,.cluster.hidden{display:none}
+  @media (max-width:640px){.fchips,.fdesc,.ffix,.evrow,.fnote{margin-left:0}}
+
   .theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);
     font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
     background:var(--sheet);border:1px solid var(--stroke);border-radius:999px;padding:7px 13px;
@@ -564,6 +605,38 @@ Object.keys(STATES).forEach(function(v){
     tr.innerHTML = col("win","Where it helps",t.win)+col("cost","Where it falls short",t.cost)+col("build","Build notes",t.build);
   }
 });
+</script>
+
+
+<script>
+(function(){
+  var bar=document.getElementById("filters"); if(!bar) return;
+  var out=document.getElementById("fcount");
+  var findings=[].slice.call(document.querySelectorAll(".finding"));
+  var clusters=[].slice.call(document.querySelectorAll(".cluster"));
+  function apply(mode){
+    var shown=0;
+    findings.forEach(function(f){
+      var keep = mode==="all"
+        || f.dataset.sev===mode
+        || (mode==="small" && f.dataset.eff==="small")
+        || (mode==="BUG" && (" "+f.dataset.tags+" ").indexOf(" BUG ")>=0);
+      f.classList.toggle("hidden", !keep);
+      if(keep) shown++;
+    });
+    clusters.forEach(function(c){
+      var any=c.querySelector(".finding:not(.hidden)");
+      c.classList.toggle("hidden", !any);
+    });
+    out.textContent = shown + " of " + findings.length + " shown";
+  }
+  bar.addEventListener("click",function(e){
+    var b=e.target.closest(".fbtn"); if(!b) return;
+    bar.querySelectorAll(".fbtn").forEach(function(x){x.classList.toggle("on", x===b);});
+    apply(b.dataset.filter);
+  });
+  apply("all");
+})();
 </script>
 
 <button class="theme-toggle" type="button" id="themeToggle" aria-live="polite">Theme</button>
