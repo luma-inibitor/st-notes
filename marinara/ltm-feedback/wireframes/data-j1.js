@@ -9,7 +9,6 @@ STATES.j1 = [
         '<div class="chat-row">Wren · roleplay</div>' +
         '<div class="chat-row">Harbour district</div>' +
         '<div class="chat-row">Notes to self</div>' +
-        '<div class="chat-row">Scratch thread</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
@@ -17,7 +16,7 @@ STATES.j1 = [
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
             '<div class="tx">I want you to remember things about me.</div></div></div>' +
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
-            '<div class="tx"><div class="bar-line"></div><div class="bar-line"></div></div></div></div>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
         '</div>' +
         '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
       '</div>' +
@@ -51,7 +50,7 @@ STATES.j1 = [
     '</div></div>'
   },
   {
-    num: "02", label: "The read, and what it costs", feas: "package", fx: [23, 24],
+    num: "02", label: "The read, and what it spends", feas: "package", fx: [23, 24],
     caption: 'A first run is <b>a model call</b>, and the drawer says so instead of presenting memories as though they appeared. The structured-output requirement is stated at the point of use, where today it is discovered by paying for a whole run and reading the rejection breakdown afterwards.',
     desk: '<div class="dev"><div class="dev-desk drawer">' +
       '<div class="side">' +
@@ -60,7 +59,6 @@ STATES.j1 = [
         '<div class="chat-row">Wren · roleplay</div>' +
         '<div class="chat-row">Harbour district</div>' +
         '<div class="chat-row">Notes to self</div>' +
-        '<div class="chat-row">Scratch thread</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
@@ -68,7 +66,7 @@ STATES.j1 = [
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
             '<div class="tx">I want you to remember things about me.</div></div></div>' +
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
-            '<div class="tx"><div class="bar-line"></div><div class="bar-line"></div></div></div></div>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
         '</div>' +
         '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
       '</div>' +
@@ -113,7 +111,6 @@ STATES.j1 = [
         '<div class="chat-row">Wren · roleplay</div>' +
         '<div class="chat-row">Harbour district</div>' +
         '<div class="chat-row">Notes to self</div>' +
-        '<div class="chat-row">Scratch thread</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
@@ -121,7 +118,7 @@ STATES.j1 = [
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
             '<div class="tx">So what do you know about me now?</div></div></div>' +
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
-            '<div class="tx"><div class="bar-line"></div><div class="bar-line"></div></div>' +
+            '<div class="tx"><div class="bar-line"></div></div>' +
             '<span class="who">0 memories used this turn</span></div></div>' +
         '</div>' +
         '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
@@ -147,7 +144,7 @@ STATES.j1 = [
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
             '<div class="tx">So what do you know about me now?</div></div></div>' +
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
-            '<div class="tx"><div class="bar-line"></div><div class="bar-line"></div></div></div></div>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
         '</div>' +
         '<div class="pane">' +
           '<div class="hdr"><span class="grow">MEMORY</span><span class="tag good">4 saved</span></div>' +
@@ -169,7 +166,6 @@ STATES.j1 = [
         '<div class="chat-row">Wren · roleplay</div>' +
         '<div class="chat-row">Harbour district</div>' +
         '<div class="chat-row">Notes to self</div>' +
-        '<div class="chat-row">Scratch thread</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
@@ -177,7 +173,7 @@ STATES.j1 = [
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
             '<div class="tx">I want you to remember things about me.</div></div></div>' +
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
-            '<div class="tx"><div class="bar-line"></div><div class="bar-line"></div></div></div></div>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
         '</div>' +
         '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
       '</div>' +
@@ -221,7 +217,6 @@ STATES.j1 = [
         '<div class="chat-row">Wren · roleplay</div>' +
         '<div class="chat-row">Harbour district</div>' +
         '<div class="chat-row">Notes to self</div>' +
-        '<div class="chat-row">Scratch thread</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
@@ -230,7 +225,7 @@ STATES.j1 = [
             '<div class="tx">Can you cover my shift tonight?</div></div></div>' +
           '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
             '<div class="tx">Nights at the clinic again.</div>' +
-            '<div class="tx"><div class="bar-line"></div><div class="bar-line"></div></div></div></div>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
         '</div>' +
         '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
       '</div>' +

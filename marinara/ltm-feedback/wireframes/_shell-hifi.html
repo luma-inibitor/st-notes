@@ -200,6 +200,10 @@
   .mtr.acc>i{background:var(--accent)}
   .w30{width:30%}.w50{width:50%}.w65{width:65%}.w75{width:75%}.w90{width:90%}.w95{width:95%}.w96{width:96%}
 
+  .fld{border:1px solid var(--stroke);border-radius:4px;background:var(--frame-2);
+    padding:4px 6px;font-size:9.5px;color:var(--ink);min-height:18px}
+  .fld.area{min-height:38px}
+  .fld.ph{color:var(--ink-3)}
   .note-s{font-size:9px;color:var(--ink-3);font-style:italic}
   .empty{border:1px dashed var(--stroke-soft);border-radius:5px;padding:12px 8px;text-align:center;
     font-family:var(--mono);font-size:8.5px;color:var(--ink-3)}
@@ -464,7 +468,7 @@ Object.keys(STATES).forEach(function(v){
       return '<div class="to '+cls+'"><h4>'+title+'</h4><ul>'+
         items.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
     };
-    tr.innerHTML = col("win","What it buys",t.win)+col("cost","What it costs",t.cost)+col("build","Build notes",t.build);
+    tr.innerHTML = col("win","Where it helps",t.win)+col("cost","Where it falls short",t.cost)+col("build","Build notes",t.build);
   }
 });
 </script>

@@ -128,7 +128,7 @@ STATES.j3 = [
           '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">review</span></div>'+
           '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
           '<div class="pane">'+
-            '<div class="hdr"><span class="grow">838 claims &middot; 61 shown</span><span class="tag acc">1 facet</span></div>'+
+            '<div class="hdr"><span class="grow">838 claims &middot; 61 shown</span><span class="tag">1 facet</span></div>'+
             '<div class="hdr"><span class="sel">group: target note</span><span class="sel">sort: risk</span><span class="grow"></span><span class="tag">24 decided</span></div>'+
             '<div class="grp">Wren<span class="c">38</span></div>'+
             '<div class="mtr warn"><i class="w96"></i></div>'+
@@ -170,7 +170,7 @@ STATES.j3 = [
               '<div class="fac">Overwrites a value<span class="c">47</span></div>'+
             '</div>'+
             '<div class="listcol">'+
-              '<div class="hdr"><span class="grow">Wren &middot; merges into trait</span><span class="tag acc">editing</span><span class="btn">Close</span></div>'+
+              '<div class="hdr"><span class="grow">Wren &middot; merges into trait</span><span class="tag">editing</span><span class="btn">Close</span></div>'+
               '<div class="row on"><div class="t">Keeps a spare key by the clinic door, on a length of blue cord, and tells nobody where.<div class="meta">editable in place &middot; caret at end</div></div></div>'+
               '<div class="hdr"><span class="grow">412 characters in this contribution</span></div>'+
               '<div class="mtr warn"><i class="w96"></i></div>'+
@@ -220,7 +220,7 @@ STATES.j3 = [
 
   {
     num:"04", label:"Conflict, three ways out", feas:"package", fx:[35,47],
-    caption:"Stored and proposed face each other, and the recall count sits on the text about to be overwritten, so the cost of taking the proposal is legible before it is taken. A third option files both in order, because most contradictions in a long story are the situation moving rather than a factual dispute. Today the queue never reads <b>mutation.note.conflicts</b>, and the per-chunk recall counts are written to disk and returned by no route.",
+    caption:"Stored and proposed face each other, and the recall count sits on the text about to be overwritten, so the loss in taking the proposal is legible before it is taken. A third option files both in order, because most contradictions in a long story are the situation moving rather than a factual dispute. Today the queue never reads <b>mutation.note.conflicts</b>, and the per-chunk recall counts are written to disk and returned by no route.",
     desk:
       '<div class="dev"><div class="dev-desk">'+
         '<div class="side">'+
@@ -255,7 +255,7 @@ STATES.j3 = [
               '<div class="note-s">Keeping both files the stored line as earlier and the proposed line as later</div>'+
               '<div class="grp">Next conflicts in this slice<span class="c">46</span></div>'+
               '<div class="row"><span class="cb"></span><div class="t">Carries the harbour keys, not the clinic keys<div class="meta">stored recalled 4 times</div></div><span class="tag warn">overwrites</span></div>'+
-              '<div class="row"><span class="cb"></span><div class="t">The east pier was rebuilt after the flood<div class="meta">stored recalled 0 times</div></div><span class="tag warn">overwrites</span></div>'+
+              '<div class="row"><span class="cb"></span><div class="t">The east pier was rebuilt after the flood<div class="meta">stored recalled 2 times</div></div><span class="tag warn">overwrites</span></div>'+
             '</div>'+
           '</div>'+
         '</div>'+
@@ -314,7 +314,7 @@ STATES.j3 = [
               '<div class="row badrow"><span class="cb on"></span><div class="t">Works the night shift, not the morning one<div class="meta">section cap exceeded on the trait section</div></div><span class="btn">Show</span></div>'+
               '<div class="row badrow"><span class="cb on"></span><div class="t">Keeps a spare key by the clinic door<div class="meta">section cap exceeded on the trait section</div></div><span class="btn">Show</span></div>'+
               '<div class="row"><div class="t">Dropped rows still available as dependencies</div><span class="tag good">auto-included</span></div>'+
-              '<div class="row on"><span class="cb on"></span><div class="t">Take a restore point first<div class="meta">a backup export, because there is no undo</div></div><span class="tag acc">recommended</span></div>'+
+              '<div class="row on"><span class="cb on"></span><div class="t">Take a restore point first<div class="meta">a backup export, because there is no undo</div></div><span class="tag">default on</span></div>'+
               '<div class="mtr warn"><i class="w75"></i></div>'+
               '<div class="hdr"><span class="grow">46 of 61 applied &middot; 13 remaining &middot; 2 skipped and marked</span></div>'+
               '<div class="note-s">Applied rows are flagged in the draft, not deleted from it, so the denominator does not shrink</div>'+

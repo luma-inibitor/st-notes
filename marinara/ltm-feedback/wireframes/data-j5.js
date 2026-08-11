@@ -10,15 +10,15 @@ STATES.j5 = [
       '<div class="chat-row on">Wren · harbour arc</div>' +
       '<div class="chat-row">Scene drafts</div>' +
       '<div class="chat-row">Worldbuilding</div>' +
-      '<div class="chat-row">Notes to self</div></div>' +
+      '</div>' +
       '<div class="main">' +
-      '<div class="topbar"><span class="ico">&lt;</span>WREN · HARBOUR ARC<span class="ico hot">M</span><span class="ico">S</span></div>' +
+      '<div class="topbar"><span class="ico">&lt;</span>WREN · HARBOUR ARC<span class="ico hot">M</span></div>' +
       '<div class="msgs">' +
       '<div class="msg"><div class="av"></div><div class="bd"><div class="who">You</div>' +
       '<div class="tx">What did Wren decide about the harbour job?</div></div></div>' +
       '<div class="msg"><div class="av"></div><div class="bd"><div class="who">Assistant</div>' +
       '<div class="tx">She has not mentioned the harbour to me before.</div>' +
-      '<div class="bar-line"></div><div class="bar-line"></div></div></div>' +
+      '<div class="bar-line"></div></div></div>' +
       '</div>' +
       '<div class="inputbar"><span class="ico wide">Message</span><span class="btn">Send</span></div>' +
       '</div>' +
@@ -63,15 +63,15 @@ STATES.j5 = [
       '<div class="chat-row on">Wren · harbour arc</div>' +
       '<div class="chat-row">Scene drafts</div>' +
       '<div class="chat-row">Worldbuilding</div>' +
-      '<div class="chat-row">Notes to self</div></div>' +
+      '</div>' +
       '<div class="main">' +
-      '<div class="topbar"><span class="ico">&lt;</span>WREN · HARBOUR ARC<span class="ico hot">M</span><span class="ico">S</span></div>' +
+      '<div class="topbar"><span class="ico">&lt;</span>WREN · HARBOUR ARC<span class="ico hot">M</span></div>' +
       '<div class="msgs">' +
       '<div class="msg"><div class="av"></div><div class="bd"><div class="who">You</div>' +
       '<div class="tx">What did Wren decide about the harbour job?</div></div></div>' +
       '<div class="msg"><div class="av"></div><div class="bd"><div class="who">Assistant</div>' +
       '<div class="tx">She has not mentioned the harbour to me before.</div>' +
-      '<div class="bar-line"></div><div class="bar-line"></div></div></div>' +
+      '<div class="bar-line"></div></div></div>' +
       '</div>' +
       '<div class="inputbar"><span class="ico wide">Message</span><span class="btn">Send</span></div>' +
       '</div>' +
@@ -118,7 +118,7 @@ STATES.j5 = [
       '<div class="chat-row on">Wren · harbour arc</div>' +
       '<div class="chat-row">Scene drafts</div>' +
       '<div class="chat-row">Worldbuilding</div>' +
-      '<div class="chat-row">Notes to self</div></div>' +
+      '</div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>LONG-TERM MEMORY<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
@@ -132,7 +132,6 @@ STATES.j5 = [
       '<div class="row"><span class="meta">t208</span><span class="t">0 used · 0 candidates</span></div>' +
       '<div class="grp">t211 · timeline bullets injected in relevance order<span class="c">View</span></div>' +
       '<div class="note-s">Every row ranked age-blind: the cooldown option is never passed and no lane scores recency.</div>' +
-      '<div class="hdr"><span class="grow">Polled on open, no push channel exists</span><span class="btn">Refresh</span></div>' +
       '</div></div></div></div>',
     phone: '<div class="dev"><div class="dev-phone">' +
       '<div class="topbar"><span class="ico">&lt;</span>RECALL HISTORY<span class="ico hot">M</span></div>' +
@@ -162,7 +161,7 @@ STATES.j5 = [
       '<div class="chat-row on">Wren · harbour arc</div>' +
       '<div class="chat-row">Scene drafts</div>' +
       '<div class="chat-row">Worldbuilding</div>' +
-      '<div class="chat-row">Notes to self</div></div>' +
+      '</div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>DIAGNOSTICS<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
@@ -172,9 +171,7 @@ STATES.j5 = [
       '<div class="fgroup">Turn</div>' +
       '<div class="fac on">t214<span class="c">14</span></div>' +
       '<div class="fac">t213<span class="c">6</span></div>' +
-      '<div class="fac">t211<span class="c">6</span></div>' +
       '<div class="fgroup">Reason</div>' +
-      '<div class="fac">Token budget<span class="c">2</span></div>' +
       '<div class="fac">Below threshold<span class="c">6</span></div>' +
       '<div class="fac on">Chat mode<span class="c">3</span></div>' +
       '</div>' +
@@ -213,7 +210,7 @@ STATES.j5 = [
       '<div class="chat-row on">Wren · harbour arc</div>' +
       '<div class="chat-row">Scene drafts</div>' +
       '<div class="chat-row">Worldbuilding</div>' +
-      '<div class="chat-row">Notes to self</div></div>' +
+      '</div>' +
       '<div class="main">' +
       '<div class="topbar"><span class="ico">&lt;</span>LONG-TERM MEMORY<span class="ico hot">M</span></div>' +
       '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
@@ -226,8 +223,7 @@ STATES.j5 = [
       '<div class="row"><span class="t">Or open the workspace from the local machine, where privileged routes are allowed</span></div>' +
       '<div class="hdr"><span class="grow"></span><span class="sel">admin secret</span><span class="btn pri">Save secret</span><span class="btn">How to set it</span></div>' +
       '<div class="note-s">The engine already ships this copy. The read views never look at the status, so it is never shown.</div>' +
-      '<div class="grp">Status<span class="c">every memory route returned 403</span></div>' +
-      '<div class="row"><span class="t">Vault, Review, Sources and Settings all failed the same way and for the same reason</span></div>' +
+      '<div class="row"><span class="t">Vault, Review, Sources and Settings all returned 403, and all four printed the same generic string</span></div>' +
       '</div></div></div></div>',
     phone: '<div class="dev"><div class="dev-phone">' +
       '<div class="topbar"><span class="ico">&lt;</span>MEMORY SETTINGS<span class="ico hot">M</span></div>' +

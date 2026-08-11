@@ -8,7 +8,6 @@ STATES.j2 = [
         '<div class="chat-row">All chats · 60</div>' +
         '<div class="chat-row">Characters · 41</div>' +
         '<div class="chat-row on">Filter: harbour</div>' +
-        '<div class="chat-row">Recent imports</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>LONG-TERM MEMORY</span></div>' +
@@ -44,7 +43,7 @@ STATES.j2 = [
           '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
         '<div class="pane">' +
           '<div class="hdr"><span class="sel">harbour</span><span class="grow"></span><span class="sel">Filter · 3</span></div>' +
-          '<div class="row"><span class="tag acc">6 chats</span><span class="tag acc">2 characters</span><span class="tag">clear</span></div>' +
+          '<div class="row"><span class="tag">6 chats</span><span class="tag">2 characters</span><span class="tag">clear</span></div>' +
           '<div class="grp">Material in this filter<span class="c">97</span></div>' +
           '<div class="row on"><span class="cb on"></span><span class="t">Character cards<div class="meta">41</div></span><span class="tag good">ready</span></div>' +
           '<div class="row on"><span class="cb on"></span><span class="t">Lorebooks<div class="meta">33</div></span><span class="tag good">ready</span></div>' +
@@ -65,7 +64,6 @@ STATES.j2 = [
         '<div class="chat-row">All chats · 60</div>' +
         '<div class="chat-row">Characters · 41</div>' +
         '<div class="chat-row on">Filter: harbour</div>' +
-        '<div class="chat-row">Recent imports</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>LONG-TERM MEMORY</span></div>' +
@@ -110,7 +108,6 @@ STATES.j2 = [
         '<div class="chat-row">All chats · 60</div>' +
         '<div class="chat-row">Characters · 41</div>' +
         '<div class="chat-row on">Filter: harbour</div>' +
-        '<div class="chat-row">Recent imports</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>EXTRACTING</span><span class="ico wide">t+12m</span></div>' +
@@ -156,7 +153,6 @@ STATES.j2 = [
         '<div class="chat-row">All chats · 60</div>' +
         '<div class="chat-row">Characters · 41</div>' +
         '<div class="chat-row on">Filter: harbour</div>' +
-        '<div class="chat-row">Recent imports</div>' +
       '</div>' +
       '<div class="main">' +
         '<div class="topbar"><span class="ico hot">M</span><span>RUN FINISHED</span><span class="ico wide">24m</span></div>' +

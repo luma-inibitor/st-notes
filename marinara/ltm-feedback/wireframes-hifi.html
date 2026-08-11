@@ -1,0 +1,2183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interface proposals for the Long-Term Memory package, drawn against Marinara Engine's real surfaces.">
+<title>Long-Term Memory — interface proposals</title>
+
+<style>
+  /* ── Tokens ──────────────────────────────────────────────────────────
+     Dark-first: the bare :root carries dark because the Engine is a dark
+     app. Light is the deliberate override. One accent, and it marks
+     exactly one thing: memory. */
+  :root {
+    --ground:#07060f; --sheet:#0e0d1c; --frame:#121122; --frame-2:#1a1830;
+    --frame-3:#232043; --stroke:#35315c; --stroke-soft:#252242;
+    --ink:#ece9ff; --ink-2:#aca6c9; --ink-3:#7a7496;
+    --accent:#8fd6c4; --accent-ink:#06120e; --accent-2:#9db4ff;
+    --good:#7ee0b8; --warn:#ffcf8a; --bad:#ff9e9e;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.9);
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){ :root:not([data-theme="dark"]){
+    --ground:#f4f4f7; --sheet:#ffffff; --frame:#ffffff; --frame-2:#f1f0f6;
+    --frame-3:#e5e3ef; --stroke:#c7c3d8; --stroke-soft:#e2e0ea;
+    --ink:#16142a; --ink-2:#514c६9; --ink-3:#847e9b;
+    --accent:#1d7a66; --accent-ink:#ffffff; --accent-2:#3d5bb8;
+    --good:#1c8560; --warn:#8a5a10; --bad:#a03434;
+    --shadow:0 14px 40px -24px rgba(20,16,50,.4);
+  }}
+  :root[data-theme="light"]{
+    --ground:#f4f4f7; --sheet:#ffffff; --frame:#ffffff; --frame-2:#f1f0f6;
+    --frame-3:#e5e3ef; --stroke:#c7c3d8; --stroke-soft:#e2e0ea;
+    --ink:#16142a; --ink-2:#514c69; --ink-3:#847e9b;
+    --accent:#1d7a66; --accent-ink:#ffffff; --accent-2:#3d5bb8;
+    --good:#1c8560; --warn:#8a5a10; --bad:#a03434;
+    --shadow:0 14px 40px -24px rgba(20,16,50,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+
+  h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.2}
+  h1{font-size:clamp(2rem,4.6vw,3.1rem);font-weight:800;letter-spacing:-.028em}
+  h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:750;letter-spacing:-.02em}
+  h3{font-size:1.13rem;font-weight:700;letter-spacing:-.01em}
+  h4{font-size:.95rem;font-weight:700}
+  p{margin:0}
+  .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-3);margin:0}
+  .lede{color:var(--ink-2);font-size:1.06rem;max-width:64ch}
+  .prose{color:var(--ink-2);max-width:68ch}
+  .prose strong{color:var(--ink);font-weight:650}
+  code{font-family:var(--mono);font-size:.86em;background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:4px;padding:.08em .34em;color:var(--ink)}
+
+  .masthead{border-bottom:1px solid var(--stroke);padding:56px 0 34px;
+    display:flex;flex-direction:column;gap:20px}
+  .mast-meta{display:flex;flex-wrap:wrap;gap:8px 10px;font-family:var(--mono);
+    font-size:.72rem;color:var(--ink-3)}
+  .mast-meta span{border:1px solid var(--stroke-soft);border-radius:999px;
+    padding:3px 10px;background:var(--sheet)}
+  .quote{border-left:2px solid var(--accent);padding:4px 0 4px 18px;color:var(--ink-2);
+    font-size:1.02rem;max-width:66ch;display:flex;flex-direction:column;gap:10px}
+
+  section{padding-top:68px}
+  .sec-head{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
+  .card{background:var(--sheet);border:1px solid var(--stroke-soft);border-radius:12px;
+    padding:18px 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .card-tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--accent-2)}
+  .card p{color:var(--ink-2);font-size:.9rem;line-height:1.55}
+  .card .src{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
+    border-top:1px dashed var(--stroke-soft);padding-top:9px;margin-top:auto;word-break:break-word}
+
+  .journey{border:1px solid var(--stroke);border-radius:16px;background:var(--sheet);
+    padding:26px;margin-top:22px;display:flex;flex-direction:column;gap:24px}
+  .j-head{display:flex;flex-direction:column;gap:10px}
+  .j-title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .j-badge{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.1em;
+    color:var(--accent-ink);background:var(--accent);border-radius:5px;padding:3px 9px}
+  .j-thesis{color:var(--ink-2);max-width:70ch}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--stroke-soft);padding-bottom:14px}
+  .tab{font-family:var(--mono);font-size:.73rem;color:var(--ink-2);background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:999px;padding:6px 13px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;transition:background .15s,color .15s,border-color .15s}
+  .tab:hover{border-color:var(--stroke);color:var(--ink)}
+  .tab .num{color:var(--ink-3)}
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);
+    color:var(--accent-ink);font-weight:700}
+  .tab[aria-selected="true"] .num{color:var(--accent-ink);opacity:.7}
+  .tab:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+
+  .stage{display:flex;flex-direction:column;gap:16px}
+  .caption{font-family:var(--mono);font-size:.76rem;line-height:1.6;color:var(--ink-2);
+    background:var(--frame-2);border:1px solid var(--stroke-soft);
+    border-left:2px solid var(--accent-2);border-radius:0 8px 8px 0;padding:11px 14px}
+  .caption b{color:var(--ink)}
+  .fx{display:inline-block;font-family:var(--mono);font-size:.66rem;font-weight:700;
+    border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:5px;opacity:.85}
+  .feas{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--stroke);border-radius:4px;padding:1px 6px;color:var(--ink-3);background:var(--frame-2)}
+  .feas.rst{border-color:color-mix(in srgb,var(--warn) 55%,transparent);color:var(--warn)}
+  .feas.eng{border-color:color-mix(in srgb,var(--bad) 55%,transparent);color:var(--bad)}
+  .feas.now{border-color:color-mix(in srgb,var(--ink-3) 60%,transparent);color:var(--ink-3);
+    background:transparent;border-style:dashed}
+
+  .rack{display:grid;grid-template-columns:minmax(0,1fr) 232px;gap:22px;align-items:start}
+  @media (max-width:860px){.rack{grid-template-columns:minmax(0,1fr)}}
+  .rack-cell{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .rack-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-3);display:flex;gap:8px;align-items:center}
+
+  /* ══ Device chrome ══════════════════════════════════════════════════ */
+  .dev{background:var(--frame);border:1px solid var(--stroke);border-radius:10px;overflow:hidden;
+    position:relative;font-size:11px;line-height:1.35;color:var(--ink-2);box-shadow:var(--shadow)}
+  .dev-desk{display:grid;grid-template-columns:104px minmax(0,1fr);height:412px}
+  .dev-desk.drawer{grid-template-columns:104px minmax(0,1fr) 186px}
+  .dev-phone{display:flex;flex-direction:column;height:412px}
+
+  .side{border-right:1px solid var(--stroke-soft);background:var(--frame-2);padding:8px 7px;
+    display:flex;flex-direction:column;gap:7px;min-width:0}
+  .side-title{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .chat-row{border:1px solid var(--stroke-soft);border-radius:5px;padding:4px 6px;font-size:9px;
+    color:var(--ink-2);background:var(--frame);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chat-row.on{border-color:var(--accent-2);background:var(--frame-3);color:var(--ink)}
+
+  .main{display:flex;flex-direction:column;min-width:0;background:var(--frame)}
+  .topbar{height:26px;border-bottom:1px solid var(--stroke-soft);display:flex;align-items:center;
+    gap:6px;padding:0 8px;background:var(--frame-2);flex-shrink:0;font-family:var(--mono);
+    font-size:9px;color:var(--ink-3);letter-spacing:.06em}
+  .ico{width:13px;height:13px;border:1px solid var(--stroke);border-radius:3px;flex-shrink:0;
+    display:grid;place-items:center;font-size:8px;color:var(--ink-3)}
+  .ico.hot{border-color:var(--accent);color:var(--accent);
+    background:color-mix(in srgb,var(--accent) 16%,transparent);
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .ico.wide{width:auto;padding:0 5px}
+
+  /* workspace tab rail */
+  .rail{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--stroke-soft);
+    background:var(--frame-2);flex-shrink:0;flex-wrap:wrap}
+  .rt{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:5px;
+    border:1px solid var(--stroke-soft);color:var(--ink-3);background:var(--frame)}
+  .rt.on{background:var(--frame-3);border-color:var(--stroke);color:var(--ink);font-weight:700}
+  .rt.new{border-color:var(--accent);color:var(--accent)}
+  .rt .b{margin-left:5px;color:var(--accent)}
+
+  .pane{flex:1;overflow:hidden;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+  .pane.split{flex-direction:row;gap:8px;padding:8px}
+  .facets{width:132px;flex-shrink:0;display:flex;flex-direction:column;gap:5px;
+    border-right:1px solid var(--stroke-soft);padding-right:8px;overflow:hidden}
+  .fgroup{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-3);margin-top:3px}
+  .fac{display:flex;gap:5px;align-items:center;font-size:9px;color:var(--ink-2);
+    border:1px solid transparent;border-radius:4px;padding:2px 4px}
+  .fac.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+  .fac .c{margin-left:auto;font-family:var(--mono);font-size:8px;color:var(--ink-3)}
+  .listcol{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;overflow:hidden}
+
+  .hdr{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;
+    color:var(--ink-3);flex-shrink:0}
+  .hdr .grow{flex:1}
+  .sel{font-family:var(--mono);font-size:8.5px;border:1px solid var(--stroke-soft);
+    border-radius:4px;padding:2px 6px;color:var(--ink-2);background:var(--frame-2)}
+
+  .grp{font-family:var(--mono);font-size:9px;color:var(--ink);background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:5px;padding:4px 6px;display:flex;
+    gap:6px;align-items:center}
+  .grp .c{margin-left:auto;color:var(--ink-3)}
+
+  .row{border:1px solid var(--stroke-soft);border-radius:5px;padding:5px 6px;background:var(--frame);
+    display:flex;gap:6px;align-items:flex-start;font-size:9.5px;color:var(--ink-2);min-width:0}
+  .row.on{border-color:var(--accent-2);background:var(--frame-3);color:var(--ink)}
+  .row.warnrow{border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .row.badrow{border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+  .row .cb{width:10px;height:10px;border:1px solid var(--stroke);border-radius:2px;flex-shrink:0;margin-top:2px}
+  .row .cb.on{background:var(--accent);border-color:var(--accent)}
+  .row .t{flex:1;min-width:0}
+  .row .meta{font-family:var(--mono);font-size:8px;color:var(--ink-3)}
+
+  .tag{font-family:var(--mono);font-size:8px;border:1px solid var(--stroke-soft);border-radius:999px;
+    padding:0 5px;color:var(--ink-3);white-space:nowrap}
+  .tag.acc{border-color:var(--accent);color:var(--accent)}
+  .tag.warn{border-color:color-mix(in srgb,var(--warn) 50%,transparent);color:var(--warn)}
+  .tag.bad{border-color:color-mix(in srgb,var(--bad) 50%,transparent);color:var(--bad)}
+  .tag.good{border-color:color-mix(in srgb,var(--good) 50%,transparent);color:var(--good)}
+
+  .btn{font-family:var(--mono);font-size:8.5px;border:1px solid var(--stroke);border-radius:4px;
+    padding:2px 7px;color:var(--ink-2);background:var(--frame-2);white-space:nowrap}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+
+  .mtr{height:4px;border-radius:2px;background:var(--frame-3);overflow:hidden}
+  .mtr>i{display:block;height:100%;background:var(--ink-3)}
+  .mtr.warn>i{background:var(--warn)}
+  .mtr.acc>i{background:var(--accent)}
+  .w30{width:30%}.w50{width:50%}.w65{width:65%}.w75{width:75%}.w90{width:90%}.w95{width:95%}.w96{width:96%}
+
+  .fld{border:1px solid var(--stroke);border-radius:4px;background:var(--frame-2);
+    padding:4px 6px;font-size:9.5px;color:var(--ink);min-height:18px}
+  .fld.area{min-height:38px}
+  .fld.ph{color:var(--ink-3)}
+  .note-s{font-size:9px;color:var(--ink-3);font-style:italic}
+  .empty{border:1px dashed var(--stroke-soft);border-radius:5px;padding:12px 8px;text-align:center;
+    font-family:var(--mono);font-size:8.5px;color:var(--ink-3)}
+
+  /* chat surfaces */
+  .msgs{flex:1;overflow:hidden;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;gap:7px}
+  .msg{display:flex;gap:6px;align-items:flex-start}
+  .msg .av{width:14px;height:14px;border-radius:50%;border:1px solid var(--stroke);flex-shrink:0;background:var(--frame-2)}
+  .msg .bd{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .msg .who{font-family:var(--mono);font-size:8px;color:var(--ink-3);letter-spacing:.04em}
+  .msg .tx{font-size:9.5px;line-height:1.45;color:var(--ink-2)}
+  .bar-line{height:5px;border-radius:3px;background:var(--frame-3)}
+  .bar-line+.bar-line{margin-top:3px}
+  .inputbar{height:26px;border-top:1px solid var(--stroke-soft);display:flex;align-items:center;
+    padding:0 8px;gap:6px;flex-shrink:0;background:var(--frame-2)}
+
+  .drawer{border-left:1px solid var(--stroke-soft);background:var(--frame-2);display:flex;
+    flex-direction:column;min-width:0;overflow:hidden}
+  .drawer-head{padding:6px 8px;border-bottom:1px solid var(--stroke-soft);font-family:var(--mono);
+    font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+    display:flex;align-items:center;gap:6px}
+  .drawer-body{padding:8px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+
+  .kv{display:flex;gap:6px;font-size:9px;color:var(--ink-2)}
+  .kv .k{color:var(--ink-3);font-family:var(--mono);font-size:8.5px}
+  .kv .v{margin-left:auto;font-family:var(--mono);font-size:8.5px;color:var(--ink)}
+
+  .flowrail{display:flex;flex-direction:column;gap:9px}
+  .flow-track{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px}
+  .fstep{border:1px solid var(--stroke-soft);border-radius:8px;background:var(--frame-2);
+    padding:8px 11px;display:flex;flex-direction:column;gap:2px;min-width:132px;flex:1}
+  .fstep .sn{font-family:var(--mono);font-size:.62rem;color:var(--ink-3);letter-spacing:.1em}
+  .fstep .st{font-size:.82rem;color:var(--ink);font-weight:650}
+  .fstep .sd{font-size:.74rem;color:var(--ink-2)}
+  .fstep.term{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+  .arrow{align-self:center;color:var(--ink-3);font-size:.8rem}
+
+  .tradeoffs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .to{border:1px solid var(--stroke-soft);border-radius:10px;background:var(--frame-2);padding:14px 15px}
+  .to h4{margin-bottom:7px;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
+  .to ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:5px}
+  .to li{font-size:.83rem;color:var(--ink-2)}
+  .to.win h4{color:var(--good)} .to.cost h4{color:var(--warn)} .to.build h4{color:var(--accent-2)}
+
+  .theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);
+    font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
+    background:var(--sheet);border:1px solid var(--stroke);border-radius:999px;padding:7px 13px;
+    cursor:pointer;box-shadow:var(--shadow)}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--accent-2)}
+  @media print{.theme-toggle{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Marinara Engine · Long-Term Memory · UI/UX proposal</p>
+    <h1>What the memory is doing</h1>
+    <p class="lede">
+      Interface proposals for the <code>long-term-memory</code> package, drawn against the
+      Engine's real surfaces and at the real scale of the problem: a vault of 118 memories and
+      one extraction run of 1,142 candidates. Six journeys, each stepped through state by state.
+    </p>
+    <div class="quote">
+      <p>“it looks like nothing got injected ... and the app ui agrees. there's something in the
+        debug logs that says the recall workflow selected things, but nothing actually got
+        injected??”</p>
+      <p>“i still don't feel like you've given me a good mental model of how ltm works. i don't
+        know what draft, mutation, or note means for example. and that's not an exhaustive list
+        of my confusions.”</p>
+    </div>
+    <div class="mast-meta">
+      <span>engine 2.4.1</span>
+      <span>package 1.1.6</span>
+      <span>desktop 1600×1000 · phone 390×844</span>
+      <span>wireframe — not visual design</span>
+      <span>teal marks memory, and only memory</span>
+    </div>
+  </header>
+
+  <section id="ground">
+    <div class="sec-head">
+      <p class="eyebrow">Before the drawings</p>
+      <h2>What the package is allowed to do</h2>
+      <p class="prose">
+        These proposals are scoped to what a capability package can build without an engine
+        change, because the package maintainer may not own the engine. Four facts from the
+        source decide the shape of everything below, and one of them costs a proposal outright.
+      </p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="card-tag">Generous</span>
+        <h4>Most of this is the package's own code</h4>
+        <p>
+          It registers arbitrary routes under its own prefix, owns its storage directory and its
+          schema, gets a revision-checked document store, and can call both a language model and
+          an embedding model. Every derived signal, the facet engine, preflight, restore points
+          and compaction are all in reach.
+        </p>
+        <p class="src">capability-module-runtime.service.ts · activateOne</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Constraint</span>
+        <h4>Nothing can be pushed to the client</h4>
+        <p>
+          There is no event channel of any kind: no server-sent events helper, no websocket, no
+          invalidation signal. Every live surface here polls a route, which is exactly what the
+          package already does for its debug log.
+        </p>
+        <p class="src">no EventSource or WebSocket anywhere in packages/client/src</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Constraint</span>
+        <h4>A new route means a restart</h4>
+        <p>
+          Route paths cannot appear after the server is listening, so adding one is a release
+          decision rather than a runtime one. Frames that need a new route are marked, because
+          that changes how they ship, not whether they can.
+        </p>
+        <p class="src">capability-route-registration.service.ts · createRouteCollector</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Costs a proposal</span>
+        <h4>Nothing can render in the transcript</h4>
+        <p>
+          The conversation mounts are chosen by a package's declared kind, which this package
+          does not have, and they sit outside the message list regardless. Message content is
+          sanitised through a fixed allowlist that strips capability elements. So the recall
+          report cannot sit beside the message it explains.
+        </p>
+        <p class="src">ConversationView.tsx · ChatMessage.tsx · sanitizeChatHtml</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="journeys">
+    <div class="sec-head">
+      <p class="eyebrow">The proposals</p>
+      <h2>Six journeys</h2>
+      <p class="prose">
+        Each is drawn in several states, from the moment a person wants something to the moment
+        they have it. <strong>Click the state chips</strong> to step through; desktop and phone
+        move together. Every state carries a feasibility mark and the findings it answers.
+      </p>
+    </div>
+    <div class="journey" id="j1">
+      <div class="j-head"><div class="j-title"><span class="j-badge">1</span><h3>First run</h3></div>
+      <p class="j-thesis">Switch it on and reach visible proof it worked. Today this journey ends in
+      nothing recalled, so the failure is drawn before the fix is.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j1"></div>
+      <div class="stage" data-stage="j1"></div>
+      <div class="flowrail" data-flow="j1"></div>
+      <div class="tradeoffs" data-trade="j1"></div>
+    </div>
+
+    <div class="journey" id="j2">
+      <div class="j-head"><div class="j-title"><span class="j-badge">2</span><h3>Import and extract</h3></div>
+      <p class="j-thesis">Narrow a large library, pick the material, confirm who the run may write
+      about, and read what it cost without opening the review queue to find out.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j2"></div>
+      <div class="stage" data-stage="j2"></div>
+      <div class="flowrail" data-flow="j2"></div>
+      <div class="tradeoffs" data-trade="j2"></div>
+    </div>
+
+    <div class="journey" id="j3">
+      <div class="j-head"><div class="j-title"><span class="j-badge">3</span><h3>Curate</h3></div>
+      <p class="j-thesis">Eight hundred claims, decided in slices rather than one at a time. The unit
+      of work is a composed cross-section, not a draft.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j3"></div>
+      <div class="stage" data-stage="j3"></div>
+      <div class="flowrail" data-flow="j3"></div>
+      <div class="tradeoffs" data-trade="j3"></div>
+    </div>
+
+    <div class="journey" id="j4">
+      <div class="j-head"><div class="j-title"><span class="j-badge">4</span><h3>Browse and correct</h3></div>
+      <p class="j-thesis">Find the memory that is wrong, then fix it. The same facet engine as review,
+      over what is stored rather than what is proposed.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j4"></div>
+      <div class="stage" data-stage="j4"></div>
+      <div class="flowrail" data-flow="j4"></div>
+      <div class="tradeoffs" data-trade="j4"></div>
+    </div>
+
+    <div class="journey" id="j5">
+      <div class="j-head"><div class="j-title"><span class="j-badge">5</span><h3>Why didn't it remember</h3></div>
+      <p class="j-thesis">The report cannot sit beside the message it explains, so it is built where
+      the package does have surfaces, and it keeps a history worth walking back through.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j5"></div>
+      <div class="stage" data-stage="j5"></div>
+      <div class="flowrail" data-flow="j5"></div>
+      <div class="tradeoffs" data-trade="j5"></div>
+    </div>
+
+    <div class="journey" id="j6">
+      <div class="j-head"><div class="j-title"><span class="j-badge">6</span><h3>Keep it healthy</h3></div>
+      <p class="j-thesis">Caps that read as a gradient rather than a wall, and a compaction pass that
+      shows what it would remove before it removes it.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j6"></div>
+      <div class="stage" data-stage="j6"></div>
+      <div class="flowrail" data-flow="j6"></div>
+      <div class="tradeoffs" data-trade="j6"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+"use strict";
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+const STATES={},FLOWS={},TRADE={};
+
+STATES.j1 = [
+  {
+    num: "01", label: "Enable, and what is readable", feas: "package", fx: [2, 3],
+    caption: 'The drawer opens on <b>three rows and three different reasons for a zero</b>: one kind has material now, one will have material after a longer session, and one never will, because a transcript is not a source kind. The current build opens on the summaries tab, which is empty by construction on a new chat, and gives no way to tell the three apart.',
+    desk: '<div class="dev"><div class="dev-desk drawer">' +
+      '<div class="side">' +
+        '<div class="side-title">Chats</div>' +
+        '<div class="chat-row on">Wren · conversation</div>' +
+        '<div class="chat-row">Wren · roleplay</div>' +
+        '<div class="chat-row">Harbour district</div>' +
+        '<div class="chat-row">Notes to self</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
+        '<div class="msgs">' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
+            '<div class="tx">I want you to remember things about me.</div></div></div>' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+      '<div class="drawer">' +
+        '<div class="drawer-head"><span class="ico hot">M</span>Long-Term Memory</div>' +
+        '<div class="drawer-body">' +
+          '<div class="kv"><span class="k">Status</span><span class="v">on</span></div>' +
+          '<div class="kv"><span class="k">Vault</span><span class="v">0 memories</span></div>' +
+          '<div class="grp">Readable now<span class="c">1</span></div>' +
+          '<div class="row"><span class="t">Character card<div class="meta">1 attached to this chat</div></span><span class="btn pri">Read it</span></div>' +
+          '<div class="row"><span class="t">Chat summaries<div class="meta">0 · written after longer sessions</div></span><span class="tag">later</span></div>' +
+          '<div class="row badrow"><span class="t">This conversation<div class="meta">transcripts are never read directly</div></span><span class="tag bad">n/a</span></div>' +
+          '<div class="note-s">Three zeros, three reasons.</div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico">&lt;</span><span class="ico hot">M</span><span>MEMORY</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">LONG-TERM MEMORY</span><span class="sel">on</span></div>' +
+          '<div class="kv"><span class="k">Vault</span><span class="v">0 memories</span></div>' +
+          '<div class="grp">Readable now<span class="c">1</span></div>' +
+          '<div class="row"><span class="t">Character card<div class="meta">1 attached to this chat</div></span><span class="btn pri">Read it</span></div>' +
+          '<div class="row"><span class="t">Chat summaries<div class="meta">0 · written after longer sessions</div></span><span class="tag">later</span></div>' +
+          '<div class="row badrow"><span class="t">This conversation<div class="meta">transcripts are never read directly</div></span><span class="tag bad">n/a</span></div>' +
+          '<div class="note-s">Sheet over the chat. Drag down to go back.</div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+    '</div></div>'
+  },
+  {
+    num: "02", label: "The read, and what it spends", feas: "package", fx: [23, 24],
+    caption: 'A first run is <b>a model call</b>, and the drawer says so instead of presenting memories as though they appeared. The structured-output requirement is stated at the point of use, where today it is discovered by paying for a whole run and reading the rejection breakdown afterwards.',
+    desk: '<div class="dev"><div class="dev-desk drawer">' +
+      '<div class="side">' +
+        '<div class="side-title">Chats</div>' +
+        '<div class="chat-row on">Wren · conversation</div>' +
+        '<div class="chat-row">Wren · roleplay</div>' +
+        '<div class="chat-row">Harbour district</div>' +
+        '<div class="chat-row">Notes to self</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
+        '<div class="msgs">' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
+            '<div class="tx">I want you to remember things about me.</div></div></div>' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+      '<div class="drawer">' +
+        '<div class="drawer-head"><span class="ico hot">M</span>Reading the card</div>' +
+        '<div class="drawer-body">' +
+          '<div class="hdr"><span class="grow">READING</span><span class="tag warn">running</span></div>' +
+          '<div class="mtr acc"><i class="w75"></i></div>' +
+          '<div class="kv"><span class="k">Sections read</span><span class="v">3 of 4</span></div>' +
+          '<div class="kv"><span class="k">Sources</span><span class="v">1</span></div>' +
+          '<div class="kv"><span class="k">Time</span><span class="v">about 30s</span></div>' +
+          '<div class="grp">This costs a model call<span class="c">1</span></div>' +
+          '<div class="row"><span class="t">Model<div class="meta">chat default</div></span><span class="btn">Change</span></div>' +
+          '<div class="note-s">Structured output required. A model that cannot hold the schema is named here, not after the bill.</div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico">&lt;</span><span class="ico hot">M</span><span>READING THE CARD</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">READING</span><span class="tag warn">running</span></div>' +
+          '<div class="mtr acc"><i class="w75"></i></div>' +
+          '<div class="kv"><span class="k">Sections read</span><span class="v">3 of 4</span></div>' +
+          '<div class="kv"><span class="k">Sources</span><span class="v">1</span></div>' +
+          '<div class="kv"><span class="k">Time</span><span class="v">about 30s</span></div>' +
+          '<div class="grp">This costs a model call<span class="c">1</span></div>' +
+          '<div class="row"><span class="t">Model<div class="meta">chat default</div></span><span class="btn">Change</span></div>' +
+          '<div class="note-s">Structured output required. A model that cannot hold the schema is named here, not after the bill.</div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+    '</div></div>'
+  },
+  {
+    num: "03", label: "What the build does today", feas: "today", fx: [8, 9],
+    caption: 'This is <b>present behaviour, not a proposal</b>. A character card import is stamped roleplay only, so following every documented step in a conversation chat ends with four saved memories and nothing recalled. The mode set is never shown while accepting, and is editable only later, in the vault editor, in another part of the workspace.',
+    desk: '<div class="dev"><div class="dev-desk drawer">' +
+      '<div class="side">' +
+        '<div class="side-title">Chats</div>' +
+        '<div class="chat-row on">Wren · conversation</div>' +
+        '<div class="chat-row">Wren · roleplay</div>' +
+        '<div class="chat-row">Harbour district</div>' +
+        '<div class="chat-row">Notes to self</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
+        '<div class="msgs">' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
+            '<div class="tx">So what do you know about me now?</div></div></div>' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
+            '<div class="tx"><div class="bar-line"></div></div>' +
+            '<span class="who">0 memories used this turn</span></div></div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+      '<div class="drawer">' +
+        '<div class="drawer-head"><span class="ico">M</span>Long-Term Memory</div>' +
+        '<div class="drawer-body">' +
+          '<div class="hdr"><span class="grow">IMPORT DONE</span><span class="tag good">saved</span></div>' +
+          '<div class="kv"><span class="k">Memories saved</span><span class="v">4</span></div>' +
+          '<div class="kv"><span class="k">Available in</span><span class="v">roleplay</span></div>' +
+          '<div class="kv"><span class="k">This chat is</span><span class="v">conversation</span></div>' +
+          '<div class="row badrow"><span class="t">Eligible here<div class="meta">none of the 4 are</div></span><span class="tag bad">0</span></div>' +
+          '<div class="grp">Last turn<span class="c">t2</span></div>' +
+          '<div class="row badrow"><span class="t">Recalled<div class="meta">no memory reached the reply</div></span><span class="tag bad">0 used</span></div>' +
+          '<div class="note-s">Mode is changed in the vault editor, not here.</div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico">&lt;</span><span class="ico">M</span><span>WREN · CONVERSATION</span></div>' +
+        '<div class="msgs">' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
+            '<div class="tx">So what do you know about me now?</div></div></div>' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
+        '</div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">MEMORY</span><span class="tag good">4 saved</span></div>' +
+          '<div class="kv"><span class="k">Available in</span><span class="v">roleplay</span></div>' +
+          '<div class="kv"><span class="k">This chat is</span><span class="v">conversation</span></div>' +
+          '<div class="row badrow"><span class="t">Recalled at t2<div class="meta">none of the 4 are eligible here</div></span><span class="tag bad">0 used</span></div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+    '</div></div>'
+  },
+  {
+    num: "04", label: "Eligibility decided at acceptance", feas: "package", fx: [1, 9],
+    caption: 'The eligibility default <b>follows the chat the material was read in</b>, and it is visible at the moment of the decision rather than three screens away. The rows name things a reader already understands, so the seven pipeline nouns are not a prerequisite for the first screen anyone sees.',
+    desk: '<div class="dev"><div class="dev-desk drawer">' +
+      '<div class="side">' +
+        '<div class="side-title">Chats</div>' +
+        '<div class="chat-row on">Wren · conversation</div>' +
+        '<div class="chat-row">Wren · roleplay</div>' +
+        '<div class="chat-row">Harbour district</div>' +
+        '<div class="chat-row">Notes to self</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
+        '<div class="msgs">' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
+            '<div class="tx">I want you to remember things about me.</div></div></div>' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+      '<div class="drawer">' +
+        '<div class="drawer-head"><span class="ico hot">M</span>Keep these?</div>' +
+        '<div class="drawer-body">' +
+          '<div class="grp">Read from the card<span class="c">4</span></div>' +
+          '<div class="row on"><span class="cb on"></span><span class="t">Works nights at a clinic</span></div>' +
+          '<div class="row on"><span class="cb on"></span><span class="t">Afraid of open water</span></div>' +
+          '<div class="row"><span class="cb"></span><span class="t">Lives in the harbour district<div class="meta">about the world</div></span></div>' +
+          '<div class="note-s">1 more below the fold.</div>' +
+          '<div class="hdr"><span class="grow">USE THESE IN</span></div>' +
+          '<div class="row"><span class="tag acc">this chat</span><span class="tag">roleplay</span><span class="tag">game</span></div>' +
+          '<div class="row"><span class="btn pri">Remember these</span><span class="btn">Not now</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico">&lt;</span><span class="ico hot">M</span><span>KEEP THESE?</span></div>' +
+        '<div class="pane">' +
+          '<div class="grp">Read from the card<span class="c">4</span></div>' +
+          '<div class="row on"><span class="cb on"></span><span class="t">Works nights at a clinic</span></div>' +
+          '<div class="row on"><span class="cb on"></span><span class="t">Afraid of open water</span></div>' +
+          '<div class="row"><span class="cb"></span><span class="t">Lives in the harbour district<div class="meta">about the world</div></span></div>' +
+          '<div class="note-s">1 more below the fold.</div>' +
+          '<div class="hdr"><span class="grow">USE THESE IN</span></div>' +
+          '<div class="row"><span class="tag acc">this chat</span><span class="tag">roleplay</span><span class="tag">game</span></div>' +
+          '<div class="row"><span class="btn pri">Remember these</span><span class="btn">Not now</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>'
+  },
+  {
+    num: "05", label: "Proof, two turns later", feas: "package", fx: [7],
+    caption: 'A count, <b>a timestamp and a turn reference</b>, so the figure reads as this turn rather than as the last time anything worked. The present readout carries neither, and holds its last successful count indefinitely once injection stops.',
+    desk: '<div class="dev"><div class="dev-desk drawer">' +
+      '<div class="side">' +
+        '<div class="side-title">Chats</div>' +
+        '<div class="chat-row on">Wren · conversation</div>' +
+        '<div class="chat-row">Wren · roleplay</div>' +
+        '<div class="chat-row">Harbour district</div>' +
+        '<div class="chat-row">Notes to self</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
+        '<div class="msgs">' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
+            '<div class="tx">Can you cover my shift tonight?</div></div></div>' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
+            '<div class="tx">Nights at the clinic again.</div>' +
+            '<div class="tx"><div class="bar-line"></div></div></div></div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+      '<div class="drawer">' +
+        '<div class="drawer-head"><span class="ico hot">M</span>Memory · this turn</div>' +
+        '<div class="drawer-body">' +
+          '<div class="hdr"><span class="grow">USED IN THE REPLY</span><span class="tag acc">2 used</span></div>' +
+          '<div class="kv"><span class="k">Tokens</span><span class="v">112</span></div>' +
+          '<div class="kv"><span class="k">At</span><span class="v">14:22</span></div>' +
+          '<div class="kv"><span class="k">Turn</span><span class="v">t6</span></div>' +
+          '<div class="row on"><span class="t">Works nights at a clinic</span><span class="tag acc">used</span></div>' +
+          '<div class="row on"><span class="t">Afraid of open water</span><span class="tag acc">used</span></div>' +
+          '<div class="grp">Dropped<span class="c">0</span></div>' +
+          '<div class="empty">Nothing dropped this turn</div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico">&lt;</span><span class="ico hot">M</span><span>WREN · CONVERSATION</span></div>' +
+        '<div class="msgs">' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">YOU</span>' +
+            '<div class="tx">Can you cover my shift tonight?</div></div></div>' +
+          '<div class="msg"><span class="av"></span><div class="bd"><span class="who">WREN</span>' +
+            '<div class="tx">Nights at the clinic again.</div></div></div>' +
+        '</div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">MEMORY · THIS TURN</span><span class="tag acc">2 used</span></div>' +
+          '<div class="kv"><span class="k">Tokens</span><span class="v">112</span></div>' +
+          '<div class="kv"><span class="k">At</span><span class="v">14:22 · turn t6</span></div>' +
+          '<div class="row on"><span class="t">Works nights at a clinic</span><span class="tag acc">used</span></div>' +
+          '<div class="row on"><span class="t">Afraid of open water</span><span class="tag acc">used</span></div>' +
+          '<div class="note-s">Nothing dropped this turn.</div>' +
+        '</div>' +
+        '<div class="inputbar"><span class="ico">+</span><span class="tag">Message Wren</span></div>' +
+      '</div>' +
+    '</div></div>'
+  }
+];
+
+FLOWS.j1 = [
+  { n: "01", t: "Enable", d: "see what is readable, and why a zero is a zero" },
+  { n: "02", t: "Read", d: "one source, one model call, cost stated first" },
+  { n: "03", t: "Today", d: "4 saved, roleplay only, nothing recalled here" },
+  { n: "04", t: "Accept", d: "eligibility set where the decision is made" },
+  { n: "05", t: "Observe", d: "2 used, 112 tokens, 14:22, turn t6", term: true }
+];
+
+TRADE.j1 = {
+  win: [
+    "A first run ends in visible proof instead of a silent zero.",
+    "Three kinds of empty are told apart before any money is spent.",
+    "The mode stamp is chosen where it is understood, not found later in the vault editor.",
+    "The recall count carries a time and a turn, so a stale figure cannot pass for a fresh one."
+  ],
+  cost: [
+    "The drawer competes with the chat for width on desktop and covers it on a phone.",
+    "Stating the model call up front makes the feature look expensive at the moment of adoption.",
+    "A per-turn receipt is one more thing to keep truthful on every turn.",
+    "Showing today's failure alongside the fix invites reading the fix as shipped."
+  ],
+  build: [
+    "The drawer, the accept step and the per-turn readout are all package-side surfaces.",
+    "Eligibility defaults read the current chat mode at accept time, no engine change.",
+    "The receipt needs a stored per-turn record keyed by turn id, polled like the debug log.",
+    "State 03 is drawn from present behaviour and needs no build at all."
+  ]
+};
+
+STATES.j2 = [
+  {
+    num: "01", label: "Narrow, then choose", feas: "package", fx: [3, 28, 30],
+    caption: 'The filter is <b>a finder and nothing else</b>: it narrows 60 chats and 41 characters so the material is reachable, and it decides nothing about the run. Every kind carries a count, including the kind that cannot be ingested at all, so the ceiling on what a chat can teach is stated up front.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side">' +
+        '<div class="side-title">Library</div>' +
+        '<div class="chat-row">All chats · 60</div>' +
+        '<div class="chat-row">Characters · 41</div>' +
+        '<div class="chat-row on">Filter: harbour</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>LONG-TERM MEMORY</span></div>' +
+        '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span>' +
+          '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
+        '<div class="pane split">' +
+          '<div class="facets">' +
+            '<div class="fgroup">Filter</div>' +
+            '<div class="fac on">Chats<span class="c">6</span></div>' +
+            '<div class="fac on">Characters<span class="c">2</span></div>' +
+            '<div class="fac">Lorebooks<span class="c">33</span></div>' +
+            '<div class="fgroup">Not filtered</div>' +
+            '<div class="fac">All chats<span class="c">60</span></div>' +
+            '<div class="fac">All characters<span class="c">41</span></div>' +
+            '<div class="note-s">Narrows the list. Sets no scope.</div>' +
+          '</div>' +
+          '<div class="listcol">' +
+            '<div class="hdr"><span class="sel">harbour</span><span class="grow"></span><span class="btn">Clear</span></div>' +
+            '<div class="grp">Material in this filter<span class="c">97 sources</span></div>' +
+            '<div class="row on"><span class="cb on"></span><span class="t">Character cards<div class="meta">41</div></span><span class="tag good">ready</span></div>' +
+            '<div class="row on"><span class="cb on"></span><span class="t">Lorebooks<div class="meta">33</div></span><span class="tag good">ready</span></div>' +
+            '<div class="row warnrow"><span class="cb"></span><span class="t">Chat summaries<div class="meta">23 of 60 chats</div></span><span class="tag warn">37 unsummarised</span></div>' +
+            '<div class="row badrow"><span class="cb"></span><span class="t">Raw transcripts<div class="meta">not a source kind</div></span><span class="tag bad">n/a</span></div>' +
+            '<div class="hdr"><span class="grow">SELECTED 74 · ONE RUN · CONCURRENCY 4</span><span class="btn pri">Next</span></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>SOURCES</span></div>' +
+        '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span>' +
+          '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="sel">harbour</span><span class="grow"></span><span class="sel">Filter · 3</span></div>' +
+          '<div class="row"><span class="tag">6 chats</span><span class="tag">2 characters</span><span class="tag">clear</span></div>' +
+          '<div class="grp">Material in this filter<span class="c">97</span></div>' +
+          '<div class="row on"><span class="cb on"></span><span class="t">Character cards<div class="meta">41</div></span><span class="tag good">ready</span></div>' +
+          '<div class="row on"><span class="cb on"></span><span class="t">Lorebooks<div class="meta">33</div></span><span class="tag good">ready</span></div>' +
+          '<div class="row warnrow"><span class="cb"></span><span class="t">Chat summaries<div class="meta">23 of 60 chats</div></span><span class="tag warn">37</span></div>' +
+          '<div class="row badrow"><span class="cb"></span><span class="t">Raw transcripts<div class="meta">not a source kind</div></span><span class="tag bad">n/a</span></div>' +
+          '<div class="note-s">Selected 74 · one run · concurrency 4</div>' +
+          '<div class="row"><span class="btn pri">Next</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>'
+  },
+  {
+    num: "02", label: "Scope derived from the selection", feas: "package", fx: [17, 18],
+    caption: 'The trusted-subject roster is <b>derived from the 74 selected sources and counted before any model call</b>. Today the import target both narrows the list and builds the scope, so the widest target passes no scope, produces an empty roster, and rejects every candidate as untrusted after the call is paid for. Here a zero blocks the run instead of starting it, and persona is editable on this screen.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side">' +
+        '<div class="side-title">Library</div>' +
+        '<div class="chat-row">All chats · 60</div>' +
+        '<div class="chat-row">Characters · 41</div>' +
+        '<div class="chat-row on">Filter: harbour</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>LONG-TERM MEMORY</span></div>' +
+        '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span>' +
+          '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">WHO THIS RUN MAY WRITE ABOUT</span><span class="tag">derived</span></div>' +
+          '<div class="grp">From your selection<span class="c">74 sources</span></div>' +
+          '<div class="row"><span class="t">Chats<div class="meta">6 in scope</div></span><span class="btn">Edit</span></div>' +
+          '<div class="row"><span class="t">Characters<div class="meta">2 in scope</div></span><span class="btn">Edit</span></div>' +
+          '<div class="row"><span class="t">Persona<div class="meta">1 in scope, editable here</div></span><span class="btn">Edit</span></div>' +
+          '<div class="grp">Trusted subjects<span class="c">9 in roster</span></div>' +
+          '<div class="row"><span class="t">Roster counted before the model call<div class="meta">an empty roster blocks the run, it does not start it</div></span><span class="tag good">9</span></div>' +
+          '<div class="hdr"><span class="grow">ESTIMATED 74 SOURCES · 1 RUN</span><span class="btn">Back</span><span class="btn pri">Extract 74</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>SCOPE</span></div>' +
+        '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span>' +
+          '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">WHO THIS RUN MAY WRITE ABOUT</span><span class="tag">derived</span></div>' +
+          '<div class="grp">From your selection<span class="c">74</span></div>' +
+          '<div class="row"><span class="t">Chats<div class="meta">6 in scope</div></span><span class="btn">Edit</span></div>' +
+          '<div class="row"><span class="t">Characters<div class="meta">2 in scope</div></span><span class="btn">Edit</span></div>' +
+          '<div class="row"><span class="t">Persona<div class="meta">1 in scope</div></span><span class="btn">Edit</span></div>' +
+          '<div class="grp">Trusted subjects<span class="c">9</span></div>' +
+          '<div class="note-s">Counted before the model call. An empty roster blocks the run.</div>' +
+          '<div class="row"><span class="btn pri">Extract 74</span><span class="btn">Back</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>'
+  },
+  {
+    num: "03", label: "A long run, reporting itself", feas: "restart", fx: [26, 23, 24],
+    caption: 'Per-source completion is written to the package store as the run proceeds and the panel <b>polls its own status route</b> for it, since nothing can be pushed to the client. Truncation is named on the source it happened to and retried, rather than discarding the response. Today the import is one synchronous request returning only a terminal report, so a run of tens of minutes is indistinguishable from a hang.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side">' +
+        '<div class="side-title">Library</div>' +
+        '<div class="chat-row">All chats · 60</div>' +
+        '<div class="chat-row">Characters · 41</div>' +
+        '<div class="chat-row on">Filter: harbour</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>EXTRACTING</span><span class="ico wide">t+12m</span></div>' +
+        '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span>' +
+          '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">EXTRACTING</span><span class="tag warn">running</span><span class="btn">Stop</span></div>' +
+          '<div class="mtr acc"><i class="w50"></i></div>' +
+          '<div class="kv"><span class="k">Sources done</span><span class="v">37 of 74</span></div>' +
+          '<div class="kv"><span class="k">Elapsed</span><span class="v">12m 04s</span></div>' +
+          '<div class="kv"><span class="k">Status polled</span><span class="v">every 3s</span></div>' +
+          '<div class="grp">Last completed<span class="c">18 kept</span></div>' +
+          '<div class="row"><span class="t">Harbour district lorebook<div class="meta">finished 14s ago · 18 kept, 5 dropped</div></span><span class="tag good">done</span></div>' +
+          '<div class="row warnrow"><span class="t">2 sources returned truncated output<div class="meta">retried at a lower unit count, not discarded</div></span><span class="tag warn">retried</span></div>' +
+          '<div class="note-s">Progress comes from a status route, so it ships at a release boundary.</div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>EXTRACTING</span><span class="ico wide">t+12m</span></div>' +
+        '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span>' +
+          '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">RUNNING</span><span class="btn">Stop</span></div>' +
+          '<div class="mtr acc"><i class="w50"></i></div>' +
+          '<div class="kv"><span class="k">Sources done</span><span class="v">37 of 74</span></div>' +
+          '<div class="kv"><span class="k">Elapsed</span><span class="v">12m 04s</span></div>' +
+          '<div class="kv"><span class="k">Polled</span><span class="v">every 3s</span></div>' +
+          '<div class="grp">Last completed<span class="c">18 kept</span></div>' +
+          '<div class="row"><span class="t">Harbour district lorebook<div class="meta">14s ago</div></span><span class="tag good">done</span></div>' +
+          '<div class="row warnrow"><span class="t">2 truncated<div class="meta">retried at a lower unit count</div></span><span class="tag warn">retried</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>'
+  },
+  {
+    num: "04", label: "What was kept, what was lost", feas: "package", fx: [21, 19, 20, 22],
+    caption: 'Totals first, then <b>one row per cause summing to 304</b>, so ninety-six instances of one problem are read once and recovery starts here. The largest single cause is a schema defect rather than a judgement: optional fields are declared optional and never nullable, so a unit carrying an explicit null is discarded whole. Review opens on the 838 that survived; dropped candidates are recovered from this screen, not queued.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side">' +
+        '<div class="side-title">Library</div>' +
+        '<div class="chat-row">All chats · 60</div>' +
+        '<div class="chat-row">Characters · 41</div>' +
+        '<div class="chat-row on">Filter: harbour</div>' +
+      '</div>' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>RUN FINISHED</span><span class="ico wide">24m</span></div>' +
+        '<div class="rail"><span class="rt">Vault</span><span class="rt new">Review<span class="b">838</span></span>' +
+          '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">1,142 CANDIDATES · 838 KEPT · 304 DROPPED</span><span class="tag warn">partial</span></div>' +
+          '<div class="grp">Dropped, by cause<span class="c">304</span></div>' +
+          '<div class="row badrow"><span class="t">Subject could not be matched<div class="meta">141 · no roster entry for the named subject</div></span><span class="btn">Recover</span></div>' +
+          '<div class="row badrow"><span class="t">Optional field returned null, whole claim discarded<div class="meta">96 · schema defect, not a judgement</div></span><span class="btn">Recover</span></div>' +
+          '<div class="row warnrow"><span class="t">No evidence in the source text<div class="meta">44</div></span><span class="btn">Recover</span></div>' +
+          '<div class="row warnrow"><span class="t">Unsupported memory category<div class="meta">23</div></span><span class="btn">Recover</span></div>' +
+          '<div class="hdr"><span class="grow">EVERY ROW IS RECOVERABLE</span><span class="btn">Export report</span><span class="btn pri">Open review · 838</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="main">' +
+        '<div class="topbar"><span class="ico hot">M</span><span>RUN FINISHED</span><span class="ico wide">24m</span></div>' +
+        '<div class="rail"><span class="rt">Vault</span><span class="rt new">Review<span class="b">838</span></span>' +
+          '<span class="rt on">Sources</span><span class="rt">Settings</span></div>' +
+        '<div class="pane">' +
+          '<div class="hdr"><span class="grow">1,142 · 838 KEPT · 304 DROPPED</span><span class="tag warn">partial</span></div>' +
+          '<div class="grp">Dropped, by cause<span class="c">304</span></div>' +
+          '<div class="row badrow"><span class="t">Subject could not be matched<div class="meta">141</div></span><span class="btn">Recover</span></div>' +
+          '<div class="row badrow"><span class="t">Optional field returned null<div class="meta">96 · whole claim discarded</div></span><span class="btn">Recover</span></div>' +
+          '<div class="row warnrow"><span class="t">No evidence in the source text<div class="meta">44</div></span><span class="btn">Recover</span></div>' +
+          '<div class="row warnrow"><span class="t">Unsupported memory category<div class="meta">23</div></span><span class="btn">Recover</span></div>' +
+          '<div class="row"><span class="btn pri">Open review · 838</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div></div>'
+  }
+];
+
+FLOWS.j2 = [
+  { n: "01", t: "Narrow", d: "60 chats and 41 characters down to 97 sources" },
+  { n: "02", t: "Confirm scope", d: "9 trusted subjects, counted before the call" },
+  { n: "03", t: "Run", d: "37 of 74 done, 12m elapsed, polled every 3s" },
+  { n: "04", t: "Read the outcome", d: "838 kept, 304 dropped, every cause recoverable", term: true }
+];
+
+TRADE.j2 = {
+  win: [
+    "The size of the loss is stated on the finish screen, not discovered inside the review queue.",
+    "An empty trusted roster blocks a run before the model is paid rather than after.",
+    "A twenty-four minute run is legible while it runs, so a slow run is not read as a hang.",
+    "Ninety-six instances of one schema defect are read once, as one row."
+  ],
+  cost: [
+    "Polling adds a request every three seconds for the whole run.",
+    "Separating the finder from the scope means two screens where the build has one.",
+    "Naming four drop causes on the outcome screen makes a working run look damaged.",
+    "Recovery from this screen is a second queue to keep consistent with review."
+  ],
+  build: [
+    "The filter, the derived scope and the outcome screen are all package-side.",
+    "Per-source progress needs a status route, so state 03 lands at a release boundary.",
+    "Drop causes need human strings mapped from the block enum before they can be listed.",
+    "Recovery needs the dropped candidates persisted, not discarded at the end of the run."
+  ]
+};
+
+/* Journey 3 — Curate. Figures are canonical: 838 kept of 1,142 candidates,
+   facet counts 61/75/24/35/9/47, 24 decided, Wren trait 19,240 / 20,000. */
+
+STATES.j3 = [
+
+  {
+    num:"01", label:"Facets by provenance", feas:"package", fx:[42],
+    caption:"The rail splits into three bands: signals the package computes, values the model returned, and slices the reviewer saved. Every entry carries a live count against the <b>838 claims</b> in the queue. The reworded-restatement lane names why it is unavailable instead of returning a zero, which on this vault would read as a clean result. Today the queue has no facets and no counts of any kind.",
+    desk:
+      '<div class="dev"><div class="dev-desk">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="chat-row">Salt road, part 2</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">vault-01</span><span class="ico">?</span></div>'+
+          '<div class="rail">'+
+            '<span class="rt">Vault</span>'+
+            '<span class="rt on">Review<span class="b">838</span></span>'+
+            '<span class="rt">Sources</span>'+
+            '<span class="rt">Settings</span>'+
+          '</div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Computed here</div>'+
+              '<div class="fac on">Restates the vault<span class="c">61</span></div>'+
+              '<div class="fac">Duplicate incoming<span class="c">75</span></div>'+
+              '<div class="fac">Keyword cap reached<span class="c">24</span></div>'+
+              '<div class="fac">Section cap reached<span class="c">35</span></div>'+
+              '<div class="fac">Reworded restatement<span class="tag bad">off</span></div>'+
+              '<div class="note-s">no count: semantic lane dead</div>'+
+              '<div class="fgroup">From the model</div>'+
+              '<div class="fac">Weak subject match<span class="c">9</span></div>'+
+              '<div class="fac">Overwrites a value<span class="c">47</span></div>'+
+              '<div class="fgroup">Yours</div>'+
+              '<div class="fac">Wren, trait only<span class="c">saved</span></div>'+
+              '<div class="fac">Decide today<span class="c">saved</span></div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">838 claims &middot; 61 shown &middot; 24 decided</span><span class="sel">group: target note</span><span class="sel">sort: risk</span></div>'+
+              '<div class="grp">Wren <span class="tag">character note</span><span class="c">38</span></div>'+
+              '<div class="row"><span class="cb on"></span><div class="t">Keeps a spare key by the clinic door<div class="meta">restates the vault &middot; trait</div></div><span class="tag">merges</span></div>'+
+              '<div class="row"><span class="cb on"></span><div class="t">Works the night shift, not the morning one<div class="meta">restates the vault &middot; trait</div></div><span class="tag warn">overwrites</span></div>'+
+              '<div class="grp">Harbour district <span class="tag">world note</span><span class="c">14</span></div>'+
+              '<div class="row"><span class="cb on"></span><div class="t">The east pier floods at spring tide<div class="meta">restates the vault &middot; setting</div></div><span class="tag">merges</span></div>'+
+              '<div class="row"><span class="cb"></span><div class="t">Two chandlers share the north quay<div class="meta">restates the vault &middot; setting</div></div><span class="tag">merges</span></div>'+
+              '<div class="empty">9 more groups below</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">review</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">Facets &middot; 61 shown of 838</span><span class="btn">Clear</span></div>'+
+            '<div class="fgroup">Computed here</div>'+
+            '<div class="fac on">Restates the vault<span class="c">61</span></div>'+
+            '<div class="fac">Duplicate incoming<span class="c">75</span></div>'+
+            '<div class="fac">Keyword cap reached<span class="c">24</span></div>'+
+            '<div class="fac">Section cap reached<span class="c">35</span></div>'+
+            '<div class="fac">Reworded restatement<span class="tag bad">off</span></div>'+
+            '<div class="note-s">no count: semantic lane dead</div>'+
+            '<div class="fgroup">From the model</div>'+
+            '<div class="fac">Weak subject match<span class="c">9</span></div>'+
+            '<div class="fac">Overwrites a value<span class="c">47</span></div>'+
+            '<div class="fgroup">Yours</div>'+
+            '<div class="fac">Wren, trait only<span class="c">saved</span></div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn pri">Show 61</span><span class="btn">Save this slice</span></div>'+
+        '</div>'+
+      '</div></div>'
+  },
+
+  {
+    num:"02", label:"One list, two controls", feas:"package", fx:[31,32,33,34,36,29,43],
+    caption:"Group-by and sort act on one list, and the facet set survives a pivot, so a slice is composed once and worked to exhaustion. One active facet means the shown count equals that facet count: <b>838 claims, 61 shown</b>. A stale row is marked in the list rather than at apply time, and the band written without review is named so the queue never implies it is the whole run. Today selection resets on any change of chat, source or draft.",
+    desk:
+      '<div class="dev"><div class="dev-desk">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="chat-row">Salt road, part 2</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">vault-01</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Active</div>'+
+              '<div class="fac on">Restates the vault<span class="c">61</span></div>'+
+              '<div class="fgroup">Computed here</div>'+
+              '<div class="fac">Duplicate incoming<span class="c">75</span></div>'+
+              '<div class="fac">Keyword cap reached<span class="c">24</span></div>'+
+              '<div class="fac">Section cap reached<span class="c">35</span></div>'+
+              '<div class="fgroup">From the model</div>'+
+              '<div class="fac">Weak subject match<span class="c">9</span></div>'+
+              '<div class="fac">Overwrites a value<span class="c">47</span></div>'+
+              '<div class="note-s">Facets survive a regroup</div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">838 claims &middot; 61 shown &middot; 61 selected</span><span class="sel">group: target note</span><span class="sel">sort: risk</span><span class="tag">24 decided</span></div>'+
+              '<div class="grp">Wren <span class="tag">character note</span><span class="tag warn">trait 19,240 / 20,000</span><span class="c">38</span></div>'+
+              '<div class="mtr warn"><i class="w96"></i></div>'+
+              '<div class="row"><span class="cb on"></span><div class="t">Keeps a spare key by the clinic door<div class="meta">restates the vault</div></div><span class="tag">merges</span></div>'+
+              '<div class="row warnrow"><span class="cb on"></span><div class="t">Works the night shift, not the morning one<div class="meta">new value for an occupied field</div></div><span class="tag warn">overwrites</span></div>'+
+              '<div class="row badrow"><span class="cb"></span><div class="t">Trained at the inland hospital<div class="meta">its source note changed since this draft was built</div></div><span class="tag bad">stale</span></div>'+
+              '<div class="grp">Harbour district <span class="tag">world note</span><span class="c">14</span></div>'+
+              '<div class="row"><span class="cb on"></span><div class="t">The east pier floods at spring tide<div class="meta">restates the vault</div></div><span class="tag">merges</span></div>'+
+              '<div class="row"><span class="grow">Written without review, straight to the vault</span><span class="tag bad">not in this list</span></div>'+
+              '<div class="note-s">Selection and edits held across regroup and re-sort, not across a reload</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">review</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">838 claims &middot; 61 shown</span><span class="tag">1 facet</span></div>'+
+            '<div class="hdr"><span class="sel">group: target note</span><span class="sel">sort: risk</span><span class="grow"></span><span class="tag">24 decided</span></div>'+
+            '<div class="grp">Wren<span class="c">38</span></div>'+
+            '<div class="mtr warn"><i class="w96"></i></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Keeps a spare key by the clinic door<div class="meta">restates the vault</div></div></div>'+
+            '<div class="row warnrow"><span class="cb on"></span><div class="t">Works the night shift, not the morning one<div class="meta">overwrites a stored value</div></div></div>'+
+            '<div class="row badrow"><span class="cb"></span><div class="t">Trained at the inland hospital<div class="meta">source note changed since this draft</div></div></div>'+
+            '<div class="grp">Harbour district<span class="c">14</span></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">The east pier floods at spring tide<div class="meta">restates the vault</div></div></div>'+
+            '<div class="note-s">Written without review is a separate band, not in this list</div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn pri">Apply 61</span><span class="btn">Facets</span></div>'+
+        '</div>'+
+      '</div></div>'
+  },
+
+  {
+    num:"03", label:"Row opened for editing", feas:"package", fx:[44,45,46],
+    caption:"The row opens into an editor on the row itself. Two counters carry different labels, <b>412 characters in this contribution</b> and <b>19,240 of 20,000 in the projected section</b>, so one denominator never means two things. The link mutation resolves its target id to a title. Today the editor sits below the diagnostics, trims at the cap with no counter and no marker at the cut, and four of the seven mutation kinds render as nothing.",
+    desk:
+      '<div class="dev"><div class="dev-desk drawer">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">editing</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Active</div>'+
+              '<div class="fac on">Restates the vault<span class="c">61</span></div>'+
+              '<div class="fgroup">Computed here</div>'+
+              '<div class="fac">Section cap reached<span class="c">35</span></div>'+
+              '<div class="fac">Keyword cap reached<span class="c">24</span></div>'+
+              '<div class="fgroup">From the model</div>'+
+              '<div class="fac">Overwrites a value<span class="c">47</span></div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">Wren &middot; merges into trait</span><span class="tag">editing</span><span class="btn">Close</span></div>'+
+              '<div class="row on"><div class="t">Keeps a spare key by the clinic door, on a length of blue cord, and tells nobody where.<div class="meta">editable in place &middot; caret at end</div></div></div>'+
+              '<div class="hdr"><span class="grow">412 characters in this contribution</span></div>'+
+              '<div class="mtr warn"><i class="w96"></i></div>'+
+              '<div class="hdr"><span class="grow">19,240 of 20,000 characters in the projected section</span><span class="tag warn">save blocks at the cap</span></div>'+
+              '<div class="grp">Evidence <span class="tag">lorebook entry 12</span></div>'+
+              '<div class="row"><div class="t">The quoted source line, shown as stored, with the matched span marked.</div></div>'+
+              '<div class="row"><div class="t">Links to</div><span class="tag">Timeline: harbour arrival</span><span class="meta">resolved from id</span></div>'+
+              '<div class="hdr"><span class="grow"></span><span class="btn pri">Save edit</span><span class="btn">Accept as written</span><span class="btn">Drop</span></div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="drawer">'+
+          '<div class="drawer-head">Target note</div>'+
+          '<div class="drawer-body">'+
+            '<div class="kv"><span class="k">note</span><span class="v">Wren</span></div>'+
+            '<div class="kv"><span class="k">keywords</span><span class="v">28 / 30</span></div>'+
+            '<div class="mtr warn"><i class="w95"></i></div>'+
+            '<div class="kv"><span class="k">contributions</span><span class="v">91 / 100</span></div>'+
+            '<div class="mtr warn"><i class="w90"></i></div>'+
+            '<div class="kv"><span class="k">trait section</span><span class="v">19,240</span></div>'+
+            '<div class="mtr warn"><i class="w96"></i></div>'+
+            '<div class="kv"><span class="k">recalled</span><span class="v">21 &times;</span></div>'+
+            '<div class="note-s">Caps read as a gradient, not a wall</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">editing</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">Wren &middot; merges into trait</span><span class="btn">Close</span></div>'+
+            '<div class="row on"><div class="t">Keeps a spare key by the clinic door, on a length of blue cord, and tells nobody where.<div class="meta">editable in place</div></div></div>'+
+            '<div class="hdr"><span class="grow">412 characters in this contribution</span></div>'+
+            '<div class="mtr warn"><i class="w96"></i></div>'+
+            '<div class="hdr"><span class="grow">19,240 of 20,000 in the projected section</span></div>'+
+            '<div class="grp">Evidence<span class="c">lorebook 12</span></div>'+
+            '<div class="row"><div class="t">The quoted source line, shown as stored.</div></div>'+
+            '<div class="row"><div class="t">Links to</div><span class="tag">Timeline: harbour arrival</span></div>'+
+            '<div class="hdr"><span class="grow"></span><span class="tag warn">keywords 28 / 30</span><span class="tag">contributions 91 / 100</span></div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn pri">Save edit</span><span class="btn">Accept</span><span class="btn">Drop</span></div>'+
+        '</div>'+
+      '</div></div>'
+  },
+
+  {
+    num:"04", label:"Conflict, three ways out", feas:"package", fx:[35,47],
+    caption:"Stored and proposed face each other, and the recall count sits on the text about to be overwritten, so the loss in taking the proposal is legible before it is taken. A third option files both in order, because most contradictions in a long story are the situation moving rather than a factual dispute. Today the queue never reads <b>mutation.note.conflicts</b>, and the per-chunk recall counts are written to disk and returned by no route.",
+    desk:
+      '<div class="dev"><div class="dev-desk">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="chat-row">Salt road, part 2</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">conflict</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Active</div>'+
+              '<div class="fac on">Overwrites a value<span class="c">47</span></div>'+
+              '<div class="fgroup">Computed here</div>'+
+              '<div class="fac">Restates the vault<span class="c">61</span></div>'+
+              '<div class="fac">Section cap reached<span class="c">35</span></div>'+
+              '<div class="fgroup">From the model</div>'+
+              '<div class="fac">Weak subject match<span class="c">9</span></div>'+
+              '<div class="note-s">47 of the 838 land on an occupied field</div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">838 claims &middot; 47 shown &middot; conflict on trait</span><span class="tag bad">contradicts stored</span></div>'+
+              '<div class="grp">Stored <span class="tag">recalled 21 times, last 2 Mar</span></div>'+
+              '<div class="row"><div class="t">Works the morning shift at the inland clinic and walks back along the pier.</div></div>'+
+              '<div class="grp">Proposed <span class="tag">from a chat summary</span></div>'+
+              '<div class="row warnrow"><div class="t">Works the night shift, not the morning one.</div><span class="tag warn">overwrites</span></div>'+
+              '<div class="hdr"><span class="grow"></span><span class="btn">Keep stored</span><span class="btn">Replace</span><span class="btn pri">Keep both, in order</span></div>'+
+              '<div class="note-s">Keeping both files the stored line as earlier and the proposed line as later</div>'+
+              '<div class="grp">Next conflicts in this slice<span class="c">46</span></div>'+
+              '<div class="row"><span class="cb"></span><div class="t">Carries the harbour keys, not the clinic keys<div class="meta">stored recalled 4 times</div></div><span class="tag warn">overwrites</span></div>'+
+              '<div class="row"><span class="cb"></span><div class="t">The east pier was rebuilt after the flood<div class="meta">stored recalled 2 times</div></div><span class="tag warn">overwrites</span></div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">conflict</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">Conflict on trait</span><span class="tag bad">contradicts stored</span></div>'+
+            '<div class="grp">Stored<span class="c">recalled 21 &times;</span></div>'+
+            '<div class="row"><div class="t">Works the morning shift at the inland clinic and walks back along the pier.<div class="meta">last recalled 2 Mar</div></div></div>'+
+            '<div class="grp">Proposed<span class="c">chat summary</span></div>'+
+            '<div class="row warnrow"><div class="t">Works the night shift, not the morning one.</div></div>'+
+            '<div class="note-s">Keeping both files the stored line as earlier and the proposed line as later</div>'+
+            '<div class="grp">Next in this slice<span class="c">46</span></div>'+
+            '<div class="row"><span class="cb"></span><div class="t">Carries the harbour keys, not the clinic keys</div></div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn">Keep stored</span><span class="btn">Replace</span><span class="btn pri">Keep both</span></div>'+
+        '</div>'+
+      '</div></div>'
+  },
+
+  {
+    num:"05", label:"Apply, preflighted", feas:"restart", fx:[37,38,39,40,41],
+    caption:"A preflight route runs the same projection code the server applies, so the <b>2 rows that would fail</b> are marked before submit rather than arriving as one whole-draft error. Progress counts against the batch: <b>46 of 61 applied, 13 remaining, 2 skipped and marked</b>. The restore point is the backup export that already exists, because there is no undo. Preflight is a new route, so it ships at a release boundary.",
+    desk:
+      '<div class="dev"><div class="dev-desk">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="chat-row">Salt road, part 2</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">applying</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Batch</div>'+
+              '<div class="fac on">Selected<span class="c">61</span></div>'+
+              '<div class="fac">Would fail<span class="c">2</span></div>'+
+              '<div class="fac">Applied<span class="c">46</span></div>'+
+              '<div class="fac">Remaining<span class="c">13</span></div>'+
+              '<div class="fgroup">Still in the queue</div>'+
+              '<div class="fac">Duplicate incoming<span class="c">75</span></div>'+
+              '<div class="fac">Overwrites a value<span class="c">47</span></div>'+
+              '<div class="note-s">Counts hold against 838</div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">Apply 61 selected</span><span class="tag warn">2 would fail</span><span class="sel">preflight: passed 59</span></div>'+
+              '<div class="grp">Preflight marks<span class="c">2</span></div>'+
+              '<div class="row badrow"><span class="cb on"></span><div class="t">Works the night shift, not the morning one<div class="meta">section cap exceeded on the trait section</div></div><span class="btn">Show</span></div>'+
+              '<div class="row badrow"><span class="cb on"></span><div class="t">Keeps a spare key by the clinic door<div class="meta">section cap exceeded on the trait section</div></div><span class="btn">Show</span></div>'+
+              '<div class="row"><div class="t">Dropped rows still available as dependencies</div><span class="tag good">auto-included</span></div>'+
+              '<div class="row on"><span class="cb on"></span><div class="t">Take a restore point first<div class="meta">a backup export, because there is no undo</div></div><span class="tag">default on</span></div>'+
+              '<div class="mtr warn"><i class="w75"></i></div>'+
+              '<div class="hdr"><span class="grow">46 of 61 applied &middot; 13 remaining &middot; 2 skipped and marked</span></div>'+
+              '<div class="note-s">Applied rows are flagged in the draft, not deleted from it, so the denominator does not shrink</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">applying</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">Apply 61 selected</span><span class="tag warn">2 would fail</span></div>'+
+            '<div class="grp">Preflight marks<span class="c">2</span></div>'+
+            '<div class="row badrow"><span class="cb on"></span><div class="t">Works the night shift, not the morning one<div class="meta">section cap exceeded on trait</div></div></div>'+
+            '<div class="row badrow"><span class="cb on"></span><div class="t">Keeps a spare key by the clinic door<div class="meta">section cap exceeded on trait</div></div></div>'+
+            '<div class="row on"><span class="cb on"></span><div class="t">Take a restore point first<div class="meta">there is no undo</div></div></div>'+
+            '<div class="mtr warn"><i class="w75"></i></div>'+
+            '<div class="hdr"><span class="grow">46 of 61 applied &middot; 13 remaining &middot; 2 skipped</span></div>'+
+            '<div class="note-s">Progress counts against the batch, not a shrinking draft</div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn pri">Continue</span><span class="btn">Stop after this row</span></div>'+
+        '</div>'+
+      '</div></div>'
+  },
+
+  {
+    num:"06", label:"Twelve claims, no rail", feas:"package", fx:[31],
+    caption:"The same route and the same row component at the median size: <b>12 claims from one character card</b>. The facet rail, the group-by and the sort are gone, because six facets are more surface than the work they filter. Scale decides the interface, not the loop. A queue built only for 838 makes the common case feel like the rare one.",
+    desk:
+      '<div class="dev"><div class="dev-desk">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">one card</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">12</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">12 claims from one character card</span><span class="tag">all shown</span></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Keeps a spare key by the clinic door</div><span class="tag">merges</span></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Walks home along the east pier</div><span class="tag">merges</span></div>'+
+            '<div class="row warnrow"><span class="cb"></span><div class="t">Trained at the inland hospital<div class="meta">weak subject match</div></div><span class="tag warn">check</span></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Prefers the night shift</div><span class="tag">merges</span></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Keeps a tide table pinned by the door</div><span class="tag">merges</span></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Speaks two harbour dialects</div><span class="tag">merges</span></div>'+
+            '<div class="empty">6 more rows, read end to end</div>'+
+            '<div class="hdr"><span class="grow"></span><span class="btn pri">Accept selected</span><span class="btn">Accept all</span><span class="btn">Show facets</span></div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">one card</span></div>'+
+          '<div class="rail"><span class="rt">Vault</span><span class="rt on">Review<span class="b">12</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">12 claims &middot; all shown</span></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Keeps a spare key by the clinic door</div></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Walks home along the east pier</div></div>'+
+            '<div class="row warnrow"><span class="cb"></span><div class="t">Trained at the inland hospital<div class="meta">weak subject match</div></div></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Prefers the night shift</div></div>'+
+            '<div class="row"><span class="cb on"></span><div class="t">Keeps a tide table pinned by the door</div></div>'+
+            '<div class="empty">7 more rows</div>'+
+            '<div class="note-s">No facet rail, no group-by, no sort</div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn pri">Accept selected</span><span class="btn">Accept all</span></div>'+
+        '</div>'+
+      '</div></div>'
+  }
+
+];
+
+FLOWS.j3 = [
+  {n:"01", t:"Compose", d:"pick facets, read the counts"},
+  {n:"02", t:"Pivot", d:"group and sort the same list"},
+  {n:"03", t:"Edit", d:"fix the text on the row"},
+  {n:"04", t:"Resolve", d:"stored beside proposed"},
+  {n:"05", t:"Apply", d:"preflight, then a restore point"},
+  {n:"06", t:"Or skip all of it", d:"twelve rows need no rail", term:true}
+];
+
+TRADE.j3 = {
+  win:[
+    "Eight hundred claims become a handful of slices, each worked to exhaustion before the next is composed.",
+    "Failures land on the offending rows before submit instead of arriving as one atomic draft error.",
+    "A conflict shows what it is about to overwrite, and how often the model has leaned on it.",
+    "The small case stays small: twelve rows get a list, not a filter engine."
+  ],
+  cost:[
+    "Six facets and two pivots is more control surface than the current queue has in total.",
+    "Selection survives regroup and re-sort but not a reload, because the package has no client storage.",
+    "Preflight doubles the projection work for every apply, once to check and once to write.",
+    "Two of the facet counts stay unavailable while the semantic lane is dead."
+  ],
+  build:[
+    "targets[] is already on the wire and already consumed; giving it a header and a pivot is presentation, not a new query.",
+    "match.basis is computed during subject resolution already and needs threading onto the mutation.",
+    "Preflight is a new route, so it ships at a release boundary rather than at runtime.",
+    "The restore point reuses the backup export; real undo would need commit journals retained past publish()."
+  ]
+};
+
+/* Journey 4 — Browse and correct. Canonical figures: 118 memories, 43 source
+   notes hidden, Wren 19,240 / 20,000, 28 / 30 keywords, recalled 21 times. */
+
+STATES.j4 = [
+
+  {
+    num:"01", label:"Vault browser", feas:"package", fx:[5,55],
+    caption:"The same facet engine as review, run over what is stored rather than what is proposed: type, subject, status, mode eligibility and cap pressure. Source notes are excluded by default, so the header reads <b>118 memories and 43 source notes hidden</b> and the count is the number recall can actually reach. Today free-text search works well, every total silently includes the 43 audit records, and they sort to the top.",
+    desk:
+      '<div class="dev"><div class="dev-desk">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="chat-row">Salt road, part 2</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">vault-01</span><span class="ico">?</span></div>'+
+          '<div class="rail"><span class="rt on">Vault<span class="b">118</span></span><span class="rt">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Type</div>'+
+              '<div class="fac on">Character<span class="c">54</span></div>'+
+              '<div class="fac">World<span class="c">31</span></div>'+
+              '<div class="fac">Timeline<span class="c">18</span></div>'+
+              '<div class="fac">Source notes<span class="c">43</span></div>'+
+              '<div class="note-s">hidden by default</div>'+
+              '<div class="fgroup">Status and mode</div>'+
+              '<div class="fac">Unresolved conflict<span class="c">7</span></div>'+
+              '<div class="fac">Roleplay only<span class="c">22</span></div>'+
+              '<div class="fgroup">Cap pressure</div>'+
+              '<div class="fac">Over 90 per cent<span class="c">4</span></div>'+
+              '<div class="fac">Never recalled<span class="c">63</span></div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">118 memories &middot; 43 source notes hidden</span><span class="sel">search memories</span><span class="sel">sort: size</span></div>'+
+              '<div class="grp">Wren <span class="tag">character note</span><span class="c">3 sections</span></div>'+
+              '<div class="row warnrow"><div class="t">Wren &middot; identity<div class="meta">19,240 / 20,000 characters &middot; recalled 21 times</div></div><span class="tag warn">near cap</span></div>'+
+              '<div class="row"><div class="t">Wren &middot; timeline<div class="meta">eligible in roleplay only</div></div><span class="tag">roleplay</span></div>'+
+              '<div class="row"><div class="t">Wren &middot; relationships<div class="meta">4,910 / 20,000 characters</div></div><span class="tag bad">1 conflict</span></div>'+
+              '<div class="grp">Harbour district <span class="tag">world note</span><span class="c">2 sections</span></div>'+
+              '<div class="row"><div class="t">Harbour district &middot; setting<div class="meta">6,180 / 20,000 characters</div></div></div>'+
+              '<div class="mtr"><i class="w30"></i></div>'+
+              '<div class="empty">112 more memories, 43 source notes held back</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">vault</span></div>'+
+          '<div class="rail"><span class="rt on">Vault<span class="b">118</span></span><span class="rt">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">118 memories</span><span class="tag">43 source notes hidden</span></div>'+
+            '<div class="hdr"><span class="sel">search memories</span><span class="sel">sort: size</span><span class="grow"></span><span class="btn">Facets</span></div>'+
+            '<div class="grp">Wren<span class="c">3 sections</span></div>'+
+            '<div class="row warnrow"><div class="t">Wren &middot; identity<div class="meta">19,240 / 20,000 &middot; recalled 21 times</div></div><span class="tag warn">near cap</span></div>'+
+            '<div class="row"><div class="t">Wren &middot; timeline<div class="meta">roleplay only</div></div></div>'+
+            '<div class="row"><div class="t">Wren &middot; relationships<div class="meta">4,910 / 20,000</div></div><span class="tag bad">1 conflict</span></div>'+
+            '<div class="grp">Harbour district<span class="c">2 sections</span></div>'+
+            '<div class="row"><div class="t">Harbour district &middot; setting<div class="meta">6,180 / 20,000</div></div></div>'+
+            '<div class="mtr"><i class="w30"></i></div>'+
+            '<div class="empty">112 more memories</div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn">Type</span><span class="btn">Status</span><span class="btn">Cap pressure</span></div>'+
+        '</div>'+
+      '</div></div>'
+  },
+
+  {
+    num:"02", label:"One memory, with use", feas:"package", fx:[47,58],
+    caption:"Two facts already written to disk, surfaced on the note: which contribution each stored line came from, and how many times that line has been injected. The line with <b>0 recalls</b> carries the caveat, because on this vault the semantic lane is dead and the index rebuild failed on 14 notes, so zero means unreachable rather than unused. Today the editor is one free-form text area, with no link back to the evidence unit and no recall count on any route.",
+    desk:
+      '<div class="dev"><div class="dev-desk drawer">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">Wren</span></div>'+
+          '<div class="rail"><span class="rt on">Vault<span class="b">118</span></span><span class="rt">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Sections</div>'+
+              '<div class="fac on">identity<span class="c">19,240</span></div>'+
+              '<div class="fac">timeline<span class="c">7,420</span></div>'+
+              '<div class="fac">relationships<span class="c">4,910</span></div>'+
+              '<div class="fgroup">Where it came from</div>'+
+              '<div class="fac">Character card<span class="c">46</span></div>'+
+              '<div class="fac">Chat summaries<span class="c">39</span></div>'+
+              '<div class="fac">Lorebook<span class="c">6</span></div>'+
+              '<div class="fgroup">Use</div>'+
+              '<div class="fac">Not recalled on this note<span class="c">28</span></div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">Wren &middot; identity</span><span class="tag">roleplay</span><span class="tag">chat</span><span class="btn">Edit</span></div>'+
+              '<div class="grp">Contributions in this section<span class="c">91 of 100</span></div>'+
+              '<div class="row"><div class="t">Works nights at a clinic<div class="meta">from the character card &middot; recalled 21 times, last 2 Mar</div></div><span class="tag good">in use</span></div>'+
+              '<div class="row"><div class="t">Keeps a spare key by the clinic door<div class="meta">from lorebook entry 12 &middot; recalled 4 times, last 27 Feb</div></div><span class="tag good">in use</span></div>'+
+              '<div class="row warnrow"><div class="t">Afraid of open water<div class="meta">from a chat summary &middot; recalled 0 times</div></div><span class="tag warn">unreachable</span></div>'+
+              '<div class="note-s">Semantic lane dead and the index rebuild failed on 14 notes, so 0 means unreachable, not unused</div>'+
+              '<div class="hdr"><span class="grow">The projected section &middot; 19,240 of 20,000 characters</span></div>'+
+              '<div class="mtr warn"><i class="w96"></i></div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="drawer">'+
+          '<div class="drawer-head">This note</div>'+
+          '<div class="drawer-body">'+
+            '<div class="kv"><span class="k">type</span><span class="v">character</span></div>'+
+            '<div class="kv"><span class="k">keywords</span><span class="v">28 / 30</span></div>'+
+            '<div class="mtr warn"><i class="w95"></i></div>'+
+            '<div class="kv"><span class="k">contributions</span><span class="v">91 / 100</span></div>'+
+            '<div class="mtr warn"><i class="w90"></i></div>'+
+            '<div class="kv"><span class="k">recalled</span><span class="v">21 &times;</span></div>'+
+            '<div class="kv"><span class="k">last</span><span class="v">2 Mar</span></div>'+
+            '<div class="kv"><span class="k">index</span><span class="v">dirty</span></div>'+
+            '<div class="note-s">Built 2 Mar 09:14, rebuild failed on 14 notes</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">Wren</span></div>'+
+          '<div class="rail"><span class="rt on">Vault<span class="b">118</span></span><span class="rt">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">Wren &middot; identity</span><span class="tag">roleplay</span><span class="btn">Edit</span></div>'+
+            '<div class="hdr"><span class="sel">identity 19,240</span><span class="sel">timeline 7,420</span><span class="sel">relationships 4,910</span></div>'+
+            '<div class="grp">Contributions<span class="c">91 of 100</span></div>'+
+            '<div class="row"><div class="t">Works nights at a clinic<div class="meta">character card &middot; recalled 21 times</div></div></div>'+
+            '<div class="row"><div class="t">Keeps a spare key by the clinic door<div class="meta">lorebook 12 &middot; recalled 4 times</div></div></div>'+
+            '<div class="row warnrow"><div class="t">Afraid of open water<div class="meta">chat summary &middot; recalled 0 times</div></div><span class="tag warn">unreachable</span></div>'+
+            '<div class="note-s">Semantic lane dead, index rebuild failed, so 0 means unreachable</div>'+
+            '<div class="hdr"><span class="grow">The projected section &middot; 19,240 of 20,000</span></div>'+
+            '<div class="mtr warn"><i class="w96"></i></div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn pri">Edit</span><span class="btn">Stop using here</span><span class="btn">Forget</span></div>'+
+        '</div>'+
+      '</div></div>'
+  },
+
+  {
+    num:"03", label:"Correct it in place", feas:"package", fx:[45,57,58],
+    caption:"Editing, scope removal and delete all ride the note patch route that already exists. The two figures against the twenty thousand cap are labelled apart, <b>412 characters in this contribution</b> against <b>19,240 of 20,000 in the projected section</b>, so the same denominator never means two things. Today the editor trims at 20,000 with no counter and no marker of what it cut, and the sanctioned fix for a wrong claim is to correct the corpus and ingest the source again.",
+    desk:
+      '<div class="dev"><div class="dev-desk">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="chat-row">Salt road, part 2</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">editing</span></div>'+
+          '<div class="rail"><span class="rt on">Vault<span class="b">118</span></span><span class="rt">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Sections</div>'+
+              '<div class="fac on">identity<span class="c">19,240</span></div>'+
+              '<div class="fac">timeline<span class="c">7,420</span></div>'+
+              '<div class="fac">relationships<span class="c">4,910</span></div>'+
+              '<div class="fgroup">Scope</div>'+
+              '<div class="fac on">roleplay<span class="c">on</span></div>'+
+              '<div class="fac on">chat<span class="c">on</span></div>'+
+              '<div class="fac">assistant<span class="c">off</span></div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">Editing one contribution &middot; Wren, identity</span><span class="tag">editing</span><span class="btn">Cancel</span></div>'+
+              '<div class="row on"><div class="t">Works nights at the harbour clinic.<div class="meta">editable in place &middot; caret at end</div></div></div>'+
+              '<div class="row"><div class="t">keywords: clinic, nights, harbour<div class="meta">3 of the 28 keywords on this note</div></div><span class="tag warn">28 / 30</span></div>'+
+              '<div class="mtr warn"><i class="w95"></i></div>'+
+              '<div class="hdr"><span class="grow">412 characters in this contribution</span></div>'+
+              '<div class="hdr"><span class="grow">19,240 of 20,000 characters in the projected section</span><span class="tag warn">save blocks at the cap</span></div>'+
+              '<div class="mtr warn"><i class="w96"></i></div>'+
+              '<div class="hdr"><span class="grow"></span><span class="btn pri">Save</span><span class="btn">Stop using here</span><span class="btn">Forget</span></div>'+
+              '<div class="note-s">Stop using here removes one mode. Forget deletes the contribution and leaves the note.</div>'+
+              '<div class="note-s">Note id derives from the subject name, so renaming the subject creates a second note.</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">editing</span></div>'+
+          '<div class="rail"><span class="rt on">Vault<span class="b">118</span></span><span class="rt">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">Editing one contribution</span><span class="btn">Cancel</span></div>'+
+            '<div class="row on"><div class="t">Works nights at the harbour clinic.<div class="meta">editable in place</div></div></div>'+
+            '<div class="row"><div class="t">keywords: clinic, nights, harbour</div><span class="tag warn">28 / 30</span></div>'+
+            '<div class="mtr warn"><i class="w95"></i></div>'+
+            '<div class="hdr"><span class="grow">412 characters in this contribution</span></div>'+
+            '<div class="hdr"><span class="grow">19,240 of 20,000 in the projected section</span></div>'+
+            '<div class="mtr warn"><i class="w96"></i></div>'+
+            '<div class="hdr"><span class="sel">roleplay on</span><span class="sel">chat on</span><span class="sel">assistant off</span></div>'+
+            '<div class="note-s">Note id derives from the subject name, so renaming creates a second note</div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn pri">Save</span><span class="btn">Stop using here</span><span class="btn">Forget</span></div>'+
+        '</div>'+
+      '</div></div>'
+  },
+
+  {
+    num:"04", label:"A stored conflict", feas:"package", fx:[35,56],
+    caption:"Both values face each other and the recall count sits on the one about to be overwritten, so the loss in taking the proposal is legible before it is taken. A third option keeps both in order, because most contradictions in a long story are the situation moving on. Of the <b>47 claims in this run that overwrite a stored value</b>, review reads none of them as conflicts, and the vault prints the proposed text without ever putting the existing text beside it.",
+    desk:
+      '<div class="dev"><div class="dev-desk">'+
+        '<div class="side">'+
+          '<div class="side-title">Chats</div>'+
+          '<div class="chat-row">Harbour arrival</div>'+
+          '<div class="chat-row">Lantern week</div>'+
+          '<div class="chat-row">Salt road, part 2</div>'+
+          '<div class="side-title">Workspace</div>'+
+          '<div class="chat-row on">Long-term memory</div>'+
+        '</div>'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>LONG-TERM MEMORY<span class="ico wide">conflict</span></div>'+
+          '<div class="rail"><span class="rt on">Vault<span class="b">118</span></span><span class="rt">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane split">'+
+            '<div class="facets">'+
+              '<div class="fgroup">Status</div>'+
+              '<div class="fac on">Unresolved conflict<span class="c">7</span></div>'+
+              '<div class="fac">Near a cap<span class="c">4</span></div>'+
+              '<div class="fac">Never recalled<span class="c">63</span></div>'+
+              '<div class="fgroup">Incoming</div>'+
+              '<div class="fac">Overwrites a value<span class="c">47</span></div>'+
+              '<div class="note-s">review reads none of the 47 as conflicts today</div>'+
+            '</div>'+
+            '<div class="listcol">'+
+              '<div class="hdr"><span class="grow">Wren &middot; conflict on identity</span><span class="tag bad">unresolved</span><span class="sel">1 of 7</span></div>'+
+              '<div class="grp">Existing <span class="tag">recalled 21 times, last 2 Mar</span></div>'+
+              '<div class="row"><div class="t">Works nights at a clinic.<div class="meta">from the character card</div></div></div>'+
+              '<div class="grp">Proposed <span class="tag">from turn t214</span></div>'+
+              '<div class="row warnrow"><div class="t">Works days at the inland clinic and takes the late ferry home.<div class="meta">from a chat summary</div></div></div>'+
+              '<div class="hdr"><span class="grow"></span><span class="btn">Keep existing</span><span class="btn">Take proposed</span><span class="btn pri">Keep both, in order</span></div>'+
+              '<div class="note-s">Merging the two notes for this subject is blocked: the keyword union is over the 30 cap.</div>'+
+              '<div class="hdr"><span class="grow">Keywords after a merge &middot; 34 of 30</span></div>'+
+              '<div class="mtr warn"><i class="w95"></i></div>'+
+              '<div class="grp">Remaining conflicts on this vault<span class="c">6</span></div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>',
+    phone:
+      '<div class="dev"><div class="dev-phone">'+
+        '<div class="main">'+
+          '<div class="topbar"><span class="ico hot">M</span>MEMORY<span class="ico wide">conflict</span></div>'+
+          '<div class="rail"><span class="rt on">Vault<span class="b">118</span></span><span class="rt">Review<span class="b">838</span></span><span class="rt">Sources</span><span class="rt">Settings</span></div>'+
+          '<div class="pane">'+
+            '<div class="hdr"><span class="grow">Conflict on identity</span><span class="tag bad">unresolved</span></div>'+
+            '<div class="grp">Existing<span class="c">recalled 21 &times;</span></div>'+
+            '<div class="row"><div class="t">Works nights at a clinic.<div class="meta">character card &middot; last 2 Mar</div></div></div>'+
+            '<div class="grp">Proposed<span class="c">turn t214</span></div>'+
+            '<div class="row warnrow"><div class="t">Works days at the inland clinic and takes the late ferry home.<div class="meta">chat summary</div></div></div>'+
+            '<div class="note-s">Merging the two notes for this subject is blocked: the keyword union is over the 30 cap</div>'+
+            '<div class="hdr"><span class="grow">Keywords after a merge &middot; 34 of 30</span></div>'+
+            '<div class="mtr warn"><i class="w95"></i></div>'+
+            '<div class="empty">6 more unresolved conflicts</div>'+
+          '</div>'+
+          '<div class="inputbar"><span class="btn">Keep existing</span><span class="btn">Take proposed</span><span class="btn pri">Keep both</span></div>'+
+        '</div>'+
+      '</div></div>'
+  }
+
+];
+
+FLOWS.j4 = [
+  {n:"01", t:"Filter", d:"same facets, over what is stored"},
+  {n:"02", t:"Open", d:"sections, provenance, recall"},
+  {n:"03", t:"Correct", d:"edit, stop using here, forget"},
+  {n:"04", t:"Resolve", d:"existing beside proposed", term:true}
+];
+
+TRADE.j4 = {
+  win:[
+    "The header count is the number recall can reach, because the 43 source notes are held out of the default view.",
+    "Each stored line names the contribution it came from and how often it has been injected.",
+    "A zero recall count is qualified by index health, so it is never read as unimportant.",
+    "Correcting a wrong claim is an edit on the note rather than a corpus fix and a re-ingest."
+  ],
+  cost:[
+    "Recall counts invite pruning by popularity, which on a dead semantic lane prunes the unreachable instead of the unused.",
+    "Forget deletes a contribution with no undo behind it, only the backup export.",
+    "The vault now carries two counting systems, characters and contributions, and both must stay labelled apart.",
+    "Note ids derive from the subject name, so a rename still forks the note rather than moving it."
+  ],
+  build:[
+    "The note patch route already exists and already carries edit, scope and delete.",
+    "Per-chunk recall counts are written to disk today and returned by no route, so one read is needed.",
+    "The facet engine is shared with review, run against stored notes instead of pending mutations.",
+    "Index health is already reported, so the caveat on a zero count is a join, not a new signal."
+  ]
+};
+
+STATES.j5 = [
+  {
+    num: "01",
+    label: "This turn, with reasons",
+    feas: "package",
+    fx: [7, 10, 11, 8],
+    caption: 'The recall receipt for the turn that just ran, opened from the chat settings drawer so the conversation stays on screen beside it. <b>3 used and 11 dropped</b>, broken into the three reasons the budget pass already computes, stamped with a time and a turn reference. The current build prints one last-injection count per chat that keeps showing an old number when the newest turn injected nothing, so five different recall outcomes all read as the same absence. The report cannot sit inside the transcript: conversation mounts are gated on a package kind this package lacks, and message HTML is sanitised through a fixed allowlist.',
+    desk: '<div class="dev"><div class="dev-desk drawer">' +
+      '<div class="side"><div class="side-title">Chats</div>' +
+      '<div class="chat-row on">Wren · harbour arc</div>' +
+      '<div class="chat-row">Scene drafts</div>' +
+      '<div class="chat-row">Worldbuilding</div>' +
+      '</div>' +
+      '<div class="main">' +
+      '<div class="topbar"><span class="ico">&lt;</span>WREN · HARBOUR ARC<span class="ico hot">M</span></div>' +
+      '<div class="msgs">' +
+      '<div class="msg"><div class="av"></div><div class="bd"><div class="who">You</div>' +
+      '<div class="tx">What did Wren decide about the harbour job?</div></div></div>' +
+      '<div class="msg"><div class="av"></div><div class="bd"><div class="who">Assistant</div>' +
+      '<div class="tx">She has not mentioned the harbour to me before.</div>' +
+      '<div class="bar-line"></div></div></div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Message</span><span class="btn">Send</span></div>' +
+      '</div>' +
+      '<div class="drawer">' +
+      '<div class="drawer-head"><span class="ico hot">M</span>This turn</div>' +
+      '<div class="drawer-body">' +
+      '<div class="kv"><span class="k">turn</span><span class="v">t214 · 14:41</span></div>' +
+      '<div class="grp">3 used<span class="c">11 dropped</span></div>' +
+      '<div class="row"><span class="t">Over the token budget</span><span class="meta">2</span></div>' +
+      '<div class="row"><span class="t">Below the score threshold</span><span class="meta">6</span></div>' +
+      '<div class="row"><span class="t">Not enabled for this chat mode</span><span class="meta">3</span></div>' +
+      '<div class="note-s">A receipt is written on every turn, including turns that inject nothing.</div>' +
+      '<div class="btn">Open diagnostics</div>' +
+      '</div></div>' +
+      '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="topbar"><span class="ico">&lt;</span>MEMORY · THIS TURN<span class="ico hot">M</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Wren · harbour arc</span><span class="sel">t214 · 14:41</span></div>' +
+      '<div class="grp">3 used<span class="c">11 dropped</span></div>' +
+      '<div class="row on"><span class="t">Wren distrusts the dockmaster</span><span class="tag acc">used</span></div>' +
+      '<div class="row on"><span class="t">Harbour district curfew</span><span class="tag acc">used</span></div>' +
+      '<div class="row on"><span class="t">Wren owes Sable a favour</span><span class="tag acc">used</span></div>' +
+      '<div class="grp">Dropped<span class="c">11</span></div>' +
+      '<div class="row"><span class="t">Over the token budget</span><span class="meta">2</span></div>' +
+      '<div class="row"><span class="t">Below the score threshold</span><span class="meta">6</span></div>' +
+      '<div class="row"><span class="t">Not enabled for this chat mode</span><span class="meta">3</span></div>' +
+      '<div class="note-s">Imported character and lorebook memories are eligible in Roleplay only.</div>' +
+      '<div class="btn">Open diagnostics</div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Back to chat</span></div>' +
+      '</div></div>'
+  },
+  {
+    num: "02",
+    label: "Assembled, then discarded",
+    feas: "engine",
+    fx: [6, 7, 10],
+    caption: 'The same turn, on an install where a prompt-assembling preset owns placement and carries no memory section. Three memories were selected and assembled, and <b>none of them reached the model</b>. Only engine code can write this record, because the discard happens where the prompt is assembled and no receipt is ever assigned. This is the single most important negative state in the document: without this line the turn is indistinguishable from memory having nothing to say, which is the reading the current build gives it.',
+    desk: '<div class="dev"><div class="dev-desk drawer">' +
+      '<div class="side"><div class="side-title">Chats</div>' +
+      '<div class="chat-row on">Wren · harbour arc</div>' +
+      '<div class="chat-row">Scene drafts</div>' +
+      '<div class="chat-row">Worldbuilding</div>' +
+      '</div>' +
+      '<div class="main">' +
+      '<div class="topbar"><span class="ico">&lt;</span>WREN · HARBOUR ARC<span class="ico hot">M</span></div>' +
+      '<div class="msgs">' +
+      '<div class="msg"><div class="av"></div><div class="bd"><div class="who">You</div>' +
+      '<div class="tx">What did Wren decide about the harbour job?</div></div></div>' +
+      '<div class="msg"><div class="av"></div><div class="bd"><div class="who">Assistant</div>' +
+      '<div class="tx">She has not mentioned the harbour to me before.</div>' +
+      '<div class="bar-line"></div></div></div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Message</span><span class="btn">Send</span></div>' +
+      '</div>' +
+      '<div class="drawer">' +
+      '<div class="drawer-head"><span class="ico hot">M</span>This turn</div>' +
+      '<div class="drawer-body">' +
+      '<div class="kv"><span class="k">turn</span><span class="v">t214 · 14:41</span></div>' +
+      '<div class="kv"><span class="k">selected</span><span class="v">3</span></div>' +
+      '<div class="kv"><span class="k">assembled</span><span class="v">3</span></div>' +
+      '<div class="kv"><span class="k">sent</span><span class="v">0</span></div>' +
+      '<div class="row badrow"><span class="t">The preset assembled the prompt with no memory slot, so all 3 were discarded before the send</span></div>' +
+      '<div class="row"><span class="t">Dropped earlier in the pass</span><span class="meta">11</span></div>' +
+      '<div class="note-s">Recorded where the prompt is assembled, not where recall runs.</div>' +
+      '<div class="btn">Open diagnostics</div>' +
+      '</div></div>' +
+      '</div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="topbar"><span class="ico">&lt;</span>MEMORY · THIS TURN<span class="ico hot">M</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Wren · harbour arc</span><span class="sel">t214 · 14:41</span></div>' +
+      '<div class="grp">Nothing reached the model<span class="c">0 of 3</span></div>' +
+      '<div class="row badrow"><span class="t">The preset assembled the prompt with no memory slot, so the 3 selected memories were discarded before the send</span></div>' +
+      '<div class="kv"><span class="k">selected</span><span class="v">3</span></div>' +
+      '<div class="kv"><span class="k">assembled</span><span class="v">3</span></div>' +
+      '<div class="kv"><span class="k">sent</span><span class="v">0</span></div>' +
+      '<div class="grp">Dropped in the pass<span class="c">11</span></div>' +
+      '<div class="row"><span class="t">Over the token budget</span><span class="meta">2</span></div>' +
+      '<div class="row"><span class="t">Below the score threshold</span><span class="meta">6</span></div>' +
+      '<div class="row"><span class="t">Not enabled for this chat mode</span><span class="meta">3</span></div>' +
+      '<div class="note-s">Without this record the turn reads as memory having nothing to say.</div>' +
+      '<div class="btn">Open diagnostics</div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Back to chat</span></div>' +
+      '</div></div>'
+  },
+  {
+    num: "03",
+    label: "Recall history",
+    feas: "restart",
+    fx: [12, 13, 11, 7],
+    caption: 'Receipts appended per turn instead of overwritten once per chat, read from a Recall tab <b>added</b> to the workspace rail rather than taking a seat from Vault, Review, Sources or Settings. The gap at <b>t212</b> is printed as a row of its own and labelled "no receipt recorded", because an unexplained gap is indistinguishable from the silent injection failure this history exists to catch. Two rows carry known weaknesses: timeline events that arrived with no sequence, and ranking that ran age-blind, since the cooldown option is never passed and no lane derives a score from recency. Reading the history needs a new route.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side"><div class="side-title">Chats</div>' +
+      '<div class="chat-row on">Wren · harbour arc</div>' +
+      '<div class="chat-row">Scene drafts</div>' +
+      '<div class="chat-row">Worldbuilding</div>' +
+      '</div>' +
+      '<div class="main">' +
+      '<div class="topbar"><span class="ico">&lt;</span>LONG-TERM MEMORY<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt">Settings</span><span class="rt new on">Recall<span class="b">t214</span></span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Recall history</span><span class="sel">this chat</span><span class="sel">last 20 turns</span></div>' +
+      '<div class="row badrow on"><span class="meta">t214</span><span class="t">3 used · 11 dropped</span><span class="tag bad">discarded by preset</span></div>' +
+      '<div class="row"><span class="meta">t213</span><span class="t">2 used · 4 dropped</span><span class="tag good">reached the model</span></div>' +
+      '<div class="row warnrow"><span class="meta">t212</span><span class="t">no receipt recorded</span><span class="tag warn">unknown</span></div>' +
+      '<div class="row"><span class="meta">t211</span><span class="t">5 used · 1 dropped</span><span class="tag warn">no chronological order</span></div>' +
+      '<div class="row"><span class="meta">t208</span><span class="t">0 used · 0 candidates</span></div>' +
+      '<div class="grp">t211 · timeline bullets injected in relevance order<span class="c">View</span></div>' +
+      '<div class="note-s">Every row ranked age-blind: the cooldown option is never passed and no lane scores recency.</div>' +
+      '</div></div></div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="topbar"><span class="ico">&lt;</span>RECALL HISTORY<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt">Settings</span><span class="rt new on">Recall<span class="b">t214</span></span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Wren · harbour arc</span><span class="sel">last 20</span></div>' +
+      '<div class="row badrow on"><span class="meta">t214</span><span class="t">3 used · 11 dropped</span><span class="tag bad">discarded</span></div>' +
+      '<div class="row"><span class="meta">t213</span><span class="t">2 used · 4 dropped</span><span class="tag good">sent</span></div>' +
+      '<div class="row warnrow"><span class="meta">t212</span><span class="t">no receipt recorded</span><span class="tag warn">unknown</span></div>' +
+      '<div class="row"><span class="meta">t211</span><span class="t">5 used · 1 dropped</span><span class="tag warn">no order</span></div>' +
+      '<div class="row"><span class="meta">t208</span><span class="t">0 used · 0 candidates</span></div>' +
+      '<div class="note-s">A gap is a row, not a blank. Ranking ran age-blind on every turn.</div>' +
+      '<div class="btn">Open diagnostics</div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Back to chat</span></div>' +
+      '</div></div>'
+  },
+  {
+    num: "04",
+    label: "Diagnose one memory",
+    feas: "package",
+    fx: [8, 15, 16, 65],
+    caption: 'The path from a turn to a memory to a reason. "Wren distrusts the dockmaster" was not recalled on t214, and the answer walks down three causes in order: the memory is imported so it is eligible in Roleplay only, the index rebuild failed on the 14 notes that include this one, and the semantic lane is dead because the rebuild reported success after embedding nothing. Vault-wide state is <b>linked, not repeated</b>: it is drawn once in journey 6 under one verb. Today these three facts sit in separate components with no path between them, and a memory can save successfully and stay invisible to recall with nothing on screen saying so.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side"><div class="side-title">Chats</div>' +
+      '<div class="chat-row on">Wren · harbour arc</div>' +
+      '<div class="chat-row">Scene drafts</div>' +
+      '<div class="chat-row">Worldbuilding</div>' +
+      '</div>' +
+      '<div class="main">' +
+      '<div class="topbar"><span class="ico">&lt;</span>DIAGNOSTICS<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt">Settings</span><span class="rt new on">Recall</span></div>' +
+      '<div class="pane split">' +
+      '<div class="facets">' +
+      '<div class="fgroup">Turn</div>' +
+      '<div class="fac on">t214<span class="c">14</span></div>' +
+      '<div class="fac">t213<span class="c">6</span></div>' +
+      '<div class="fgroup">Reason</div>' +
+      '<div class="fac">Below threshold<span class="c">6</span></div>' +
+      '<div class="fac on">Chat mode<span class="c">3</span></div>' +
+      '</div>' +
+      '<div class="listcol">' +
+      '<div class="hdr"><span class="grow">Why this memory was not recalled</span><span class="sel">t214</span></div>' +
+      '<div class="grp">Wren distrusts the dockmaster<span class="c">recalled 21 times, last 2 Mar</span></div>' +
+      '<div class="row warnrow"><span class="t">Imported from a character card, so it is eligible in Roleplay only and this chat is not in Roleplay</span><span class="btn">Set modes</span></div>' +
+      '<div class="row warnrow"><span class="t">Index rebuild failed on 14 notes, and this note is one of them</span><span class="btn">Open health</span></div>' +
+      '<div class="row badrow"><span class="t">Semantic lane dead: 0 embedded chunks, so only the lexical lane ranked it</span><span class="btn">Open health</span></div>' +
+      '<div class="row"><span class="t">Rejected candidates from the last run</span><span class="meta">304 of 1,142</span></div>' +
+      '<div class="note-s">Vault-wide index and embedding state is rendered once, in journey 6, and linked from here.</div>' +
+      '</div></div></div></div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="topbar"><span class="ico">&lt;</span>DIAGNOSTICS<span class="ico hot">M</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Not recalled on t214</span><span class="sel">t214</span></div>' +
+      '<div class="grp">Wren distrusts the dockmaster<span class="c">21 recalls</span></div>' +
+      '<div class="row warnrow"><span class="t">Eligible in Roleplay only. This chat is not in Roleplay.</span><span class="btn">Set modes</span></div>' +
+      '<div class="row warnrow"><span class="t">Index rebuild failed on 14 notes, including this one.</span><span class="btn">Health</span></div>' +
+      '<div class="row badrow"><span class="t">Semantic lane dead: 0 embedded chunks.</span><span class="btn">Health</span></div>' +
+      '<div class="row"><span class="t">Rejected candidates, last run</span><span class="meta">304 of 1,142</span></div>' +
+      '<div class="note-s">Three causes that live in three separate components today.</div>' +
+      '<div class="hdr"><span class="grow">Vault state is drawn once, in Settings</span><span class="btn">Open health</span></div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Back to recall history</span></div>' +
+      '</div></div>'
+  },
+  {
+    num: "05",
+    label: "A 403 that names the fix",
+    feas: "package",
+    fx: [63],
+    caption: 'A permissions failure rendered as the remedy. This install requires an admin secret for memory routes, and the engine already ships copy naming both ways out, so nothing here needs writing. It is simply never reached: the four read views print <b>one generic loading string for every failure</b> without looking at the response status, so an authentication problem with a documented fix arrives as a vault that will not load. One failure per screen. A projection-limit error belongs with the note that overflowed and cannot co-occur with a 403 that stopped every read.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side"><div class="side-title">Chats</div>' +
+      '<div class="chat-row on">Wren · harbour arc</div>' +
+      '<div class="chat-row">Scene drafts</div>' +
+      '<div class="chat-row">Worldbuilding</div>' +
+      '</div>' +
+      '<div class="main">' +
+      '<div class="topbar"><span class="ico">&lt;</span>LONG-TERM MEMORY<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt on">Settings</span><span class="rt new">Recall</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Memory settings</span><span class="tag bad">403</span></div>' +
+      '<div class="empty">This install requires an admin secret for memory routes.</div>' +
+      '<div class="grp">Two ways to get in<span class="c">either works</span></div>' +
+      '<div class="row"><span class="t">Set ADMIN_SECRET in the server environment, then reload</span></div>' +
+      '<div class="row"><span class="t">Or open the workspace from the local machine, where privileged routes are allowed</span></div>' +
+      '<div class="hdr"><span class="grow"></span><span class="sel">admin secret</span><span class="btn pri">Save secret</span><span class="btn">How to set it</span></div>' +
+      '<div class="note-s">The engine already ships this copy. The read views never look at the status, so it is never shown.</div>' +
+      '<div class="row"><span class="t">Vault, Review, Sources and Settings all returned 403, and all four printed the same generic string</span></div>' +
+      '</div></div></div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="topbar"><span class="ico">&lt;</span>MEMORY SETTINGS<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt on">Settings</span><span class="rt new">Recall</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Cannot read the vault</span><span class="tag bad">403</span></div>' +
+      '<div class="empty">This install requires an admin secret for memory routes.</div>' +
+      '<div class="row"><span class="t">Set ADMIN_SECRET in the server environment, then reload</span></div>' +
+      '<div class="row"><span class="t">Or open from the local machine</span></div>' +
+      '<div class="hdr"><span class="grow"></span><span class="sel">admin secret</span><span class="btn pri">Save</span></div>' +
+      '<div class="note-s">Today this arrives as a generic loading error with no cause and no remedy.</div>' +
+      '<div class="btn">How to set it</div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Back to chat</span></div>' +
+      '</div></div>'
+  }
+];
+
+FLOWS.j5 = [
+  { n: "01", t: "Check this turn", d: "open the memory drawer beside the message" },
+  { n: "02", t: "See the discard", d: "selected, assembled, never sent" },
+  { n: "03", t: "Scroll back", d: "receipts per turn, gaps named" },
+  { n: "04", t: "Diagnose one memory", d: "turn, memory, reason" },
+  { n: "05", t: "Act on the cause", d: "set modes, repair, or supply the secret", term: true }
+];
+
+TRADE.j5 = {
+  win: [
+    "The five outcomes that all look like silence today become five different readings.",
+    "A turn where the preset threw the injection away stops looking like a turn with nothing to recall.",
+    "A gap in the history is labelled, so absence of a receipt is never read as absence of a problem.",
+    "A 403 arrives naming its own remedy instead of as a vault that will not load."
+  ],
+  cost: [
+    "Per-turn receipts are storage that grows with the conversation and needs a retention rule.",
+    "The Recall tab is a fifth destination in a rail that already holds four.",
+    "The history is polled, so it lags the turn by one refresh interval.",
+    "The most valuable frame in the set is the one the package cannot ship alone."
+  ],
+  build: [
+    "State 02 needs an engine change: the discard record can only be written where the prompt is assembled.",
+    "The recall history read is a new route, so it lands at a release boundary.",
+    "The rejection counts already exist in the budget pass and are computed then dropped.",
+    "Index and embedding state is rendered once in journey 6 and linked from state 04."
+  ]
+};
+
+STATES.j6 = [
+  {
+    num: "01",
+    label: "Cap pressure as a gradient",
+    feas: "package",
+    fx: [48, 45, 54],
+    caption: 'Three pressures on one note, all three already computed at write time: characters, keywords and contributions. The amber is uniform on purpose, and a low-pressure note sits below it so the screen reads as a gradient rather than a wall. <b>Nothing on this vault has reached a cap</b>, so nothing is drawn in the failure colour, and red is held back for a limit actually hit. The current build renders none of the three and truncates section text at the cap in silence, which makes the first sign of a full note an apply that fails partway through a batch. Splitting identity into separate section keys is a schema change, so it is marked here rather than offered as one click.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side"><div class="side-title">Chats</div>' +
+      '<div class="chat-row">Wren · harbour arc</div>' +
+      '<div class="chat-row">Scene drafts</div>' +
+      '<div class="chat-row on">Worldbuilding</div>' +
+      '</div>' +
+      '<div class="main">' +
+      '<div class="topbar"><span class="ico">&lt;</span>LONG-TERM MEMORY<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt on">Settings</span><span class="rt new">Recall</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Notes under pressure</span><span class="sel">least headroom first</span>' +
+      '<span class="tag warn">none at a cap yet</span></div>' +
+      '<div class="grp">Wren · character<span class="c">identity section</span></div>' +
+      '<div class="row"><span class="t">Section characters</span><span class="meta">19,240 / 20,000</span></div>' +
+      '<div class="mtr warn"><i class="w96"></i></div>' +
+      '<div class="row"><span class="t">Keywords</span><span class="meta">28 / 30</span></div>' +
+      '<div class="mtr warn"><i class="w95"></i></div>' +
+      '<div class="row"><span class="t">Contributions</span><span class="meta">91 / 100</span></div>' +
+      '<div class="mtr warn"><i class="w90"></i></div>' +
+      '<div class="grp">Harbour district · world<span class="c">room to grow</span></div>' +
+      '<div class="row"><span class="t">Section characters</span><span class="meta">6,180 / 20,000</span></div>' +
+      '<div class="mtr"><i class="w30"></i></div>' +
+      '<div class="note-s">Identity holds traits, changes, dispositions, backstory and events against one cap.</div>' +
+      '<div class="hdr"><span class="grow"></span><span class="btn pri">Compact</span><span class="btn">Split by claim kind</span></div>' +
+      '</div></div></div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="topbar"><span class="ico">&lt;</span>NOTES UNDER PRESSURE<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt on">Settings</span><span class="rt new">Recall</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Least headroom first</span><span class="tag warn">none at a cap</span></div>' +
+      '<div class="grp">Wren · identity<span class="c">3 pressures</span></div>' +
+      '<div class="row"><span class="t">Characters</span><span class="meta">19,240 / 20,000</span></div>' +
+      '<div class="mtr warn"><i class="w96"></i></div>' +
+      '<div class="row"><span class="t">Keywords</span><span class="meta">28 / 30</span></div>' +
+      '<div class="mtr warn"><i class="w95"></i></div>' +
+      '<div class="row"><span class="t">Contributions</span><span class="meta">91 / 100</span></div>' +
+      '<div class="mtr warn"><i class="w90"></i></div>' +
+      '<div class="grp">Harbour district · world<span class="c">low</span></div>' +
+      '<div class="row"><span class="t">Characters</span><span class="meta">6,180 / 20,000</span></div>' +
+      '<div class="mtr"><i class="w30"></i></div>' +
+      '<div class="note-s">Red is held back for a limit actually reached.</div>' +
+      '<div class="btn pri">Compact</div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Vault health</span></div>' +
+      '</div></div>'
+  },
+  {
+    num: "02",
+    label: "Compaction preview",
+    feas: "package",
+    fx: [49, 50, 53, 60],
+    caption: 'Additive sections union forever, so a compaction pass has to exist. Every removal here is justified one way only, by <b>naming another line in the same section that already says it</b>, and both lines are shown before anything is agreed to. A recall count of zero is not a reason and does not appear: on this vault the semantic lane is dead and the index rebuild failed on 14 notes, which makes zero a statement about reachability rather than worth, and deletion has no undo. For the same reason the pass is gated on index health, and repairing the index is the primary action while the index is dirty. Stored deduplication today compares a claim against the whole section as one blob, which cannot cross its threshold once the section holds real content.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side"><div class="side-title">Chats</div>' +
+      '<div class="chat-row">Wren · harbour arc</div>' +
+      '<div class="chat-row">Scene drafts</div>' +
+      '<div class="chat-row on">Worldbuilding</div>' +
+      '</div>' +
+      '<div class="main">' +
+      '<div class="topbar"><span class="ico">&lt;</span>COMPACTION PREVIEW<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt on">Settings</span><span class="rt new">Recall</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Wren · identity · 91 contributions</span><span class="sel">preview</span>' +
+      '<span class="tag">nothing written yet</span></div>' +
+      '<div class="row"><span class="cb on"></span><span class="t">Restates a line already in this section, and names the line it restates</span><span class="tag warn">remove</span></div>' +
+      '<div class="row"><span class="cb on"></span><span class="t">Restates a line already in this section, and names the line it restates</span><span class="tag warn">remove</span></div>' +
+      '<div class="row"><span class="cb on"></span><span class="t">Restates two earlier lines taken together, both shown before removal</span><span class="tag warn">remove</span></div>' +
+      '<div class="row"><span class="cb"></span><span class="t">Says something no other line in the section says</span><span class="tag good">keep</span></div>' +
+      '<div class="grp">After compaction<span class="c">12,880 / 20,000</span></div>' +
+      '<div class="mtr"><i class="w65"></i></div>' +
+      '<div class="row badrow"><span class="t">Gated on index health: the rebuild failed on 14 notes, so compaction stays blocked</span><span class="tag bad">blocked</span></div>' +
+      '<div class="note-s">No removal is justified by a recall count. Zero recalls here means unreachable, not unimportant.</div>' +
+      '<div class="hdr"><span class="grow"></span><span class="btn pri">Repair the index</span>' +
+      '<span class="btn">Export backup</span><span class="btn">Apply compaction</span></div>' +
+      '</div></div></div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="topbar"><span class="ico">&lt;</span>COMPACTION PREVIEW<span class="ico hot">M</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Wren · identity</span><span class="sel">91 contributions</span></div>' +
+      '<div class="row"><span class="cb on"></span><span class="t">Restates a line already in this section</span><span class="tag warn">remove</span></div>' +
+      '<div class="row"><span class="cb on"></span><span class="t">Restates a line already in this section</span><span class="tag warn">remove</span></div>' +
+      '<div class="row"><span class="cb on"></span><span class="t">Restates two earlier lines together</span><span class="tag warn">remove</span></div>' +
+      '<div class="row"><span class="cb"></span><span class="t">Says something no other line says</span><span class="tag good">keep</span></div>' +
+      '<div class="note-s">Tap a row to read it beside the line it restates.</div>' +
+      '<div class="grp">After compaction<span class="c">12,880 / 20,000</span></div>' +
+      '<div class="mtr"><i class="w65"></i></div>' +
+      '<div class="row badrow"><span class="t">Blocked until the index is repaired: rebuild failed on 14 notes</span><span class="tag bad">blocked</span></div>' +
+      '<div class="hdr"><span class="grow"></span><span class="btn pri">Repair the index</span><span class="btn">Backup</span></div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Vault health</span></div>' +
+      '</div></div>'
+  },
+  {
+    num: "03",
+    label: "Vault state in one view",
+    feas: "package",
+    fx: [64, 66, 65],
+    caption: 'The single canonical health view: vault counts, index state, embedding availability and integrity, in one place and under one verb. The current build already fetches everything on screen here. The status response requested once on load carries the embedding flag, the dirty flag, the index errors and the build timestamp, and the integrity results sit one tab away, so this frame costs <b>a render, not a request</b>. Two of those fields are read today and the rest are dropped on the floor, which is how a vault with a dead semantic lane and a dirty index reports itself as healthy. Journey 5 links here rather than drawing these fields a second time under a second name.',
+    desk: '<div class="dev"><div class="dev-desk">' +
+      '<div class="side"><div class="side-title">Chats</div>' +
+      '<div class="chat-row">Wren · harbour arc</div>' +
+      '<div class="chat-row">Scene drafts</div>' +
+      '<div class="chat-row on">Worldbuilding</div>' +
+      '</div>' +
+      '<div class="main">' +
+      '<div class="topbar"><span class="ico">&lt;</span>VAULT HEALTH<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt on">Settings</span><span class="rt new">Recall</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Vault health</span><span class="tag warn">degraded</span></div>' +
+      '<div class="kv"><span class="k">memories</span><span class="v">118</span></div>' +
+      '<div class="kv"><span class="k">source notes, hidden by default</span><span class="v">43</span></div>' +
+      '<div class="kv"><span class="k">embedded chunks</span><span class="v">0</span></div>' +
+      '<div class="kv"><span class="k">index built</span><span class="v">2 Mar 09:14</span></div>' +
+      '<div class="grp">Problems<span class="c">2</span></div>' +
+      '<div class="row badrow"><span class="t">Embeddings unavailable: the native binding did not load, so the semantic lane is dead</span><span class="btn">Repair</span></div>' +
+      '<div class="row warnrow"><span class="t">Index dirty: the rebuild failed on 14 notes and reported success anyway</span><span class="btn">Repair</span></div>' +
+      '<div class="row warnrow"><span class="t">Integrity check found orphaned links</span><span class="btn">Review</span></div>' +
+      '<div class="note-s">One verb for the fix, Repair, used here and referred to as Repair from journey 5.</div>' +
+      '</div></div></div></div>',
+    phone: '<div class="dev"><div class="dev-phone">' +
+      '<div class="topbar"><span class="ico">&lt;</span>VAULT HEALTH<span class="ico hot">M</span></div>' +
+      '<div class="rail"><span class="rt">Vault</span><span class="rt">Review</span><span class="rt">Sources</span>' +
+      '<span class="rt on">Settings</span><span class="rt new">Recall</span></div>' +
+      '<div class="pane">' +
+      '<div class="hdr"><span class="grow">Vault health</span><span class="tag warn">degraded</span></div>' +
+      '<div class="kv"><span class="k">memories</span><span class="v">118</span></div>' +
+      '<div class="kv"><span class="k">source notes hidden</span><span class="v">43</span></div>' +
+      '<div class="kv"><span class="k">embedded chunks</span><span class="v">0</span></div>' +
+      '<div class="kv"><span class="k">index built</span><span class="v">2 Mar 09:14</span></div>' +
+      '<div class="grp">Problems<span class="c">2</span></div>' +
+      '<div class="row badrow"><span class="t">Embeddings unavailable, semantic lane dead</span><span class="btn">Repair</span></div>' +
+      '<div class="row warnrow"><span class="t">Index dirty, rebuild failed on 14 notes</span><span class="btn">Repair</span></div>' +
+      '<div class="row warnrow"><span class="t">Orphaned links found</span><span class="btn">Review</span></div>' +
+      '<div class="note-s">Every field here is already fetched on load and then discarded.</div>' +
+      '</div>' +
+      '<div class="inputbar"><span class="ico wide">Back to settings</span></div>' +
+      '</div></div>'
+  }
+];
+
+FLOWS.j6 = [
+  { n: "01", t: "See pressure", d: "three meters, one gradient, no wall" },
+  { n: "02", t: "Preview compaction", d: "each removal names the line it restates" },
+  { n: "03", t: "Read vault state", d: "counts, index, embeddings, integrity", term: true }
+];
+
+TRADE.j6 = {
+  win: [
+    "Cap pressure is visible while there is still room to act on it.",
+    "A compaction removal is auditable: the line that makes it redundant is on screen.",
+    "One health view under one verb, so journey 5 links instead of repeating.",
+    "A degraded vault stops reporting itself as healthy."
+  ],
+  cost: [
+    "A fourth meter on a crowded settings tab, and three amber bars that never turn red on this vault.",
+    "Compaction is destructive with no undo, so it stays behind a backup and a gate.",
+    "Gating on index health means a dirty index blocks a pass someone came to run.",
+    "Splitting identity by claim kind is deferred, so the one-cap problem stays visible but unfixed."
+  ],
+  build: [
+    "All three caps are already enforced at write time, so the numbers exist and only need rendering.",
+    "Restatement detection needs a per-line comparison, not the whole-section blob compare used today.",
+    "The status payload already carries the embedding flag, the dirty flag, the errors and the timestamp.",
+    "Integrity results are one existing tab away, so the health view costs a render rather than a request."
+  ]
+};
+
+function feasMark(f){
+  if(!f) return "";
+  var cls = f==="restart"?"feas rst":f==="engine"?"feas eng":f==="today"?"feas now":"feas";
+  var txt = f==="restart"?"new route":f==="engine"?"needs engine":f==="today"?"today":"in package";
+  return '<span class="'+cls+'">'+txt+'</span>';
+}
+function fxList(a){return (a||[]).map(function(x){return '<span class="fx">F'+x+'</span>';}).join("");}
+
+function renderStage(v, idx){
+  var s = STATES[v][idx];
+  var stage = document.querySelector('[data-stage="'+v+'"]');
+  stage.innerHTML =
+    '<p class="caption">'+fxList(s.fx)+s.caption+'</p>'+
+    '<div class="rack">'+
+      '<div class="rack-cell"><span class="rack-label">Desktop · 1600×1000 '+feasMark(s.feas)+'</span>'+s.desk+'</div>'+
+      '<div class="rack-cell"><span class="rack-label">Phone · 390×844</span>'+s.phone+'</div>'+
+    '</div>';
+}
+
+Object.keys(STATES).forEach(function(v){
+  var tabs = document.querySelector('[data-tabs="'+v+'"]');
+  if(!tabs) return;
+  tabs.innerHTML = STATES[v].map(function(s,i){
+    return '<button class="tab" role="tab" type="button" data-i="'+i+'" aria-selected="'+(i===0)+'">'+
+      '<span class="num">'+s.num+'</span>'+esc(s.label)+'</button>';
+  }).join("");
+  tabs.addEventListener("click",function(e){
+    var btn = e.target.closest(".tab"); if(!btn) return;
+    tabs.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",String(b===btn));});
+    renderStage(v, Number(btn.dataset.i));
+  });
+  renderStage(v,0);
+
+  var flow = document.querySelector('[data-flow="'+v+'"]');
+  if(flow && FLOWS[v]){
+    flow.innerHTML = '<span class="rack-label">User journey</span><div class="flow-track">'+
+      FLOWS[v].map(function(st){
+        return '<div class="fstep'+(st.term?" term":"")+'"><span class="sn">'+esc(st.n)+
+          '</span><span class="st">'+esc(st.t)+'</span><span class="sd">'+esc(st.d)+'</span></div>';
+      }).join('<span class="arrow">→</span>')+'</div>';
+  }
+
+  var tr = document.querySelector('[data-trade="'+v+'"]');
+  if(tr && TRADE[v]){
+    var t = TRADE[v];
+    var col=function(cls,title,items){
+      return '<div class="to '+cls+'"><h4>'+title+'</h4><ul>'+
+        items.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
+    };
+    tr.innerHTML = col("win","Where it helps",t.win)+col("cost","Where it falls short",t.cost)+col("build","Build notes",t.build);
+  }
+});
+</script>
+
+<button class="theme-toggle" type="button" id="themeToggle" aria-live="polite">Theme</button>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById("themeToggle");
+  btn.addEventListener("click",function(){
+    var explicit=root.getAttribute("data-theme");
+    var dark = explicit ? explicit==="dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    root.setAttribute("data-theme", dark?"light":"dark");
+  });
+})();
+</script>
+</body>
+</html>

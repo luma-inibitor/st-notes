@@ -32,8 +32,8 @@ Four constraints shape the designs below.
   listening, which makes routes a release-boundary decision rather than a runtime
   one.
 - **Every package route is privileged**, with no per-route exception.
-- **Nothing can render in the chat transcript.** This one costs a proposal, and
-  the cost is discussed where it lands.
+- **Nothing can render in the chat transcript.** This rules out putting the recall
+  report beside the message it explains, which section 3 rebuilds around.
 
 ## The structural fact everything follows from
 
@@ -90,7 +90,7 @@ the note already holds. The last four are already computed or already on the wir
 and simply never surfaced.
 
 A full pass of this kind over 1,142 claims against 161 notes measured 133 ms with
-no model calls, so the cost is not the obstacle.
+no model calls, so compute time is not what stands in the way.
 
 ### One list, composable controls
 
@@ -242,7 +242,7 @@ have provided.
 the quoted line. On the recall rows, in the vault, and on review rows: edit, stop
 using here, forget.
 
-### What this costs, stated plainly
+### The reader has to go and look
 
 The argument for a transcript strip was that the moment a wrong memory is noticed
 is the moment it is quoted back at the reader. Every placement available to a
