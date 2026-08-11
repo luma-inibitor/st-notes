@@ -4,7 +4,7 @@
     "title": "Long-Term Memory findings",
     "ltmPackage": "1.1.6",
     "engine": "2.4.1",
-    "updatedAt": "2026-08-11T03:07:59.444Z",
+    "updatedAt": "2026-08-11T17:53:10.097Z",
     "tagVocabulary": [
       "UX",
       "ARCH",
@@ -1327,7 +1327,7 @@
           "symbol": "recoverLtmMutations()"
         }
       ],
-      "fix": "Stop publish() from remove()ing committed journals so the last N retained before-states can back a revert route.",
+      "fix": "Retain the last N committed transaction journals instead of unlinking them in `publish()`, noting that the operator raises this as context for why bulk accept is risky and explicitly not as a priority ask.",
       "effort": "large"
     },
     {
@@ -2731,10 +2731,5 @@
       "reason": "merged with per-claim provenance into 59."
     }
   ],
-  "notes": [
-    "Your suggested reword of the old #4 — \"memories should be enabled for the chat type they were sourced from\" — describes finding 8, not finding 3. Verification showed these are genuinely separate: 3 is about what can enter the pipeline, 8 about whether the output is eligible where it was made. The invariant phrasing now sits on 8.",
-    "Severity is a first draft and the distribution is bad. 14 critical, 45 high, 21 medium, 3 low — with more than half the list at high or above, the axis currently carries almost no signal. It needs a stricter bar at both levels, and probably a rule that severity means severity *to a user who hits it*, not importance to the argument.",
-    "Nineteen findings are new since the last enumeration, surfaced by verification rather than by the migration — among them silent section truncation, selection being wiped, conflicts being absent from review, the empty trusted roster, and the whole-response discard on truncated output.",
-    "`BUG` is on sixteen findings. Several are arguable design tradeoffs rather than defects: 27, 43, 69 and 70 are the weakest of them."
-  ]
+  "notes": []
 }

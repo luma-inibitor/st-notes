@@ -71,25 +71,28 @@ function evidence(f) {
   return `<div class="evrow">${items}</div>`;
 }
 
-function annotations(f) {
-  if (!f.annotations || !f.annotations.length) return "";
-  return f.annotations
-    .map((a) => `<p class="fnote">${rich(a.text)}</p>`)
-    .join("");
+// Annotations are the operator's triage notes to themselves. They stay in the
+// JSON, where the triage app shows them, and never reach the report. Anything a
+// maintainer needs to read belongs in the description or the fix.
+function annotations() {
+  return "";
 }
 
 function findingHtml(f) {
   return `
       <article class="finding" id="f${f.order}" data-sev="${f.severity}" data-eff="${f.effort || ""}" data-grade="${f.grade}" data-cluster="${esc(f.cluster)}" data-tags="${f.tags.join(" ")}" data-text="${esc((f.statement+" "+f.description+" "+f.fix).toLowerCase().replace(/[`"]/g," "))}">
         <header class="fhead">
+          <button class="ftoggle" type="button" aria-expanded="true" aria-controls="b${f.order}" aria-label="Collapse this finding"><span class="caret"></span></button>
           <span class="fnum">F${f.order}</span>
           <h4>${rich(f.statement)}</h4>
         </header>
         <div class="fchips">${chipRow(f)}</div>
-        <p class="fdesc">${rich(f.description)}</p>
-        ${evidence(f)}
-        <p class="ffix"><span class="fixlabel">Smallest fix</span>${rich(f.fix)}</p>
-        ${annotations(f)}
+        <div class="fbody" id="b${f.order}">
+          <p class="fdesc">${rich(f.description)}</p>
+          ${evidence(f)}
+          <p class="ffix"><span class="fixlabel">Smallest fix</span>${rich(f.fix)}</p>
+          ${annotations(f)}
+        </div>
       </article>`;
 }
 

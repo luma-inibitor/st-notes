@@ -22,7 +22,7 @@
       <tr><th>Component</th><th>What ran</th></tr>
       <tr><td>Engine</td><td><b>Marinara Engine 2.4.1</b> (<code>084baaf</code>)</td></tr>
       <tr><td>Package</td><td><b>Long-Term Memory 1.1.6</b>, capability API 1.6, built against engine 2.4.1 (<code>c0ce4d8</code>)</td></tr>
-      <tr><td>Host</td><td>Termux on Android, <code>HOST=0.0.0.0</code>, loopback admin bypass active. A second machine held the source checkouts that the reading half of this review used.</td></tr>
+      <tr><td>Host</td><td>Termux on Android for the migration, and a Linux container for the first-run walkthrough. The Android host is where the native embedding binding cannot load.</td></tr>
       <tr><td>Extraction model</td><td><b>GLM 5.2</b> ran both full extractions. Gemini Flash and DS v4 were evaluated and not used.</td></tr>
       <tr><td>Embeddings</td><td>Local ONNX, space id <code>local:Xenova/all-MiniLM-L6-v2:q8:mean:normalized:v1</code>. The native binding never loaded on this host, so the vector lane produced nothing for the entire migration.</td></tr>
       <tr><td>Corpus</td><td>One story across <b>10 chats</b>: 6 roleplay, 4 conversation branches. 97 summary entries spanning 2026-07-13 to 2026-08-06, which extraction turned into 1,142 claims across 161 notes.</td></tr>

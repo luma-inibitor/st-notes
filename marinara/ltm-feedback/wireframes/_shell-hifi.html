@@ -293,6 +293,17 @@
   .fhead{display:flex;gap:10px;align-items:baseline}
   .fnum{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);flex:none;padding-top:2px}
   .fhead h4{font-size:1rem;font-weight:650;color:var(--ink);line-height:1.35}
+  .fhead{cursor:pointer}
+  .ftoggle{flex:none;width:17px;height:17px;margin-top:1px;border:1px solid var(--stroke);
+    border-radius:4px;background:var(--frame-2);cursor:pointer;display:grid;place-items:center;padding:0}
+  .ftoggle:hover{border-color:var(--accent)}
+  .ftoggle .caret{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;
+    border-top:5px solid var(--ink-3);transition:transform .12s}
+  .ftoggle:hover .caret{border-top-color:var(--accent)}
+  .finding.shut .ftoggle .caret{transform:rotate(-90deg)}
+  .finding.shut .fbody{display:none}
+  .finding.shut{padding:11px 0}
+  .fbody{display:block}
   .fchips{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0 9px 30px}
   .fchip{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;
     border:1px solid var(--stroke);border-radius:999px;padding:1px 7px;color:var(--ink-3)}
@@ -325,8 +336,15 @@
   @media (max-width:640px){.fchips,.fdesc,.ffix,.evrow,.fnote{margin-left:0}}
 
   .findings-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:28px;align-items:start}
-  @media (max-width:900px){.findings-layout{grid-template-columns:minmax(0,1fr)}}
-  .facetpanel{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px;
+  @media (max-width:900px){
+    .findings-layout{grid-template-columns:minmax(0,1fr)}
+    .facetpanel{position:static;max-height:none;overflow:visible;
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr));gap:10px 16px;align-items:start}
+    .facetpanel .fsearch,.facetpanel .fsummary,.facetpanel .fclear{grid-column:1/-1}
+    .fgroupbox{gap:0}
+    .fopt{padding:1px 4px}
+  }
+  .facetpanel{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px;overscroll-behavior:contain;
     border:1px solid var(--stroke-soft);border-radius:12px;background:var(--sheet);padding:14px;
     max-height:calc(100vh - 36px);overflow-y:auto}
   .fsearch{width:100%;border:1px solid var(--stroke);border-radius:7px;background:var(--frame-2);
@@ -347,6 +365,7 @@
   .fclear{font-family:var(--mono);font-size:.68rem;border:1px solid var(--stroke);border-radius:6px;
     padding:4px 9px;background:var(--frame-2);color:var(--ink-2);cursor:pointer;align-self:flex-start}
   .fclear:hover{border-color:var(--accent);color:var(--accent)}
+  .fbtnrow{display:flex;flex-wrap:wrap;gap:7px}
   .noresult{border:1px dashed var(--stroke);border-radius:10px;padding:26px;text-align:center;
     color:var(--ink-3);font-family:var(--mono);font-size:.8rem}
 
@@ -388,9 +407,9 @@
       <p>“it looks like nothing got injected ... and the app ui agrees. there's something in the
         debug logs that says the recall workflow selected things, but nothing actually got
         injected??”</p>
-      <p>“i still don't feel like you've given me a good mental model of how ltm works. i don't
-        know what draft, mutation, or note means for example. and that's not an exhaustive list
-        of my confusions.”</p>
+      <p>Partway through planning the migration, on the vocabulary, said to the assistant
+        helping with it: “i don't know what draft, mutation, or note means for example. and
+        that's not an exhaustive list of my confusions.”</p>
     </div>
     <div class="mast-meta">
       <span>engine 2.4.1</span>
@@ -760,6 +779,7 @@ Object.keys(STATES).forEach(function(v){
     var html='<input class="fsearch" id="fq" type="search" placeholder="Search findings" value="'+
       query.replace(/"/g,"&quot;")+'">';
     GROUPS.forEach(function(g){
+      if(!g.values.length) return;
       html+='<div><p class="fgrouphead">'+g.label+'</p><div class="fgroupbox">';
       g.values.forEach(function(v){
         var n=items.filter(function(f){
@@ -774,7 +794,8 @@ Object.keys(STATES).forEach(function(v){
     });
     var shown=items.filter(matches).length;
     html+='<p class="fsummary"><b>'+shown+'</b> of '+items.length+' findings</p>';
-    html+='<button class="fclear" type="button" id="fclear">Clear all</button>';
+    html+='<div class="fbtnrow"><button class="fclear" type="button" id="fclear">Clear all</button>'+
+      '<button class="fclear" type="button" id="toggleall" data-open="true">Collapse all</button></div>';
     panel.innerHTML=html;
     apply();
   }
@@ -820,6 +841,48 @@ Object.keys(STATES).forEach(function(v){
   });
 
   render();
+})();
+</script>
+
+
+<script>
+/* Findings collapse to title and badges. Expanded is the default, because a
+   reader opening this cold should see a document, not a list of headlines. */
+(function(){
+  var body=document.querySelector(".findings-body"); if(!body) return;
+
+  function setOne(f, open){
+    f.classList.toggle("shut", !open);
+    var t=f.querySelector(".ftoggle");
+    if(t){ t.setAttribute("aria-expanded", String(open));
+           t.setAttribute("aria-label", (open?"Collapse":"Expand")+" this finding"); }
+  }
+  function collapseAll(open){
+    [].slice.call(document.querySelectorAll(".finding")).forEach(function(f){ setOne(f, open); });
+    var btn=document.getElementById("toggleall");
+    if(btn){ btn.textContent = open ? "Collapse all" : "Expand all"; btn.dataset.open = String(open); }
+  }
+
+  body.addEventListener("click", function(e){
+    if(e.target.closest("a,code")) return;
+    var head=e.target.closest(".fhead"); if(!head) return;
+    var f=head.closest(".finding");
+    setOne(f, f.classList.contains("shut"));
+  });
+
+  document.addEventListener("click", function(e){
+    var b=e.target.closest("#toggleall"); if(!b) return;
+    collapseAll(b.dataset.open !== "true");
+  });
+
+  /* A link from the roll-up must land on readable prose. */
+  function openTarget(){
+    var id=location.hash.slice(1); if(!id) return;
+    var f=document.getElementById(id);
+    if(f && f.classList.contains("finding")){ setOne(f, true); f.scrollIntoView({block:"center"}); }
+  }
+  window.addEventListener("hashchange", openTarget);
+  openTarget();
 })();
 </script>
 
