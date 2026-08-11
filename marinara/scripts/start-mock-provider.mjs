@@ -16,7 +16,7 @@
 // request is the fastest way to learn what prompt and schema an agent actually
 // sends, which is what a custom responder needs in order to answer usefully.
 //
-// See docs/development/ui-ux-exploration-harness.md.
+// See ../ui-ux-exploration-harness.md.
 import { createServer } from "node:http";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";

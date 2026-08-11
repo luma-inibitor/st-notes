@@ -22,7 +22,7 @@
 // or playwright.config.ts: the smoke suite wipes its fixtures each run, while
 // exploration wants a long-lived instance with seeded data.
 //
-// See docs/development/ui-ux-exploration-harness.md.
+// See ../ui-ux-exploration-harness.md.
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createRequire } from "node:module";

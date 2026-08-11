@@ -9,16 +9,19 @@ node $HARNESS/seed-chat.mjs --file $HARNESS/fixtures/conversation-late-shift.jso
 
 | Fixture | Mode | Messages | What it is for |
 | --- | --- | --- | --- |
-| `example-chat.json` | conversation | 13 | The minimal shape. Read this one first. |
 | `conversation-late-shift.json` | conversation | 53 | A texting storyline over six days: day dividers, odd-hour timestamps, reactions, double-texting. |
 | `roleplay-stoke-moran.json` | roleplay | 37 | A long-prose Roleplay session adapted from *The Adventure of the Speckled Band* (Conan Doyle, 1892, public domain). |
 | `game-ashfall-contract.json` | game | 23 | A Game Mode session with a built world: map, NPCs, party, HUD widgets, and GM command tags in the turns. |
 
-The three storyline fixtures are long on purpose. Both Conversation and Roleplay
-cross the client's history page size, so opening them shows a **Load More**
-button, and there is enough specific, memorable detail — names, dates, sums,
-promises — for extraction and summary agents to have something to find. Three
-lines of "hello" exercise neither.
+All three are long on purpose. Both Conversation and Roleplay cross the client's
+history page size, so opening them shows a **Load More** button, and there is
+enough specific, memorable detail — names, dates, sums, promises — for
+extraction and summary agents to have something to find. Three lines of "hello"
+exercise neither.
+
+For the minimal shape, read the Format section below rather than copying a
+fixture: a character name, a chat name, a mode, and a list of messages is a
+valid file.
 
 ## Format
 

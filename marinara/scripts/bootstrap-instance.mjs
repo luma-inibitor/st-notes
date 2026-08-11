@@ -13,7 +13,7 @@
 // requests without a secret by default, so no header is needed on 127.0.0.1;
 // pass --admin-secret when calling from anywhere else.
 //
-// See docs/development/ui-ux-exploration-harness.md.
+// See ../ui-ux-exploration-harness.md.
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";

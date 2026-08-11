@@ -11,7 +11,32 @@
 // visible before clicking. Panels and accordions remember their state across
 // page loads, so a blind "click to expand" closes them on the second run.
 
-const CHAT_NAME = process.env.UIUX_CHAT_NAME ?? "Wren — memory test";
+// Defaults to the Conversation fixture's chat, which the sidebar's default
+// CONVO tab already shows. Seeding a Roleplay or Game chat instead means
+// selecting its tab first, as steps/fixture-tour.mjs does.
+const CHAT_NAME = process.env.UIUX_CHAT_NAME ?? "Devi — the Marcus problem";
+
+/**
+ * Click the sidebar row for a chat. The responsive layout keeps a second,
+ * off-screen copy of the chat list, and `getByText().first()` resolves to that
+ * one, which never becomes clickable — so filter on the bounding box and
+ * dispatch the click from inside the page. Sidebar rows also truncate long
+ * names with an ellipsis, hence the prefix match.
+ */
+async function openChat(page, name) {
+  return page.evaluate((prefix) => {
+    const rows = [...document.querySelectorAll("div, span, button, a")].filter((node) => {
+      const box = node.getBoundingClientRect();
+      if (box.width === 0 || box.top > window.innerHeight || box.bottom < 0) return false;
+      const text = (node.innerText || "").trim();
+      return text.length > 0 && text.length < 200 && text.startsWith(prefix);
+    });
+    const row = rows.at(-1);
+    if (!row) return false;
+    row.click();
+    return true;
+  }, name.slice(0, 12));
+}
 
 export default async function exampleTour({ page, baseUrl, shot, outline, clickText }) {
   await page.goto(baseUrl, { waitUntil: "networkidle", timeout: 60_000 });
@@ -24,9 +49,7 @@ export default async function exampleTour({ page, baseUrl, shot, outline, clickT
   }
   await shot("home");
 
-  const chat = page.getByText(CHAT_NAME, { exact: false });
-  if (await chat.count()) {
-    await chat.first().click();
+  if (await openChat(page, CHAT_NAME)) {
     await page.waitForTimeout(3000);
   } else {
     console.log(`chat "${CHAT_NAME}" not found; seed one with $HARNESS/seed-chat.mjs`);

@@ -217,7 +217,6 @@ node $HARNESS/seed-chat.mjs --file $HARNESS/fixtures/game-ashfall-contract.json
 | `conversation-late-shift.json` | conversation | 53 | Six days of texting: day dividers, relative timestamps, 3am messages, reactions, double-texting. |
 | `roleplay-stoke-moran.json`    | roleplay     | 37 | Long-prose turns across two sessions, adapted from *The Speckled Band* (public domain). |
 | `game-ashfall-contract.json`   | game         | 23 | A built world — node map, NPCs, party, HUD widgets — and turns carrying GM command tags. |
-| `example-chat.json`            | conversation | 13 | The minimal fixture shape. |
 
 The script prints `CHARACTER_ID`, `PERSONA_ID`, and `CHAT_ID`. It reuses cards
 with the same name unless you pass `--new-character`. Content can also come from
@@ -365,15 +364,19 @@ before looking for the chat. `steps/fixture-tour.mjs` does this for each fixture
 
 ### Playwright times out with "element is outside of the viewport"
 
-The layout keeps a second copy of some controls — the mode tabs, the Game Mode
-buttons — for narrow viewports, and a role or text selector can resolve to the
-off-screen one, which never becomes clickable. Filter candidates by their
-bounding box before clicking:
+The layout keeps a second copy of some controls — the chat list, the mode tabs,
+the Game Mode buttons — for narrow viewports, and a role or text selector can
+resolve to the off-screen one, which never becomes clickable. Filter candidates
+by their bounding box before clicking:
 
 ```js
 const box = element.getBoundingClientRect();
 if (box.width === 0 || box.top > window.innerHeight || box.bottom < 0) continue;
 ```
+
+This catches even the simplest navigation: `getByText(chatName).first()` finds
+the off-screen sidebar row, so both shipped steps open a chat through a
+box-filtered `page.evaluate` instead.
 
 ### A tutorial sits in every screenshot and Escape does not close it
 
