@@ -40,7 +40,23 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
     font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 24px 96px;
+    display:grid;grid-template-columns:minmax(0,1fr) 216px;gap:40px;align-items:start}
+  .docmain{min-width:0;max-width:1180px}
+  .toc{position:sticky;top:0;max-height:100vh;overflow-y:auto;padding:26px 0 40px;
+    font-size:.82rem;line-height:1.45}
+  .toc-title{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);margin:0 0 10px}
+  .toc a{display:block;color:var(--ink-3);text-decoration:none;padding:3px 9px;border-radius:5px;
+    border-left:2px solid transparent}
+  .toc a:hover{color:var(--ink);background:var(--frame-2)}
+  .toc a.lvl2{padding-left:19px;font-size:.78rem}
+  .toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--frame-2)}
+  .toc .grp{margin-top:14px}
+  @media (max-width:1080px){
+    .wrap{grid-template-columns:minmax(0,1fr)}
+    .toc{display:none}
+  }
 
   h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.2}
   h1{font-size:clamp(2rem,4.6vw,3.1rem);font-weight:800;letter-spacing:-.028em}
@@ -308,6 +324,32 @@
   .finding.hidden,.cluster.hidden{display:none}
   @media (max-width:640px){.fchips,.fdesc,.ffix,.evrow,.fnote{margin-left:0}}
 
+  .findings-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:28px;align-items:start}
+  @media (max-width:900px){.findings-layout{grid-template-columns:minmax(0,1fr)}}
+  .facetpanel{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px;
+    border:1px solid var(--stroke-soft);border-radius:12px;background:var(--sheet);padding:14px;
+    max-height:calc(100vh - 36px);overflow-y:auto}
+  .fsearch{width:100%;border:1px solid var(--stroke);border-radius:7px;background:var(--frame-2);
+    color:var(--ink);font-family:var(--sans);font-size:.82rem;padding:7px 9px}
+  .fsearch::placeholder{color:var(--ink-3)}
+  .fgrouphead{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ink-3);margin-bottom:5px}
+  .fgroupbox{display:flex;flex-direction:column;gap:2px}
+  .fopt{display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-2);cursor:pointer;
+    padding:2px 5px;border-radius:5px;border:1px solid transparent}
+  .fopt:hover{background:var(--frame-2)}
+  .fopt.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 11%,transparent)}
+  .fopt .n{margin-left:auto;font-family:var(--mono);font-size:.68rem;color:var(--ink-3)}
+  .fopt.zero{opacity:.4}
+  .fsummary{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
+    border-top:1px solid var(--stroke-soft);padding-top:11px}
+  .fsummary b{color:var(--accent)}
+  .fclear{font-family:var(--mono);font-size:.68rem;border:1px solid var(--stroke);border-radius:6px;
+    padding:4px 9px;background:var(--frame-2);color:var(--ink-2);cursor:pointer;align-self:flex-start}
+  .fclear:hover{border-color:var(--accent);color:var(--accent)}
+  .noresult{border:1px dashed var(--stroke);border-radius:10px;padding:26px;text-align:center;
+    color:var(--ink-3);font-family:var(--mono);font-size:.8rem}
+
   .theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);
     font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
     background:var(--sheet);border:1px solid var(--stroke);border-radius:999px;padding:7px 13px;
@@ -318,6 +360,7 @@
 </head>
 <body>
 <div class="wrap">
+<div class="docmain">
 
   <header class="masthead">
     <p class="eyebrow">Marinara Engine · Long-Term Memory · UI/UX proposal</p>
@@ -551,6 +594,8 @@
   </section>
 
 </div>
+<nav class="toc" id="toc" aria-label="Contents"></nav>
+</div>
 
 <script>
 "use strict";
@@ -613,34 +658,154 @@ Object.keys(STATES).forEach(function(v){
 </script>
 
 
+
+
 <script>
+/* Table of contents, generated from the document so it cannot fall out of date. */
 (function(){
-  var bar=document.getElementById("filters"); if(!bar) return;
-  var out=document.getElementById("fcount");
-  var findings=[].slice.call(document.querySelectorAll(".finding"));
+  var toc=document.getElementById("toc"); if(!toc) return;
+  var parts=[];
+  parts.push('<p class="toc-title">Contents</p>');
+  document.querySelectorAll("section[id]").forEach(function(sec){
+    var h=sec.querySelector("h2"); if(!h) return;
+    parts.push('<a href="#'+sec.id+'" data-t="'+sec.id+'">'+h.textContent.trim()+'</a>');
+    if(sec.id==="findings"){
+      sec.querySelectorAll(".cluster").forEach(function(c,i){
+        var t=c.querySelector("h3"); if(!t) return;
+        if(!c.id) c.id="cl"+i;
+        parts.push('<a class="lvl2" href="#'+c.id+'" data-t="'+c.id+'">'+t.textContent.trim()+'</a>');
+      });
+    }
+    if(sec.id==="journeys"){
+      sec.querySelectorAll(".journey").forEach(function(j){
+        var t=j.querySelector("h3"); if(!t) return;
+        parts.push('<a class="lvl2" href="#'+j.id+'" data-t="'+j.id+'">'+t.textContent.trim()+'</a>');
+      });
+    }
+  });
+  toc.innerHTML=parts.join("");
+  var links=[].slice.call(toc.querySelectorAll("a"));
+  var targets=links.map(function(a){return document.getElementById(a.dataset.t);});
+  function mark(){
+    var y=window.scrollY+140, best=0;
+    targets.forEach(function(el,i){ if(el && el.offsetTop<=y) best=i; });
+    links.forEach(function(a,i){ a.classList.toggle("on", i===best); });
+  }
+  var tick=false;
+  window.addEventListener("scroll",function(){
+    if(tick) return; tick=true;
+    requestAnimationFrame(function(){ mark(); tick=false; });
+  },{passive:true});
+  mark();
+})();
+
+/* Findings facets. Multi-select inside a group is OR, across groups is AND. */
+(function buildFacets(){
+  var panel=document.getElementById("facetpanel"); if(!panel) return;
+  var body=document.querySelector(".findings-body");
+  var items=[].slice.call(document.querySelectorAll(".finding"));
   var clusters=[].slice.call(document.querySelectorAll(".cluster"));
-  function apply(mode){
+
+  var GROUPS=[
+    {key:"sev",   label:"Severity", order:["critical","high","medium","low"],
+     val:function(f){return [f.dataset.sev];}},
+    {key:"eff",   label:"Fix effort", order:["small","medium","large"],
+     val:function(f){return f.dataset.eff?[f.dataset.eff]:[];}},
+    {key:"grade", label:"Evidence", order:["source","observed","measured","reported"],
+     val:function(f){return [f.dataset.grade];}},
+    {key:"tags",  label:"Tags", order:null,
+     val:function(f){return (f.dataset.tags||"").split(/\s+/).filter(Boolean);}},
+    {key:"cluster", label:"Cluster", order:null,
+     val:function(f){return [f.dataset.cluster];}}
+  ];
+
+  var state={}; GROUPS.forEach(function(g){state[g.key]=new Set();});
+  var query="";
+
+  GROUPS.forEach(function(g){
+    var vals=new Set();
+    items.forEach(function(f){ g.val(f).forEach(function(v){ if(v) vals.add(v); }); });
+    g.values = g.order ? g.order.filter(function(v){return vals.has(v);})
+                       : [].slice.call(vals).sort();
+  });
+
+  function matchesExcept(f, skipKey){
+    if(query && (f.dataset.text||"").indexOf(query)<0) return false;
+    for(var i=0;i<GROUPS.length;i++){
+      var g=GROUPS[i]; if(g.key===skipKey) continue;
+      var sel=state[g.key]; if(!sel.size) continue;
+      var vs=g.val(f), hit=false;
+      for(var j=0;j<vs.length;j++) if(sel.has(vs[j])) { hit=true; break; }
+      if(!hit) return false;
+    }
+    return true;
+  }
+  function matches(f){ return matchesExcept(f,null); }
+
+  function render(){
+    var html='<input class="fsearch" id="fq" type="search" placeholder="Search findings" value="'+
+      query.replace(/"/g,"&quot;")+'">';
+    GROUPS.forEach(function(g){
+      html+='<div><p class="fgrouphead">'+g.label+'</p><div class="fgroupbox">';
+      g.values.forEach(function(v){
+        var n=items.filter(function(f){
+          return matchesExcept(f,g.key) && g.val(f).indexOf(v)>=0;
+        }).length;
+        var on=state[g.key].has(v);
+        html+='<span class="fopt'+(on?" on":"")+(n===0&&!on?" zero":"")+
+          '" data-g="'+g.key+'" data-v="'+String(v).replace(/"/g,"&quot;")+'">'+
+          '<span>'+v+'</span><span class="n">'+n+'</span></span>';
+      });
+      html+='</div></div>';
+    });
+    var shown=items.filter(matches).length;
+    html+='<p class="fsummary"><b>'+shown+'</b> of '+items.length+' findings</p>';
+    html+='<button class="fclear" type="button" id="fclear">Clear all</button>';
+    panel.innerHTML=html;
+    apply();
+  }
+
+  function apply(){
     var shown=0;
-    findings.forEach(function(f){
-      var keep = mode==="all"
-        || f.dataset.sev===mode
-        || (mode==="small" && f.dataset.eff==="small")
-        || (mode==="BUG" && (" "+f.dataset.tags+" ").indexOf(" BUG ")>=0);
-      f.classList.toggle("hidden", !keep);
+    items.forEach(function(f){
+      var keep=matches(f);
+      f.classList.toggle("hidden",!keep);
       if(keep) shown++;
     });
     clusters.forEach(function(c){
-      var any=c.querySelector(".finding:not(.hidden)");
-      c.classList.toggle("hidden", !any);
+      c.classList.toggle("hidden", !c.querySelector(".finding:not(.hidden)"));
     });
-    out.textContent = shown + " of " + findings.length + " shown";
+    var none=document.getElementById("noresult");
+    if(shown===0){
+      if(!none){
+        none=document.createElement("div");
+        none.id="noresult"; none.className="noresult";
+        none.textContent="No finding matches that combination.";
+        body.appendChild(none);
+      }
+    } else if(none){ none.remove(); }
   }
-  bar.addEventListener("click",function(e){
-    var b=e.target.closest(".fbtn"); if(!b) return;
-    bar.querySelectorAll(".fbtn").forEach(function(x){x.classList.toggle("on", x===b);});
-    apply(b.dataset.filter);
+
+  panel.addEventListener("click",function(e){
+    if(e.target.closest("#fclear")){
+      GROUPS.forEach(function(g){state[g.key].clear();});
+      query=""; render(); return;
+    }
+    var o=e.target.closest(".fopt"); if(!o) return;
+    var set=state[o.dataset.g];
+    if(set.has(o.dataset.v)) set.delete(o.dataset.v); else set.add(o.dataset.v);
+    render();
   });
-  apply("all");
+  panel.addEventListener("input",function(e){
+    if(e.target.id!=="fq") return;
+    query=e.target.value.trim().toLowerCase();
+    var pos=e.target.selectionStart;
+    render();
+    var box=document.getElementById("fq");
+    if(box){ box.focus(); box.setSelectionRange(pos,pos); }
+  });
+
+  render();
 })();
 </script>
 

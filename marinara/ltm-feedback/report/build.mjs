@@ -80,7 +80,7 @@ function annotations(f) {
 
 function findingHtml(f) {
   return `
-      <article class="finding" id="f${f.order}" data-sev="${f.severity}" data-eff="${f.effort || ""}" data-tags="${f.tags.join(" ")}">
+      <article class="finding" id="f${f.order}" data-sev="${f.severity}" data-eff="${f.effort || ""}" data-grade="${f.grade}" data-cluster="${esc(f.cluster)}" data-tags="${f.tags.join(" ")}" data-text="${esc((f.statement+" "+f.description+" "+f.fix).toLowerCase().replace(/[`"]/g," "))}">
         <header class="fhead">
           <span class="fnum">F${f.order}</span>
           <h4>${rich(f.statement)}</h4>
@@ -106,7 +106,7 @@ const clusterSections = CLUSTERS.map((name) => {
     .filter(Boolean)
     .join(" · ");
   return `
-    <div class="cluster">
+    <div class="cluster" data-cluster="${esc(name)}">
       <div class="chead">
         <h3>${esc(name)}</h3>
         <span class="cmeta">${badge}</span>
@@ -131,17 +131,11 @@ const findingsSection = `
         thing and discards it. ${bugCount} carry a bug tag, separating unintended behaviour from
         a design tradeoff.
       </p>
-      <div class="filterbar" id="filters">
-        <span class="flabel">Show</span>
-        <button class="fbtn on" data-filter="all" type="button">everything</button>
-        <button class="fbtn" data-filter="critical" type="button">critical</button>
-        <button class="fbtn" data-filter="high" type="button">high</button>
-        <button class="fbtn" data-filter="small" type="button">cheap fixes</button>
-        <button class="fbtn" data-filter="BUG" type="button">bugs</button>
-        <span class="fcount" id="fcount"></span>
-      </div>
     </div>
-    ${clusterSections}
+    <div class="findings-layout">
+      <aside class="facetpanel" id="facetpanel" aria-label="Filter findings"></aside>
+      <div class="findings-body">${clusterSections}</div>
+    </div>
   </section>`;
 
 // ── the roll-up of every fix, ordered cheap first ────────────────────────────
@@ -217,7 +211,11 @@ let out = shell
   .replace('<section id="ground">', sections + '\n  <section id="ground">')
   .replace('<section id="journeys">', findingsSection + '\n  <section id="journeys">')
   .replace('<section id="deviations">', recSection + '\n  <section id="deviations">')
-  .replace("</section>\n\n</div>\n\n<script>", "</section>\n" + appendix + "\n</div>\n\n<script>");
+  .replace("</section>\n\n</div>\n<nav", "</section>\n" + appendix + "\n</div>\n<nav");
+
+for (const id of ["orientation","what-happened","goods","ground","findings","journeys","recommendations","deviations","appendix"]) {
+  if (!out.includes(`id="${id}"`)) { console.error("MISSING SECTION:", id); process.exit(1); }
+}
 
 fs.writeFileSync(path.join(root, "ltm-review.html"), out);
 

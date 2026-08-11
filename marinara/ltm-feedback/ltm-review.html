@@ -40,7 +40,23 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
     font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 24px 96px;
+    display:grid;grid-template-columns:minmax(0,1fr) 216px;gap:40px;align-items:start}
+  .docmain{min-width:0;max-width:1180px}
+  .toc{position:sticky;top:0;max-height:100vh;overflow-y:auto;padding:26px 0 40px;
+    font-size:.82rem;line-height:1.45}
+  .toc-title{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);margin:0 0 10px}
+  .toc a{display:block;color:var(--ink-3);text-decoration:none;padding:3px 9px;border-radius:5px;
+    border-left:2px solid transparent}
+  .toc a:hover{color:var(--ink);background:var(--frame-2)}
+  .toc a.lvl2{padding-left:19px;font-size:.78rem}
+  .toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--frame-2)}
+  .toc .grp{margin-top:14px}
+  @media (max-width:1080px){
+    .wrap{grid-template-columns:minmax(0,1fr)}
+    .toc{display:none}
+  }
 
   h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.2}
   h1{font-size:clamp(2rem,4.6vw,3.1rem);font-weight:800;letter-spacing:-.028em}
@@ -308,6 +324,32 @@
   .finding.hidden,.cluster.hidden{display:none}
   @media (max-width:640px){.fchips,.fdesc,.ffix,.evrow,.fnote{margin-left:0}}
 
+  .findings-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:28px;align-items:start}
+  @media (max-width:900px){.findings-layout{grid-template-columns:minmax(0,1fr)}}
+  .facetpanel{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px;
+    border:1px solid var(--stroke-soft);border-radius:12px;background:var(--sheet);padding:14px;
+    max-height:calc(100vh - 36px);overflow-y:auto}
+  .fsearch{width:100%;border:1px solid var(--stroke);border-radius:7px;background:var(--frame-2);
+    color:var(--ink);font-family:var(--sans);font-size:.82rem;padding:7px 9px}
+  .fsearch::placeholder{color:var(--ink-3)}
+  .fgrouphead{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ink-3);margin-bottom:5px}
+  .fgroupbox{display:flex;flex-direction:column;gap:2px}
+  .fopt{display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-2);cursor:pointer;
+    padding:2px 5px;border-radius:5px;border:1px solid transparent}
+  .fopt:hover{background:var(--frame-2)}
+  .fopt.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 11%,transparent)}
+  .fopt .n{margin-left:auto;font-family:var(--mono);font-size:.68rem;color:var(--ink-3)}
+  .fopt.zero{opacity:.4}
+  .fsummary{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
+    border-top:1px solid var(--stroke-soft);padding-top:11px}
+  .fsummary b{color:var(--accent)}
+  .fclear{font-family:var(--mono);font-size:.68rem;border:1px solid var(--stroke);border-radius:6px;
+    padding:4px 9px;background:var(--frame-2);color:var(--ink-2);cursor:pointer;align-self:flex-start}
+  .fclear:hover{border-color:var(--accent);color:var(--accent)}
+  .noresult{border:1px dashed var(--stroke);border-radius:10px;padding:26px;text-align:center;
+    color:var(--ink-3);font-family:var(--mono);font-size:.8rem}
+
   .theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);
     font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
     background:var(--sheet);border:1px solid var(--stroke);border-radius:999px;padding:7px 13px;
@@ -318,6 +360,7 @@
 </head>
 <body>
 <div class="wrap">
+<div class="docmain">
 
   <header class="masthead">
     <p class="eyebrow">Marinara Engine · Long-Term Memory · UI/UX proposal</p>
@@ -702,24 +745,17 @@
         thing and discards it. 15 carry a bug tag, separating unintended behaviour from
         a design tradeoff.
       </p>
-      <div class="filterbar" id="filters">
-        <span class="flabel">Show</span>
-        <button class="fbtn on" data-filter="all" type="button">everything</button>
-        <button class="fbtn" data-filter="critical" type="button">critical</button>
-        <button class="fbtn" data-filter="high" type="button">high</button>
-        <button class="fbtn" data-filter="small" type="button">cheap fixes</button>
-        <button class="fbtn" data-filter="BUG" type="button">bugs</button>
-        <span class="fcount" id="fcount"></span>
-      </div>
     </div>
-    
-    <div class="cluster">
+    <div class="findings-layout">
+      <aside class="facetpanel" id="facetpanel" aria-label="Filter findings"></aside>
+      <div class="findings-body">
+    <div class="cluster" data-cluster="Recall that silently does nothing">
       <div class="chead">
         <h3>Recall that silently does nothing</h3>
         <span class="cmeta">6 findings · 3 critical · 2 high</span>
       </div>
       
-      <article class="finding" id="f6" data-sev="critical" data-eff="medium" data-tags="ENGINE ARCH UX">
+      <article class="finding" id="f6" data-sev="critical" data-eff="medium" data-grade="source" data-cluster="Recall that silently does nothing" data-tags="ENGINE ARCH UX" data-text="a prompt-assembling preset can discard recall entirely.  generate.routes.ts  guards the injection block with  if (handledbypresetsection || !presetownsagentplacement) . a preset that assembles the whole prompt sets  presetownsagentplacement , and if it carries no  agent_data  marker section for  long-term-memory  the route skips the branch entirely: it appends no text, pushes no context injection, and never assigns  longtermmemoryrecallreceipt . that receipt is load-bearing, because  recordgenerationlongtermmemorydispatch()  records an injection only when it has one and can confirm the artifact in the dispatched messages, so nothing lands in the record and the readout keeps showing the last successful run. one preset shared by four chats disabled memory in all four at once, with every layer still reporting success. in generate.routes.ts assign a longtermmemoryrecallreceipt marked as skipped when presetownsagentplacement is set with no long-term-memory agent_data section so the dispatch record shows that the package dropped recall.">
         <header class="fhead">
           <span class="fnum">F6</span>
           <h4>A prompt-assembling preset can discard recall entirely.</h4>
@@ -730,7 +766,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>In generate.routes.ts assign a longTermMemoryRecallReceipt marked as skipped when presetOwnsAgentPlacement is set with no long-term-memory agent_data section so the dispatch record shows that the package dropped recall.</p>
         
       </article>
-      <article class="finding" id="f7" data-sev="high" data-eff="medium" data-tags="UX ARCH BUG">
+      <article class="finding" id="f7" data-sev="high" data-eff="medium" data-grade="observed" data-cluster="Recall that silently does nothing" data-tags="UX ARCH BUG" data-text="the last-injection readout keeps showing an old count when nothing is injected.  lastinjectionsummary.tsx  renders a  &lt;details&gt;  element that the stored recall receipt drives entirely; expanded, it lists each recalled memory with token counts and links into the vault. a turn that injects nothing produces no receipt, and  recordgenerationlongtermmemorydispatch()  writes a record only when a receipt exists and it can confirm the artifact in the dispatched messages, so no write happens and the previous run's values stay on screen. the readout has no zero state and no timestamp, which lets a healthy-looking count describe a generation that ran long ago while the current turn got nothing. have recordgenerationlongtermmemorydispatch() write a zero-count record with a timestamp when a turn injects nothing so lastinjectionsummary.tsx can render an explicit nothing-injected state instead of stale values.">
         <header class="fhead">
           <span class="fnum">F7</span>
           <h4>The last-injection readout keeps showing an old count when nothing is injected.</h4>
@@ -741,7 +777,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Have recordGenerationLongTermMemoryDispatch() write a zero-count record with a timestamp when a turn injects nothing so LastInjectionSummary.tsx can render an explicit nothing-injected state instead of stale values.</p>
         
       </article>
-      <article class="finding" id="f8" data-sev="high" data-eff="small" data-tags="ARCH UX BUG">
+      <article class="finding" id="f8" data-sev="high" data-eff="small" data-grade="source" data-cluster="Recall that silently does nothing" data-tags="ARCH UX BUG" data-text="memories from character and lorebook imports are eligible in roleplay only. the model never chooses mode.  interop.ts  stamps character and lorebook imports with all three modes and  extractionmode:  roleplay  , and  source-extraction.ts  compiles a single  resolvedmode  that falls to roleplay when there is no  chatid  and no explicit mode, so extracting an imported source outside a chat produces roleplay-only memories;  memoryvault.tsx  hardcodes  modes: [ roleplay ]  in  newnote  for manual creation as well. the mode filter in  retrieval.ts  drops ineligible memories before ranking. chat-derived extraction gets this right, since the extract handler stamps  [ltmmodeforchatmode(chat.mode)] , so a user who completes the documented first run against a character import in a conversation chat ends with a vault that recalls nothing. make resolvedmode in source-extraction.ts and newnote in memoryvault.tsx default to all three modes when no chat mode is known instead of falling back to roleplay.">
         <header class="fhead">
           <span class="fnum">F8</span>
           <h4>Memories from character and lorebook imports are eligible in Roleplay only.</h4>
@@ -752,7 +788,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Make resolvedMode in source-extraction.ts and newNote in MemoryVault.tsx default to all three modes when no chat mode is known instead of falling back to roleplay.</p>
         
       </article>
-      <article class="finding" id="f9" data-sev="medium" data-eff="medium" data-tags="UX">
+      <article class="finding" id="f9" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Recall that silently does nothing" data-tags="UX" data-text="mode eligibility cannot be seen or set while accepting a memory.  reviewqueue.tsx  prints the source's modes as read-only text and exposes no control over them, so the reviewer sees the value at the moment of decision but cannot change it. the only editable surface is the per-mode checkbox set inside the  memoryvault.tsx  note editor, plus the bulk  batch( modes )  action: leaving review, opening the vault, locating the note and opening its editor. that field decides whether a memory is ever eligible for recall, and accept time fixes it to whatever stamp the source already carries. replace the read-only modes text in reviewqueue.tsx with the per-mode checkbox control from the memoryvault.tsx note editor and send the chosen modes with the accept call.">
         <header class="fhead">
           <span class="fnum">F9</span>
           <h4>Mode eligibility cannot be seen or set while accepting a memory.</h4>
@@ -763,7 +799,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Replace the read-only modes text in ReviewQueue.tsx with the per-mode checkbox control from the MemoryVault.tsx note editor and send the chosen modes with the accept call.</p>
         
       </article>
-      <article class="finding" id="f15" data-sev="critical" data-eff="small" data-tags="ENV ARCH UX BUG">
+      <article class="finding" id="f15" data-sev="critical" data-eff="small" data-grade="observed" data-cluster="Recall that silently does nothing" data-tags="ENV ARCH UX BUG" data-text="a vault rebuild reports success after embedding nothing.  capability-embedding.service.ts  exports a frozen object that returns  localembed(...)  unconditionally against the space id  local:xenova/all-minilm-l6-v2:q8:mean:normalized:v1 , with no remote provider and no fallback, even though the engine's own recall path supports remote connections, dedicated embedding connections and a local sidecar. when the native binding is missing,  hasnativeonnxruntimebinding  returns false with a single info log, embedding returns null, and  markltmindexesclean  still marks the indexes clean so the rebuild returns normally and index health reads healthy. the  /status  response does carry  embeddingsavailable: false , but no client surface mentions embeddings at all: a search for  embed  across the stock client and its locale file turns up nothing, and the detail view shows only a total indexed chunk count, which stays high while the semantic lane is dead. retrieval keeps returning results from the remaining lanes, so nothing catches the degradation without a purpose-written probe. render the embeddingsavailable field already returned by /status as a degraded semantic lane warning in longtermmemorydetail.tsx.">
         <header class="fhead">
           <span class="fnum">F15</span>
           <h4>A vault rebuild reports success after embedding nothing.</h4>
@@ -774,7 +810,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Render the embeddingsAvailable field already returned by /status as a degraded semantic lane warning in LongTermMemoryDetail.tsx.</p>
         
       </article>
-      <article class="finding" id="f16" data-sev="critical" data-eff="small" data-tags="ARCH UX">
+      <article class="finding" id="f16" data-sev="critical" data-eff="small" data-grade="source" data-cluster="Recall that silently does nothing" data-tags="ARCH UX" data-text="a memory can save successfully and stay invisible to recall.  applyinner()  in  reconciliation.ts  writes the draft to  accepted  before it rebuilds, then calls  rebuildlongtermmemoryindexes  inside a try/catch. a failure records  indexrebuildstatus:  failed   and  indexrebuilderror  on the draft, logs the error, and still returns the applied draft as a success.  reviewqueue.tsx  surfaces this only as a transient line in the batch result,  changes were saved, but the index rebuild failed: {{value1}} , and no component ever reads  indexrebuildstatus  afterwards. the vault stores the note and displays it correctly, while retrieval, which reads the indexes, cannot see it. leave the indexes marked dirty in applyinner() in reconciliation.ts when rebuildlongtermmemoryindexes throws so vault health reports the failure instead of reading healthy.">
         <header class="fhead">
           <span class="fnum">F16</span>
           <h4>A memory can save successfully and stay invisible to recall.</h4>
@@ -786,13 +822,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="Reviewing without seeing consequences">
       <div class="chead">
         <h3>Reviewing without seeing consequences</h3>
         <span class="cmeta">12 findings · 2 critical · 4 high</span>
       </div>
       
-      <article class="finding" id="f35" data-sev="critical" data-eff="medium" data-tags="ARCH UX BUG">
+      <article class="finding" id="f35" data-sev="critical" data-eff="medium" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="ARCH UX BUG" data-text="review never shows that a mutation contradicts stored content.  reviewqueue.tsx  never reads  mutation.note.conflicts ; the string  conflict  does not occur in the file at all. the queue presents a  create_note  carrying recorded conflicts with no conflict information and no options, identical in every way to one that contradicts nothing stored. only the vault renders conflicts anywhere, read-only, showing field, resolution status and  conflict.proposed  while never displaying  conflict.existing , so the product never compares proposed content against stored content at any point. render mutation.note.conflicts on the review row showing conflict.existing beside conflict.proposed.">
         <header class="fhead">
           <span class="fnum">F35</span>
           <h4>Review never shows that a mutation contradicts stored content.</h4>
@@ -803,7 +839,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Render mutation.note.conflicts on the review row showing conflict.existing beside conflict.proposed.</p>
         
       </article>
-      <article class="finding" id="f36" data-sev="medium" data-eff="small" data-tags="ARCH UX">
+      <article class="finding" id="f36" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="ARCH UX" data-text="additive and overwriting mutations look identical in review.  dispositionformutation()  already computes whether a mutation merges into a section or replaces its contents, and  isadditiveltmsection()  fixes which sections are additive: timeline always, world always, character except  items  and  progression , relationship only  history , tone only  observations . every row therefore carries the answer, and the review queue renders no visual distinction between the two cases. a reviewer working quickly through a batch cannot tell which accepts append to a belief and which overwrite one. label every mutation row with the disposition value dispositionformutation() already computes so rewrites read differently from merges.">
         <header class="fhead">
           <span class="fnum">F36</span>
           <h4>Additive and overwriting mutations look identical in review.</h4>
@@ -814,7 +850,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Label every mutation row with the disposition value dispositionForMutation() already computes so rewrites read differently from merges.</p>
         
       </article>
-      <article class="finding" id="f37" data-sev="medium" data-eff="medium" data-tags="ARCH UX">
+      <article class="finding" id="f37" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="ARCH UX" data-text="draft-wide invariants are only checked at apply time.  preflight()  enforces rules that span the claims inside one draft: every mutation citing its source note, every link target existing or created in the same batch, every change claim's target ending up linked to a timeline event grounded in the same source, no duplicate  create_note  for one id, no writes to source or scene notes, and matching scope. nothing evaluates any of it while the reviewer decides. it arrives afterward as an atomic whole-draft failure carrying messages such as  timeline event {id} must link to draft source {sourcenoteid}.  and  long-term memory {id} must link to a timeline event grounded in the same source.  expose preflight() through a dry-run review endpoint the queue calls on selection change so invariant failures land on the offending rows.">
         <header class="fhead">
           <span class="fnum">F37</span>
           <h4>Draft-wide invariants are only checked at apply time.</h4>
@@ -825,7 +861,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Expose preflight() through a dry-run review endpoint the queue calls on selection change so invariant failures land on the offending rows.</p>
         
       </article>
-      <article class="finding" id="f38" data-sev="high" data-eff="small" data-tags="ARCH UX">
+      <article class="finding" id="f38" data-sev="high" data-eff="small" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="ARCH UX" data-text="rejecting a mutation removes it from dependency recovery.  filterautoapplydependencies()  and the  autoincludedmutationids  accumulation in  applyinner()  pull in what a partial selection needs, drawing  add_link  mutations and their  create_note  from  draft.mutations . apply removes rejected mutations from the draft before that pass runs, so the pool the recovery mechanism searches no longer holds them, while it still holds undecided ones. rejecting a dependency can fail an entire draft where leaving it untouched would have been safe. the instinct this punishes is tidying up: a duplicate  add_link  is already idempotent, since  changesformutation  returns  []  when the link exists and application runs through  uniquelinks() , so keeping a redundant link costs nothing. run filterautoapplydependencies() over the full pre-rejection mutation pool so a rejected dependency can still be auto-included.">
         <header class="fhead">
           <span class="fnum">F38</span>
           <h4>Rejecting a mutation removes it from dependency recovery.</h4>
@@ -836,7 +872,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Run filterAutoApplyDependencies() over the full pre-rejection mutation pool so a rejected dependency can still be auto-included.</p>
         
       </article>
-      <article class="finding" id="f39" data-sev="high" data-eff="large" data-tags="ARCH">
+      <article class="finding" id="f39" data-sev="high" data-eff="large" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="ARCH" data-text="there is no way to undo an applied draft.  commitltmmutation()  writes a journal holding the before-state of every touched file, promotes it to committed, and then  publish()  calls  remove()  to delete it once the events are appended. the journal serves crash recovery, which  recoverltmmutations()  performs at startup, not history: no revert route exists, no per-note version list, and no retained before-state after a successful commit. that is the standing condition against which a bulk accept of hundreds of mutations lands as a single irreversible write. stop publish() from remove()ing committed journals so the last n retained before-states can back a revert route.">
         <header class="fhead">
           <span class="fnum">F39</span>
           <h4>There is no way to undo an applied draft.</h4>
@@ -847,7 +883,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Stop publish() from remove()ing committed journals so the last N retained before-states can back a revert route.</p>
         <p class="fnote">Scored high for impact, but deliberately not a priority ask. Real undo means retaining transaction journals instead of deleting them on commit, which is a big lift; the operator does not want the maintainer to prioritise it. Worth stating as context for why bulk accept is risky, not as a request.</p>
       </article>
-      <article class="finding" id="f40" data-sev="high" data-eff="medium" data-tags="ARCH UX">
+      <article class="finding" id="f40" data-sev="high" data-eff="medium" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="ARCH UX" data-text="most apply-time failures are knowable before anything is submitted. apply-time failure comes from two places: the whole-draft invariants in  preflight() , and the projection limits  mergesection()  enforces, including the 20,000-character text cap and the 100-contribution cap. the selected mutations plus the current state of the vault already determine fourteen of the twenty-five distinct failure modes before anyone submits, and the review queue evaluates none of them. the reviewer learns about a preventable failure only after committing a selection, and it arrives as an atomic whole-draft error rather than as a mark on the row that caused it. add a preview endpoint that runs preflight() and the mergesection() cap checks over the current selection so knowable failures appear as row-level marks before submit.">
         <header class="fhead">
           <span class="fnum">F40</span>
           <h4>Most apply-time failures are knowable before anything is submitted.</h4>
@@ -858,7 +894,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a preview endpoint that runs preflight() and the mergeSection() cap checks over the current selection so knowable failures appear as row-level marks before submit.</p>
         
       </article>
-      <article class="finding" id="f41" data-sev="medium" data-eff="medium" data-tags="ARCH UX">
+      <article class="finding" id="f41" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="ARCH UX" data-text="a partial apply erases the record of what was already applied.  applyinner()  finishes a partial accept by calling  updatedraftstatusunlocked(id,  pending , { applystate:  not_started , mutations: &lt;only the skipped items&gt; }) . that call replaces the mutation list rather than annotating it, so the accepted work vanishes from the draft with nothing recording that it happened, and  applystate  reads as though nobody has ever touched the draft. a draft that is nine-tenths reviewed becomes indistinguishable from a small fresh one. have applyinner() mark applied mutations with an applied flag instead of replacing draft.mutations with only the skipped ones.">
         <header class="fhead">
           <span class="fnum">F41</span>
           <h4>A partial apply erases the record of what was already applied.</h4>
@@ -869,7 +905,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Have applyInner() mark applied mutations with an applied flag instead of replacing draft.mutations with only the skipped ones.</p>
         
       </article>
-      <article class="finding" id="f42" data-sev="high" data-eff="medium" data-tags="ARCH UX">
+      <article class="finding" id="f42" data-sev="high" data-eff="medium" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="ARCH UX" data-text="how confidently a claim was bound to a character never reaches review. subject resolution matches a claim's subject against a trusted catalogue and records how it made the match, ranking bases that include  exact_name ,  unique_alias ,  spelling_variation  and  trait_or_qualified_alias . rejection details and events carry  match.basis  through as  matchbasis , and nothing ever attaches it to the mutation the reviewer sees. the queue presents a claim bound to a character by a single fuzzy spelling match exactly like one bound by an exact name, so the claims most likely to land on the wrong person are the ones nobody can pick out of the queue. thread match.basis from subject-identity.ts onto the mutation so the review row can badge every non-exact_name binding.">
         <header class="fhead">
           <span class="fnum">F42</span>
           <h4>How confidently a claim was bound to a character never reaches review.</h4>
@@ -880,7 +916,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Thread match.basis from subject-identity.ts onto the mutation so the review row can badge every non-exact_name binding.</p>
         
       </article>
-      <article class="finding" id="f44" data-sev="medium" data-eff="small" data-tags="UX">
+      <article class="finding" id="f44" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="UX" data-text="edit-before-accept is unlabeled and undiscoverable.  mutationeditor  sits inside an expanded mutation panel, below the evidence and diagnostics; accept submits its values as  editedmutations  and the server re-validates them. it carries no edit label, button or icon, and it renders nothing at all for  add_link ,  set_keywords ,  set_status  and  set_subjects , leaving four of the seven mutation kinds uneditable. a reviewer who wants to correct a claim rather than take it or drop it has to expand a row and scroll past two other blocks, and nothing indicates that anything sits down there. add a visible edit control on the mutation row that opens mutationeditor.">
         <header class="fhead">
           <span class="fnum">F44</span>
           <h4>Edit-before-accept is unlabeled and undiscoverable.</h4>
@@ -891,7 +927,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a visible Edit control on the mutation row that opens MutationEditor.</p>
         
       </article>
-      <article class="finding" id="f45" data-sev="critical" data-eff="small" data-tags="UX BUG">
+      <article class="finding" id="f45" data-sev="critical" data-eff="small" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="UX BUG" data-text="the editor silently truncates section text at the cap. the editor applies  boundedtrim  and a  maxlength  at the 20,000-character section cap, cutting text with no counter, no warning and no marker at the cut point.  mergesection()  enforces the same limit server-side with the error  a projected section exceeds the 20,000-character text limit. , so the editor's trim keeps the reviewer from ever meeting that error, at the cost of dropping content unannounced. nothing else in the feature displays cap pressure either: no component renders a character counter, a keyword count or the  contributions  field. replace boundedtrim in the editor with a live character counter against the 20,000-character cap that blocks save rather than cutting text.">
         <header class="fhead">
           <span class="fnum">F45</span>
           <h4>The editor silently truncates section text at the cap.</h4>
@@ -902,7 +938,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Replace boundedTrim in the editor with a live character counter against the 20,000-character cap that blocks save rather than cutting text.</p>
         
       </article>
-      <article class="finding" id="f46" data-sev="medium" data-eff="small" data-tags="UX">
+      <article class="finding" id="f46" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="UX" data-text="a link mutation never shows what it points at. elsewhere the queue resolves ids to titles broadly, and rows offer  open memory  and  open source , so showing what a mutation touches is the established pattern. an  add_link  row is the exception: it never surfaces its target, and  mutationeditor  returns nothing for that kind either, so a reviewer can neither inspect nor correct the row. faced with four near-identical link proposals pointing at timeline events, that reviewer has no way to tell the referenced events apart. the projection preview compounds it by printing  change.before  and  change.after  raw rather than passing them through  humanizereviewtext() . resolve an add_link mutation's target id to its note title in the row using the id-to-title lookup the queue already applies elsewhere.">
         <header class="fhead">
           <span class="fnum">F46</span>
           <h4>A link mutation never shows what it points at.</h4>
@@ -913,7 +949,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Resolve an add_link mutation's target id to its note title in the row using the id-to-title lookup the queue already applies elsewhere.</p>
         
       </article>
-      <article class="finding" id="f47" data-sev="medium" data-eff="small" data-tags="UX">
+      <article class="finding" id="f47" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Reviewing without seeing consequences" data-tags="UX" data-text="per-chunk recall counts are recorded and never surfaced. usage tracking already counts recall per chunk:  ltmusagechunkschema  carries  retrievalcount ,  injectioncount ,  totalinjectedtokens ,  lastretrievedat  and  lastinjectedat , and  usage.ts  increments the first two on every injection. only  retention.ts  reads them, consulting  lastinjectedat  for pruning decisions, and no route returns them, so no interface can show them. a reviewer accepting a mutation that overwrites a stored section cannot tell whether that text has been feeding the model on every generation or whether retrieval has never reached it once, even though the count exists on disk. return  retrievalcount  and  injectioncount  from the usage store on note and review responses so interfaces can display the counts the store already writes.">
         <header class="fhead">
           <span class="fnum">F47</span>
           <h4>Per-chunk recall counts are recorded and never surfaced.</h4>
@@ -925,13 +961,13 @@
         <p class="fnote">Corrected: an earlier pass reported that no cumulative recall counter existed anywhere. It does, per chunk, in the usage store. The finding is that it is never exposed, which makes the fix small rather than medium.</p>
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="The vault decaying with use">
       <div class="chead">
         <h3>The vault decaying with use</h3>
         <span class="cmeta">13 findings · 2 critical · 6 high</span>
       </div>
       
-      <article class="finding" id="f48" data-sev="critical" data-eff="medium" data-tags="ARCH UX SCALE">
+      <article class="finding" id="f48" data-sev="critical" data-eff="medium" data-grade="source" data-cluster="The vault decaying with use" data-tags="ARCH UX SCALE" data-text="seven storage caps are enforced at write time with no warning. the limits run to thirty keywords, a hundred tags, two hundred fifty links, two hundred fifty conflicts, twenty thousand section characters, a hundred contributions and a hundred evidence refs.  mergesection()  in  draft-projector.ts  throws on breach with  a projected section exceeds the 20,000-character text limit.  or  a projected section exceeds the 100-contribution limit. , while no component renders a character counter, a keyword count, or the  contributions  field at all. the interface exposes one cap behaviour only: the vault editor silently truncates section text at 20,000 characters. an apply therefore fails partway through a batch, and that failure gives the first indication that a note was near full. return each target note's current section length, contribution count and keyword count in the draft review response so rows show cap pressure before apply.">
         <header class="fhead">
           <span class="fnum">F48</span>
           <h4>Seven storage caps are enforced at write time with no warning.</h4>
@@ -942,7 +978,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Return each target note's current section length, contribution count and keyword count in the draft review response so rows show cap pressure before apply.</p>
         
       </article>
-      <article class="finding" id="f49" data-sev="critical" data-eff="large" data-tags="ARCH SCALE">
+      <article class="finding" id="f49" data-sev="critical" data-eff="large" data-grade="source" data-cluster="The vault decaying with use" data-tags="ARCH SCALE" data-text="sections and keyword lists grow without pruning until they hit their caps. every apply unions additive sections.  isadditiveltmsection()  marks timeline sections always additive, character sections additive except  items  and  progression , relationship only  history , world always, and tone only  observations , and nothing anywhere decays, compacts or expires stored content. any long-running story therefore ends with every cap full rather than merely risking it, and the product states this nowhere. add a compaction pass that rewrites additive sections as they approach their caps instead of only unioning contributions in mergesection().">
         <header class="fhead">
           <span class="fnum">F49</span>
           <h4>Sections and keyword lists grow without pruning until they hit their caps.</h4>
@@ -953,7 +989,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a compaction pass that rewrites additive sections as they approach their caps instead of only unioning contributions in mergeSection().</p>
         
       </article>
-      <article class="finding" id="f50" data-sev="high" data-eff="small" data-tags="ARCH SCALE">
+      <article class="finding" id="f50" data-sev="high" data-eff="small" data-grade="measured" data-cluster="The vault decaying with use" data-tags="ARCH SCALE" data-text="duplicate detection against stored content cannot fire on a large section.  existingsectioncandidates()  in  dedup.ts  pushes exactly one candidate per section, the whole trimmed  section.text  as a single blob with no line splitting, and  deduplicateunits()  requires a jaccard score of at least  lexicalthreshold = 0.85 . an exact-duplicate claim of about eleven tokens scores 0.478 against a 226-character section, 0.186 at 568 characters, 0.060 at 2 kb, and 0.040 at 5 kb and above, so no section holding real content can reach the threshold.  seeninbatch  compares unit against unit, and that path does work. the guard against restatement goes quiet precisely on the notes large enough to need it. have existingsectioncandidates() emit one candidate per stored contribution instead of one blob per section.">
         <header class="fhead">
           <span class="fnum">F50</span>
           <h4>Duplicate detection against stored content cannot fire on a large section.</h4>
@@ -964,7 +1000,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Have existingSectionCandidates() emit one candidate per stored contribution instead of one blob per section.</p>
         
       </article>
-      <article class="finding" id="f51" data-sev="high" data-eff="small" data-tags="ARCH">
+      <article class="finding" id="f51" data-sev="high" data-eff="small" data-grade="source" data-cluster="The vault decaying with use" data-tags="ARCH" data-text="similarity comparison ignores everything past the first five hundred tokens.  tokenize()  in  utils.ts  slices its token list with  .slice(0, 500)  and filters out every token shorter than  minlength = 4 , so short words never participate in similarity and the comparison only ever sees a prefix of a long section. a 20 kb section scores identically to a 5 kb one. any claim restating material from the tail of a saturated section passes the duplicate check, because nothing ever examines that tail. drop the .slice(0, 500) truncation in tokenize() so the whole section participates in similarity scoring.">
         <header class="fhead">
           <span class="fnum">F51</span>
           <h4>Similarity comparison ignores everything past the first five hundred tokens.</h4>
@@ -975,7 +1011,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Drop the .slice(0, 500) truncation in tokenize() so the whole section participates in similarity scoring.</p>
         
       </article>
-      <article class="finding" id="f52" data-sev="medium" data-eff="small" data-tags="ARCH">
+      <article class="finding" id="f52" data-sev="medium" data-eff="small" data-grade="source" data-cluster="The vault decaying with use" data-tags="ARCH" data-text="duplicate detection never compares across sections or notes.  deduplicateunits()  keys its candidate map on the note id joined to the section key, so every comparison stays inside one section of one note. the vault stores the same fact twice when it lands under two sections of a single note, or on both halves of a split identity. nothing ever reconciles the two copies, and both go on competing for retrieval budget. key the deduplicateunits() candidate map on note id alone so comparison spans every section of a note.">
         <header class="fhead">
           <span class="fnum">F52</span>
           <h4>Duplicate detection never compares across sections or notes.</h4>
@@ -986,7 +1022,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Key the deduplicateUnits() candidate map on note id alone so comparison spans every section of a note.</p>
         
       </article>
-      <article class="finding" id="f53" data-sev="high" data-eff="medium" data-tags="ARCH SCALE">
+      <article class="finding" id="f53" data-sev="high" data-eff="medium" data-grade="measured" data-cluster="The vault decaying with use" data-tags="ARCH SCALE" data-text="reworded restatements are never detected as duplicates. the write path running from  evidence-unit-extraction.ts  through  deduplicateunits()  into  draft-projector.ts  never calls an embedding function, and there are no embedding references in  dedup.ts ,  draft-projector.ts ,  source-extraction.ts  or  source-processing.ts . embeddings exist only on the index and retrieval side, in  embedding-adapter.ts ,  rebuild.ts  and  retrieval.ts . an embedding sweep over one corpus at a cosine threshold of roughly 0.88 surfaced about 35 genuine same-fact-different-words pairs that lexical dedup had passed through. each accepted restatement stays in the vault and competes for retrieval budget indefinitely. call the existing embedding-adapter from deduplicateunits() to compare candidates by cosine similarity alongside the lexical check.">
         <header class="fhead">
           <span class="fnum">F53</span>
           <h4>Reworded restatements are never detected as duplicates.</h4>
@@ -997,7 +1033,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Call the existing embedding-adapter from deduplicateUnits() to compare candidates by cosine similarity alongside the lexical check.</p>
         
       </article>
-      <article class="finding" id="f54" data-sev="high" data-eff="large" data-tags="ARCH MODEL UX">
+      <article class="finding" id="f54" data-sev="high" data-eff="large" data-grade="reported" data-cluster="The vault decaying with use" data-tags="ARCH MODEL UX" data-text="one identity section holds five different kinds of claim. stable traits, changes to those traits, dispositions and beliefs, backstory, and plain events all land in one character identity section.  isadditiveltmsection()  marks that section additive and exempts only  items  and  progression , so all five kinds accumulate against a single 20,000-character limit, a single contribution count, and a single retrieval budget. the characters who get the most development saturate first, and their budget goes to whichever claim kind happens to rank rather than to the kind the prompt needed. split the character identity section into separate section keys per claim kind so each carries its own cap and retrieval budget.">
         <header class="fhead">
           <span class="fnum">F54</span>
           <h4>One identity section holds five different kinds of claim.</h4>
@@ -1008,7 +1044,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Split the character identity section into separate section keys per claim kind so each carries its own cap and retrieval budget.</p>
         
       </article>
-      <article class="finding" id="f55" data-sev="high" data-eff="small" data-tags="ARCH UX">
+      <article class="finding" id="f55" data-sev="high" data-eff="small" data-grade="observed" data-cluster="The vault decaying with use" data-tags="ARCH UX" data-text="nothing curates keywords when the cap is reached. a token editor in the note editor and  patch /notes/:id  let a user curate keywords by hand, and  blockers()  in  identity-repair.ts  reports  combined keywords exceed the 30-keyword note limit.  as a merge blocker. nothing ranks, trims or auto-prunes when the union crosses thirty, and the editor enforces no count, so the cap arrives as a hard projection failure that an unrelated claim happens to trigger. the blind prune-and-retry behaviour that works around this lives in the operator's own  review-app.cjs , not in the package. show a live count against the 30-keyword limit in memoryvault's tokeneditor that blocks adding past the cap.">
         <header class="fhead">
           <span class="fnum">F55</span>
           <h4>Nothing curates keywords when the cap is reached.</h4>
@@ -1019,7 +1055,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Show a live count against the 30-keyword limit in MemoryVault's TokenEditor that blocks adding past the cap.</p>
         
       </article>
-      <article class="finding" id="f56" data-sev="medium" data-eff="medium" data-tags="ARCH USER UX">
+      <article class="finding" id="f56" data-sev="medium" data-eff="medium" data-grade="observed" data-cluster="The vault decaying with use" data-tags="ARCH USER UX" data-text="two notes for one subject can never be merged. fuzzy subject matching does exist on the way in:  subject-identity.ts  matches names against a trusted catalogue and records the basis as  exact_name ,  unique_alias ,  spelling_variation  or  trait_or_qualified_alias . nothing repairs a split once it has happened, and identity repair reported zero merge candidates for the pair that needed merging. one subject's history then sits in two notes, and dedup never compares them either, because its key is per note. add a merge action that folds one note's sections, links and subjects into another, using identity-repair's blockers() as the precheck.">
         <header class="fhead">
           <span class="fnum">F56</span>
           <h4>Two notes for one subject can never be merged.</h4>
@@ -1030,7 +1066,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a merge action that folds one note's sections, links and subjects into another, using identity-repair's blockers() as the precheck.</p>
         
       </article>
-      <article class="finding" id="f57" data-sev="medium" data-eff="small" data-tags="ARCH UX">
+      <article class="finding" id="f57" data-sev="medium" data-eff="small" data-grade="source" data-cluster="The vault decaying with use" data-tags="ARCH UX" data-text="nothing states that note ids derive from subject strings. the engine generates note ids from the subject string a claim carries. the derivation surfaces only when the result runs too long, in  evidence-unit-validation.ts , which emits  generated target note id '${noteid}' exceeds the long-term memory storage contract.  normalising names across the corpus before ingest is therefore a precondition for one note per subject, and no interface text or documentation says so. a user ingesting unnormalised names gets split notes with no signal at the time it happens. state in the import ui copy that note ids derive from the subject string, and that normalising names before ingest is a precondition.">
         <header class="fhead">
           <span class="fnum">F57</span>
           <h4>Nothing states that note ids derive from subject strings.</h4>
@@ -1041,7 +1077,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>State in the import UI copy that note ids derive from the subject string, and that normalising names before ingest is a precondition.</p>
         
       </article>
-      <article class="finding" id="f58" data-sev="high" data-eff="medium" data-tags="ARCH UX">
+      <article class="finding" id="f58" data-sev="high" data-eff="medium" data-grade="source" data-cluster="The vault decaying with use" data-tags="ARCH UX" data-text="there is no way to correct a wrong claim already in the vault. all seven mutation kinds,  create_note ,  append_section ,  update_section ,  add_link ,  set_keywords ,  set_status  and  set_subjects , act on a draft before apply. after apply, free-form section editing in the vault is the only remaining handle on the text, and it silently truncates at 20,000 characters and does not tie a line back to the evidence unit that produced it or supersede it. correcting a wrong claim in practice means fixing the corpus and re-ingesting the whole source. add per-contribution delete and replace controls to the vault note editor backed by patch /notes/:id so a user corrects a stored claim without re-ingesting the source.">
         <header class="fhead">
           <span class="fnum">F58</span>
           <h4>There is no way to correct a wrong claim already in the vault.</h4>
@@ -1052,7 +1088,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add per-contribution delete and replace controls to the vault note editor backed by PATCH /notes/:id so a user corrects a stored claim without re-ingesting the source.</p>
         
       </article>
-      <article class="finding" id="f59" data-sev="low" data-eff="medium" data-tags="ARCH CORPUS">
+      <article class="finding" id="f59" data-sev="low" data-eff="medium" data-grade="source" data-cluster="The vault decaying with use" data-tags="ARCH CORPUS" data-text="nothing records how heavily a claim was compressed. sections and chunks carry only wall-clock  createdat  and  updatedat  under  ltmsectionschema  and  ltmmemorychunkschema , and no field records how many summarisation passes produced the text. once stored, a near-verbatim extraction looks exactly like a claim that has been through several rounds of compression. each pass gives meaning a chance to drift, so the vault ends up holding claims of very different reliability with nothing to separate them. add a compressiondepth field to ltmsectionschema and ltmmemorychunkschema that carries the source's summarisation pass count.">
         <header class="fhead">
           <span class="fnum">F59</span>
           <h4>Nothing records how heavily a claim was compressed.</h4>
@@ -1063,7 +1099,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a compressionDepth field to ltmSectionSchema and ltmMemoryChunkSchema that carries the source's summarisation pass count.</p>
         
       </article>
-      <article class="finding" id="f60" data-sev="low" data-eff="medium" data-tags="SCALE MODEL">
+      <article class="finding" id="f60" data-sev="low" data-eff="medium" data-grade="measured" data-cluster="The vault decaying with use" data-tags="SCALE MODEL" data-text="identity notes accumulate content with no lasting value. extraction pulls routines, schedules and one-off logistics and files them into the same identity note as load-bearing history. about 10% of one real identity note was this kind of content, removable with no information loss. it consumes section characters, contributions and retrieval budget for as long as the note exists. classify routines, schedules and logistics at extraction and route them to a separate low-durability section key instead of the identity section.">
         <header class="fhead">
           <span class="fnum">F60</span>
           <h4>Identity notes accumulate content with no lasting value.</h4>
@@ -1075,13 +1111,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="Extraction that loses work quietly">
       <div class="chead">
         <h3>Extraction that loses work quietly</h3>
         <span class="cmeta">11 findings · 1 critical · 3 high</span>
       </div>
       
-      <article class="finding" id="f17" data-sev="critical" data-eff="small" data-tags="ARCH UX BUG">
+      <article class="finding" id="f17" data-sev="critical" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="ARCH UX BUG" data-text="an extraction scope with no chats rejects every claim as untrusted. the roster builder collects trusted subjects from the persona ids of the chats that the extraction scope resolves, so a scope carrying no chat ids yields a roster with zero entries.  loadtrustedltmsubjectcatalog()  always constructs the catalog object, and  enforcetrustedsubjects  switches on whenever that object exists, so an empty roster enforces exactly as a populated one does. nothing inspects roster size before the run spends the model call; the drops surface afterward, one per candidate, as  untrusted_subject . the stock  all available  import target passes no scope at all, which is the configuration that produces the empty roster. skip enforcetrustedsubjects in source-extraction.ts when loadtrustedltmsubjectcatalog() returns a roster with zero entries.">
         <header class="fhead">
           <span class="fnum">F17</span>
           <h4>An extraction scope with no chats rejects every claim as untrusted.</h4>
@@ -1092,7 +1128,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Skip enforceTrustedSubjects in source-extraction.ts when loadTrustedLtmSubjectCatalog() returns a roster with zero entries.</p>
         <p class="fnote">seems kinda niche</p>
       </article>
-      <article class="finding" id="f18" data-sev="low" data-eff="small" data-tags="UX ARCH">
+      <article class="finding" id="f18" data-sev="low" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="UX ARCH" data-text="the persona scope field cannot be set through the interface. the vault's scope editor renders an existing persona id only as a removable pill. its add controls are a chat or group select and a character-id input, and no add-persona control exists anywhere in the feature, so only the api or chat-scope resolution ever populates the field. of the stock import targets only  current chat  carries a  personaid . the effect stays second-order in any case: the roster builds from  scope.chatids , and  personaid  changes only which existing notes enter the catalog. add an add-persona control to the scope editor in memoryvault.tsx beside the existing chat, group and character-id inputs.">
         <header class="fhead">
           <span class="fnum">F18</span>
           <h4>The persona scope field cannot be set through the interface.</h4>
@@ -1103,7 +1139,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add an add-persona control to the scope editor in MemoryVault.tsx beside the existing chat, group and character-id inputs.</p>
         <p class="fnote">i don't think i personally ran into this so marked low prio</p>
       </article>
-      <article class="finding" id="f19" data-sev="low" data-eff="small" data-tags="UX">
+      <article class="finding" id="f19" data-sev="low" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="UX" data-text="rejected candidates sit in a collapsed panel scoped to one source. the panel itself is substantial.  /rejected-suggestions  feeds a panel titled  suggestions that weren't saved , which shows per item the proposed content, a mapped  why it wasn't saved  label, a  what was expected  line built from the  recovery  object, a suggested fix, and two actions: recover manually, which hands off to the vault prefilled, and delete. it renders as a  &lt;details&gt;  element collapsed by default and scoped to the currently selected source, so it stays invisible from every other part of the workspace. a run that discards a third of its candidates therefore leaves no mark anywhere the user is already looking. show the count returned by /rejected-suggestions as a badge on the review queue header and open the details panel when that count is non-zero.">
         <header class="fhead">
           <span class="fnum">F19</span>
           <h4>Rejected candidates sit in a collapsed panel scoped to one source.</h4>
@@ -1114,7 +1150,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Show the count returned by /rejected-suggestions as a badge on the review queue header and open the details panel when that count is non-zero.</p>
         
       </article>
-      <article class="finding" id="f20" data-sev="medium" data-eff="small" data-tags="UX">
+      <article class="finding" id="f20" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="UX" data-text="draft block reasons render as raw enum names.  rejectionreasonlabels  and a parallel fix table map extraction drop reasons, giving all eleven a distinct human label and a distinct suggested remedy. the eight draft block reason codes get neither: each renders as a humanized enum name plus the raw message, with no explanation of what it means or what caused it. nothing aggregates or groups either set by cause, so the reviewer reads forty instances of one underlying problem forty separate times. add the eight draft block reason codes to rejectionreasonlabels and its parallel suggested-fix table in reviewqueue.tsx.">
         <header class="fhead">
           <span class="fnum">F20</span>
           <h4>Draft block reasons render as raw enum names.</h4>
@@ -1125,7 +1161,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add the eight draft block reason codes to rejectionReasonLabels and its parallel suggested-fix table in ReviewQueue.tsx.</p>
         
       </article>
-      <article class="finding" id="f21" data-sev="low" data-eff="small" data-tags="UX">
+      <article class="finding" id="f21" data-sev="low" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="UX" data-text="the extraction summary omits how many candidates were dropped. the outcome state is honest about itself:  summarizeextractionoutcome()  returns  partial_success  whenever a run keeps anything and drops or deduplicates anything, and the import panel renders a warning-toned  partial success  badge. the numbers next to it are requested, wrote, succeeded, failed, cancelled, missing and write failures.  totalcandidates ,  keptunits  and  droppedunits  appear nowhere in that summary, so only the review queue, a navigation away, reveals the size of the loss. include totalcandidates, keptunits and droppedunits from summarizeextractionoutcome() in the importresultsummary rendered by sourcesworkspace.tsx.">
         <header class="fhead">
           <span class="fnum">F21</span>
           <h4>The extraction summary omits how many candidates were dropped.</h4>
@@ -1136,7 +1172,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Include totalCandidates, keptUnits and droppedUnits from summarizeExtractionOutcome() in the importResultSummary rendered by SourcesWorkspace.tsx.</p>
         
       </article>
-      <article class="finding" id="f22" data-sev="high" data-eff="small" data-tags="MODEL ARCH BUG">
+      <article class="finding" id="f22" data-sev="high" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="MODEL ARCH BUG" data-text="an explicit null on an optional field discards the whole claim. the evidence-unit schema declares optional fields  .optional()  and never  .nullable() , so a unit carrying   dimensions : null  fails parsing and extraction discards it whole as  invalid_format .  normalizeevidenceunitresponse()  rewrites only  id ,  sourcehash  and  links , and it does coerce a non-array  links  to an empty array, so the pass that runs immediately before validation already knows how to normalize junk of this shape. one full extraction run produced 28 of 200 rejections that were exactly this:  dimensions  or  dimensionchanges  set to null. strip null-valued optional fields in normalizeevidenceunitresponse() before parseevidenceunitpayload validates the unit.">
         <header class="fhead">
           <span class="fnum">F22</span>
           <h4>An explicit null on an optional field discards the whole claim.</h4>
@@ -1147,7 +1183,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Strip null-valued optional fields in normalizeEvidenceUnitResponse() before parseEvidenceUnitPayload validates the unit.</p>
         
       </article>
-      <article class="finding" id="f23" data-sev="high" data-eff="small" data-tags="MODEL ARCH UX">
+      <article class="finding" id="f23" data-sev="high" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="MODEL ARCH UX" data-text="the structured-output requirements for a model are documented nowhere. extraction actually needs generic openai-compatible  json_schema  with  strict: false , not strict mode and not tool calling; the code avoids strict mode deliberately because the schema uses  format ,  pattern , length bounds,  uniqueitems  and conditional subschemas that it rejects. a degradation path exists too:  isresponseformatunsupportederror()  triggers a retry with the response format removed, and  extractjsonobject()  salvages fenced or embedded json, which is precisely the regime where null-for-optional and shape drift bite hardest. no document states any of this where a user choosing a model can read it, so the user establishes a model's compatibility by paying for a full run and reading the wreckage. state the json_schema with strict false requirement in the extraction model help text in memorysettings.tsx.">
         <header class="fhead">
           <span class="fnum">F23</span>
           <h4>The structured-output requirements for a model are documented nowhere.</h4>
@@ -1158,7 +1194,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>State the json_schema with strict false requirement in the extraction model help text in MemorySettings.tsx.</p>
         
       </article>
-      <article class="finding" id="f24" data-sev="high" data-eff="medium" data-tags="MODEL ARCH">
+      <article class="finding" id="f24" data-sev="high" data-eff="medium" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="MODEL ARCH" data-text="hitting the output limit discards the entire extraction. a finish reason of length or max-tokens makes  runlongtermmemoryevidenceunitextraction()  throw  ltm_model_output_truncated , and the handler drops the entire response instead of parsing up to the last complete unit, even though a valid json prefix sits in the buffer. stock settings expose  maxoutputtokens , clamped between 512 and 32,768 and floored by the model's own limit, so the ceiling tunes but the failure stays all-or-nothing. the user pays for the call in full and nothing from it survives. parse the buffered response up to the last complete evidence unit in runlongtermmemoryevidenceunitextraction() instead of throwing ltm_model_output_truncated.">
         <header class="fhead">
           <span class="fnum">F24</span>
           <h4>Hitting the output limit discards the entire extraction.</h4>
@@ -1169,7 +1205,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Parse the buffered response up to the last complete evidence unit in runLongTermMemoryEvidenceUnitExtraction() instead of throwing ltm_model_output_truncated.</p>
         
       </article>
-      <article class="finding" id="f25" data-sev="medium" data-eff="small" data-tags="ARCH">
+      <article class="finding" id="f25" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="ARCH" data-text="nothing caps the size of a source note before extraction. one input-side guard exists:  preflightextractionpromptcontext()  throws  ltm_model_context_capacity  before any model call when the assembled prompt would need trimming. it early-returns unless the provider reports a known context window, so a provider that reports none skips the check entirely. import applies no byte-size limit to a source note and performs no chunking; the code states outright that it never truncates source text and directs the user to split it by hand. apply a fixed fallback character budget in preflightextractionpromptcontext() when the provider reports no context window instead of early-returning unchecked.">
         <header class="fhead">
           <span class="fnum">F25</span>
           <h4>Nothing caps the size of a source note before extraction.</h4>
@@ -1180,7 +1216,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Apply a fixed fallback character budget in preflightExtractionPromptContext() when the provider reports no context window instead of early-returning unchecked.</p>
         
       </article>
-      <article class="finding" id="f29" data-sev="medium" data-eff="small" data-tags="ARCH UX">
+      <article class="finding" id="f29" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="ARCH UX" data-text="editing a source silently blocks its pending drafts.  draftfreshness()  derives freshness on every review read and stores nothing, comparing the draft's own fingerprint against one it recomputes from the source note's live content. any drift in a fingerprint input flips it: the source section's text or evidence, the note title or id, provenance, modes, extraction mode, or normalized scope, which covers chat, group and character ids while deliberately excluding  personaid . once the reviewer opens the queue the block announces itself clearly, with the pill reading stale, a red panel reading  source stale: the source or extraction context changed after this extraction. , exclusion from bulk apply, and a 409 on applying anyway. the transition itself stays silent: nothing emits an event, notification or log entry, so nothing prompts anyone to go and look. add a stale-draft count computed from draftfreshness() to the review summary in ltmworkspace.tsx so the transition is visible without opening the queue.">
         <header class="fhead">
           <span class="fnum">F29</span>
           <h4>Editing a source silently blocks its pending drafts.</h4>
@@ -1191,7 +1227,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a stale-draft count computed from draftFreshness() to the review summary in LtmWorkspace.tsx so the transition is visible without opening the queue.</p>
         
       </article>
-      <article class="finding" id="f43" data-sev="medium" data-eff="medium" data-tags="ARCH UX">
+      <article class="finding" id="f43" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Extraction that loses work quietly" data-tags="ARCH UX" data-text="some memories are applied without review and without notice.  lowrisk()  gates the path: it requires  risk ===  low  , excludes scene-prefixed notes and excludes any note carrying  conflicts . reconciliation writes mutations that clear it straight into the vault, and they never appear in the review queue. eligibility depends on the source, so chat-summary material can take that path while character and lorebook material cannot. nothing in the interface names which sources bypass review, and nothing lists what the package wrote on the user's behalf, so the reviewed set and the vault's contents diverge with no surface acknowledging it. list mutations that passed the lowrisk() gate in reconciliation.ts as an already-applied section in reviewqueue.tsx.">
         <header class="fhead">
           <span class="fnum">F43</span>
           <h4>Some memories are applied without review and without notice.</h4>
@@ -1203,13 +1239,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="No account of what recall did">
       <div class="chead">
         <h3>No account of what recall did</h3>
         <span class="cmeta">5 findings · 1 critical</span>
       </div>
       
-      <article class="finding" id="f10" data-sev="medium" data-eff="small" data-tags="UX">
+      <article class="finding" id="f10" data-sev="medium" data-eff="small" data-grade="source" data-cluster="No account of what recall did" data-tags="UX" data-text="five different recall outcomes present as the same absence. an empty vault, no lexical or vector match, a score below threshold, a budget drop and ineligibility for the current chat mode all end at the same empty readout.  budget.ts  already computes a typed  rejectionreason  per discarded candidate, drawn from  budget ,  lower_rank ,  score_threshold ,  duplicate_text  and  missing_chunk ; it populates those rejected candidates only when  explain  is set, which comes from  recall.debugenabled , and the result goes to the debug log rather than to the recall readout. the single question users ask about a memory system, why it did not remember, has one undifferentiated answer built from data the engine computes on every turn. populate rejected candidates in budget.ts unconditionally rather than only when explain is set and show the dominant rejectionreason in the recall readout.">
         <header class="fhead">
           <span class="fnum">F10</span>
           <h4>Five different recall outcomes present as the same absence.</h4>
@@ -1220,7 +1256,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Populate rejected candidates in budget.ts unconditionally rather than only when explain is set and show the dominant rejectionReason in the recall readout.</p>
         
       </article>
-      <article class="finding" id="f11" data-sev="low" data-eff="small" data-tags="UX ARCH">
+      <article class="finding" id="f11" data-sev="low" data-eff="small" data-grade="source" data-cluster="No account of what recall did" data-tags="UX ARCH" data-text="most per-candidate recall scoring is computed and never emitted. per candidate,  ltmrankedcandidate  carries  score ,  normalizedscore ,  finalnormalizedscore ,  relevancescore ,  reasons[] ,  lanes[] ,  lanescores{} ,  rawlanescores{}  and  cooldownpenalty , gaining  tier  and  estimatedtokens  on selected candidates and  rejectionreason  on rejected ones.  preparegenerationlongtermmemory()  emits one  recall_explanation  event carrying note id, section key, relevance score, lanes, reasons, estimated tokens and rejection reason, and only when debug recording is on;  activityview.tsx  renders that event. nothing emits  lanescores ,  rawlanescores ,  normalizedscore ,  finalnormalizedscore , the raw fused  score ,  tier  or  cooldownpenalty  at all, so with debug off the entire recall surface amounts to note titles and token counts. include lanescores, rawlanescores, normalizedscore, finalnormalizedscore, the fused score, tier and cooldownpenalty in the recall_explanation event emitted by preparegenerationlongtermmemory().">
         <header class="fhead">
           <span class="fnum">F11</span>
           <h4>Most per-candidate recall scoring is computed and never emitted.</h4>
@@ -1231,7 +1267,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Include laneScores, rawLaneScores, normalizedScore, finalNormalizedScore, the fused score, tier and cooldownPenalty in the recall_explanation event emitted by prepareGenerationLongTermMemory().</p>
         
       </article>
-      <article class="finding" id="f12" data-sev="critical" data-eff="medium" data-tags="ARCH BUG">
+      <article class="finding" id="f12" data-sev="critical" data-eff="medium" data-grade="source" data-cluster="No account of what recall did" data-tags="ARCH BUG" data-text="the recency weighting branch is unreachable.  reciprocalrankfuse(lanes, options = {})  in  ranking.ts  reads  options.cooldowns  to set  cooldownpenalty  and scale a candidate's score, and the  ltmrankcooldown  type exists to feed it. the sole caller,  retrievelongtermmemory  in  retrieval.ts , invokes  reciprocalrankfuse(lanes)  with no options object, leaving  cooldowns  unconditionally  undefined  so the penalty branch never executes. nothing else derives a score from age either: the five lanes are direct-metadata, bm25, keyword, graph and vector, neither ranking nor budgeting reads  chunk.updatedat , and only  retention.ts  consumes the  lastinjectedat  value that  usage.ts  writes, for pruning. ranking runs entirely age-blind, and the declared cooldown is a caller-supplied multiplier rather than anything derived from recency. pass a cooldowns option derived from each candidate's lastinjectedat into reciprocalrankfuse() from retrievelongtermmemory() in retrieval.ts.">
         <header class="fhead">
           <span class="fnum">F12</span>
           <h4>The recency weighting branch is unreachable.</h4>
@@ -1242,7 +1278,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Pass a cooldowns option derived from each candidate's lastInjectedAt into reciprocalRankFuse() from retrieveLongTermMemory() in retrieval.ts.</p>
         <p class="fnote">marked critical on the assumption this isn't known to maintainers</p>
       </article>
-      <article class="finding" id="f13" data-sev="medium" data-eff="large" data-tags="ARCH UX">
+      <article class="finding" id="f13" data-sev="medium" data-eff="large" data-grade="source" data-cluster="No account of what recall did" data-tags="ARCH UX" data-text="recalled events reach the model with no chronological order.  applyltmbudget  and  tierfor  in  budget.ts  order selected chunks by tier, then score, then  chunk.id , and  timeline_event  sits in tier 3, so the bullets inside a  [timeline]  block that  serializelongtermmemoryprompt  emits appear in relevance order tie-broken by an id string. notes, sections and chunks carry no in-world date or time field, only wall-clock  createdat  and  updatedat , and the serializer renders no timestamp of any kind into the prompt. the model receives a set of events with no sequence, grouping or stated relation between them, which bites hardest in conversation mode, where the engine does inject a current-context block with real time and date that the memories cannot connect to. add an optional in-world timestamp field to ltmsectionschema that extraction populates and that serializelongtermmemoryprompt() uses to order timeline bullets.">
         <header class="fhead">
           <span class="fnum">F13</span>
           <h4>Recalled events reach the model with no chronological order.</h4>
@@ -1253,7 +1289,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add an optional in-world timestamp field to ltmSectionSchema that extraction populates and that serializeLongTermMemoryPrompt() uses to order TIMELINE bullets.</p>
         
       </article>
-      <article class="finding" id="f14" data-sev="low" data-eff="small" data-tags="ARCH">
+      <article class="finding" id="f14" data-sev="low" data-eff="small" data-grade="source" data-cluster="No account of what recall did" data-tags="ARCH" data-text="the model cannot tell which memory an injected line came from.  chunknotesections  in  chunking.ts  never copies a section's structured  evidence[]  onto the chunk, and the chunk schema has no evidence field, so the injector cannot reach supporting quotes by construction. at serialization,  memorytitle  in  prompt.ts  groups character and relationship chunks under a note title, while it emits  world ,  timeline_event ,  thread ,  tone  and  scene  chunks as bare bullets under a category header with no title, no id and no section key. the user can trace a recalled note afterwards through the last-injection summary; the model reading a  [world]  or  [timeline]  bullet cannot attribute it to a memory or weigh it by the evidence behind it. emit the owning note title and section key alongside every world, timeline_event, thread, tone and scene bullet in memorytitle() in prompt.ts.">
         <header class="fhead">
           <span class="fnum">F14</span>
           <h4>The model cannot tell which memory an injected line came from.</h4>
@@ -1265,13 +1301,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="Diagnosing it">
       <div class="chead">
         <h3>Diagnosing it</h3>
         <span class="cmeta">6 findings · 1 high</span>
       </div>
       
-      <article class="finding" id="f61" data-sev="medium" data-eff="small" data-tags="UX ARCH">
+      <article class="finding" id="f61" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Diagnosing it" data-tags="UX ARCH" data-text="section-limit errors never name the note that overflowed.  mergesection()  in  draft-projector.ts  throws  a projected section exceeds the 20,000-character text limit.  and  a projected section exceeds the 100-contribution limit.  with code  projection_limit_exceeded . no caller hands it the note id or the section key: both sit one frame up in  applymutation  as  current.id  and  mutation.sectionkey , and nothing threads them down, so the omission is structural rather than a matter of message wording. other errors in the same codebase do name their object, including  evidence-unit-validation.ts  and the key-qualified messages from  blockers()  in  identity-repair.ts . one run produced 35 identical failures with no note id, no section key and no current size, leaving no way to tell which of 161 notes overflowed. thread current.id and mutation.sectionkey from applymutation into mergesection() in draft-projector.ts and name them in the projection_limit_exceeded message.">
         <header class="fhead">
           <span class="fnum">F61</span>
           <h4>Section-limit errors never name the note that overflowed.</h4>
@@ -1282,7 +1318,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Thread current.id and mutation.sectionKey from applyMutation into mergeSection() in draft-projector.ts and name them in the projection_limit_exceeded message.</p>
         
       </article>
-      <article class="finding" id="f62" data-sev="medium" data-eff="small" data-tags="UX">
+      <article class="finding" id="f62" data-sev="medium" data-eff="small" data-grade="observed" data-cluster="Diagnosing it" data-tags="UX" data-text="the storage-contract error delivers a raw schema dump. a storage-contract failure means a projected note no longer validates against  ltmnoteschema , usually because it breached an array cap such as the 30-keyword or 250-link limits.  projectltmdraftmutationgroup()  in  draft-projector.ts  catches the parse failure and rethrows it as  long-term memory projection for char_wren exceeds its storage contract:   followed by the validator's own message, which begins  [{ code : too_big , maximum :30, type : array , ... . that message does name the note, unlike the section-limit errors, but the part identifying which cap it hit arrives as a serialized issue array the reader has to parse by hand. map the caught validator issues in projectltmdraftmutationgroup() to a readable line naming the field and the cap it exceeded instead of appending the raw issue array.">
         <header class="fhead">
           <span class="fnum">F62</span>
           <h4>The storage-contract error delivers a raw schema dump.</h4>
@@ -1293,7 +1329,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Map the caught validator issues in projectLtmDraftMutationGroup() to a readable line naming the field and the cap it exceeded instead of appending the raw issue array.</p>
         <p class="fnote">needs rewording. what's the "storage-contract failure"?</p>
       </article>
-      <article class="finding" id="f63" data-sev="high" data-eff="small" data-tags="UX ARCH BUG">
+      <article class="finding" id="f63" data-sev="high" data-eff="small" data-grade="source" data-cluster="Diagnosing it" data-tags="UX ARCH BUG" data-text="a permissions failure is shown as a generic loading error.  registerprivilegedroutes  in  server-entry.ts  attaches a blanket  onrequest  hook to every route in the package, so that hook gates  /status  identically to  delete /data , with no per-route granularity. with  admin_secret  unset and the request not loopback-exempt,  requireprivilegedaccess  returns 403 with  admin_secret is required for privileged apis , but  request()  in  api.ts  reads only  payload.error  and never inspects the status code, and the read views discard even that:  memorysettings.tsx  renders a fixed  could not load memory settings. , and the same pattern produces  integrity check could not load. ,  long-term memory status could not load.  and  could not load activity.  a search of the stock ltm client for  403  or  apierror  returns nothing, so nothing distinguishes a permissions problem from a server fault. the engine already ships  getprivilegedactionerrormessage  and  privileged_access_hint , which name the remedy, and the package's private client ignores them despite sending  x-admin-secret  from the same localstorage key. have request() in api.ts inspect the response status and return getprivilegedactionerrormessage with privileged_access_hint for 403 so the views name the admin_secret remedy.">
         <header class="fhead">
           <span class="fnum">F63</span>
           <h4>A permissions failure is shown as a generic loading error.</h4>
@@ -1304,7 +1340,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Have request() in api.ts inspect the response status and return getPrivilegedActionErrorMessage with PRIVILEGED_ACCESS_HINT for 403 so the views name the ADMIN_SECRET remedy.</p>
         
       </article>
-      <article class="finding" id="f64" data-sev="low" data-eff="small" data-tags="UX BUG">
+      <article class="finding" id="f64" data-sev="low" data-eff="small" data-grade="source" data-cluster="Diagnosing it" data-tags="UX BUG" data-text="most of the status payload is fetched and never displayed. the  /status  response carries index errors and warnings, a dirty flag, a generation timestamp, a source hash, note counts by type and by status, event counts, and both embedding fields. the interface reads two values from it: the total note count and the indexed chunk count. it fetches everything else on every load and throws it away, including  indexes.errors  and  embeddingsavailable , so the fields that would explain a degraded vault are precisely the ones no component renders. render indexes.errors, indexes.warnings, the dirty flag, the generation timestamp and embeddingsavailable from the already-fetched /status payload in longtermmemorydetail.tsx.">
         <header class="fhead">
           <span class="fnum">F64</span>
           <h4>Most of the status payload is fetched and never displayed.</h4>
@@ -1315,7 +1351,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Render indexes.errors, indexes.warnings, the dirty flag, the generation timestamp and embeddingsAvailable from the already-fetched /status payload in LongTermMemoryDetail.tsx.</p>
         <p class="fnote">bruh the sentence structure here is whack. reword to simplify</p>
       </article>
-      <article class="finding" id="f65" data-sev="medium" data-eff="medium" data-tags="UX">
+      <article class="finding" id="f65" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Diagnosing it" data-tags="UX" data-text="diagnostic information is split across four separate places. rejected candidates render in a collapsed panel in  reviewqueue.tsx , integrity results in the maintenance tab of  memorysettings.tsx , last injection in  lastinjectionsummary.tsx  in two spots, and the 200-event debug feed in  activityview.tsx .  longtermmemorynavigation.tsx  lists the activity view as no destination at all: it sits inside the settings debug tab behind a  record debug activity  toggle that defaults off, and until a user finds that toggle the package records nothing to look at. no surface combines them, so answering why memory is not working means visiting four components in three tabs, and the one carrying per-candidate recall scoring is the one that starts empty. promote activityview.tsx to a diagnostics destination in longtermmemorynavigation.tsx that also embeds rejected suggestions, integrity results and the last-injection readout with debug recording on by default.">
         <header class="fhead">
           <span class="fnum">F65</span>
           <h4>Diagnostic information is split across four separate places.</h4>
@@ -1326,7 +1362,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Promote ActivityView.tsx to a Diagnostics destination in LongTermMemoryNavigation.tsx that also embeds rejected suggestions, integrity results and the last-injection readout with debug recording on by default.</p>
         
       </article>
-      <article class="finding" id="f66" data-sev="medium" data-eff="small" data-tags="UX">
+      <article class="finding" id="f66" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Diagnosing it" data-tags="UX" data-text="vault health reporting omits most of what the package knows.  longtermmemorydetail.tsx  shows a health pill and, when health is not healthy, a warning banner whose popover gives a derived index health label, the indexed chunk count, and a pointer to settings, maintenance, reindex. the same response also delivers note counts by type, embedded chunk counts, index errors and warnings, the dirty flag and the generation timestamp, and the component renders none of them; a different component again, inside  memorysettings.tsx , reports integrity problems. what exists therefore covers roughly two of six things the package already knows about vault state, split across two places, with no single view of it. expand the health popover in longtermmemorydetail.tsx to render note counts by type, embedded chunk counts, index errors and warnings, the dirty flag and the generation timestamp from the same /status response.">
         <header class="fhead">
           <span class="fnum">F66</span>
           <h4>Vault health reporting omits most of what the package knows.</h4>
@@ -1338,13 +1374,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="Organising the review queue">
       <div class="chead">
         <h3>Organising the review queue</h3>
         <span class="cmeta">4 findings</span>
       </div>
       
-      <article class="finding" id="f31" data-sev="medium" data-eff="medium" data-tags="SCALE UX ARCH">
+      <article class="finding" id="f31" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Organising the review queue" data-tags="SCALE UX ARCH" data-text="the review queue can only be grouped one way. the queue fixes the hierarchy at source, then draft, then target, then mutation. it consumes  targets[] , so the data for organising the work by subject already rides the wire, but a target renders as an unlabeled wrapper element with no header, which makes even the existing grouping imperceptible. the query hard-codes  /drafts/review?status=pending , and the view carries no pivot, group-by, sort, filter or search control of any kind. reviewing one character means visiting every draft that happens to touch them. pivot reviewqueue.tsx to group rows under the target memory title that targets[] already returns.">
         <header class="fhead">
           <span class="fnum">F31</span>
           <h4>The review queue can only be grouped one way.</h4>
@@ -1355,7 +1391,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Pivot ReviewQueue.tsx to group rows under the target memory title that targets[] already returns.</p>
         
       </article>
-      <article class="finding" id="f32" data-sev="medium" data-eff="small" data-tags="UX BUG">
+      <article class="finding" id="f32" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Organising the review queue" data-tags="UX BUG" data-text="review selection is cleared whenever the view changes. the machinery for a wide batch is present: per-mutation checkboxes, a select-all with indeterminate state, a sticky batch bar offering  accept eligible (n) ,  skip selected (n)  and  clear , and a  runbatch()  that already groups its outgoing requests by draft. an effect resets  selectedids  on any change of chat, source or selected draft, destroying the selection before it can ever span two drafts. bulk action works, but permanently within one draft at a time, and nothing ever exercises the request layer's grouping. narrow the selectedids reset effect in reviewqueue.tsx so selection clears only on chat change, not on source or draft change.">
         <header class="fhead">
           <span class="fnum">F32</span>
           <h4>Review selection is cleared whenever the view changes.</h4>
@@ -1366,7 +1402,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Narrow the selectedIds reset effect in ReviewQueue.tsx so selection clears only on chat change, not on source or draft change.</p>
         
       </article>
-      <article class="finding" id="f33" data-sev="medium" data-eff="small" data-tags="SCALE UX">
+      <article class="finding" id="f33" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Organising the review queue" data-tags="SCALE UX" data-text="unsubmitted review state does not survive a reload. decisions themselves survive, because each click posts immediately to  /drafts/:id/accept  or  /skip , so applied work never goes missing. only react state holds  selectedids  and  editedbyid : the current selection and every unsubmitted edit to a note title, section text or per-section importance. the feature's only  localstorage  users are the onboarding flag and the admin secret, so a reload or a navigation away discards the whole in-progress pass. persist selectedids and editedbyid to localstorage keyed by chat id so a reload restores the in-progress pass.">
         <header class="fhead">
           <span class="fnum">F33</span>
           <h4>Unsubmitted review state does not survive a reload.</h4>
@@ -1377,7 +1413,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Persist selectedIds and editedById to localStorage keyed by chat id so a reload restores the in-progress pass.</p>
         
       </article>
-      <article class="finding" id="f34" data-sev="medium" data-eff="small" data-tags="SCALE UX">
+      <article class="finding" id="f34" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Organising the review queue" data-tags="SCALE UX" data-text="the review queue shows depth but never progress. the review summary renders counts of sources, pending mutations, ready and blocked, all of which describe how much remains rather than how much the reviewer has handled. no component computes an  x of y reviewed  figure. key handling in the feature amounts to roving-tab arrows and escape or enter in shared controls, with no accept, reject or next shortcut, so a pass over hundreds of mutations runs entirely on the mouse and gives no sense of an end. compute a reviewed-of-total figure from the counts already in the review summary and render it as a progress line above the queue.">
         <header class="fhead">
           <span class="fnum">F34</span>
           <h4>The review queue shows depth but never progress.</h4>
@@ -1389,13 +1425,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="Running extraction at scale">
       <div class="chead">
         <h3>Running extraction at scale</h3>
         <span class="cmeta">4 findings</span>
       </div>
       
-      <article class="finding" id="f26" data-sev="low" data-eff="medium" data-tags="SCALE ARCH UX">
+      <article class="finding" id="f26" data-sev="low" data-eff="medium" data-grade="source" data-cluster="Running extraction at scale" data-tags="SCALE ARCH UX" data-text="a long extraction run reports no progress until it finishes.  post /import/source-notes  accepts up to 100  sourceids  at an  importconcurrency  of 1 to 10, so batching is real, but it runs as one long synchronous request that returns only a terminal report. no sse stream, websocket, polling interval, job table or pollable operation status exists anywhere; the route mints an  operationid  per call and echoes it back with no way to query it. the only mid-flight control is a client-side abort, which the server does honor. a run lasting tens of minutes therefore looks exactly like a hang until it returns. return post /import/source-notes as an sse stream that emits a per-source completion event the import panel in sourcesworkspace.tsx renders as progress.">
         <header class="fhead">
           <span class="fnum">F26</span>
           <h4>A long extraction run reports no progress until it finishes.</h4>
@@ -1406,7 +1442,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Return POST /import/source-notes as an SSE stream that emits a per-source completion event the import panel in SourcesWorkspace.tsx renders as progress.</p>
         
       </article>
-      <article class="finding" id="f27" data-sev="low" data-eff="medium" data-tags="ARCH BUG">
+      <article class="finding" id="f27" data-sev="low" data-eff="medium" data-grade="source" data-cluster="Running extraction at scale" data-tags="ARCH BUG" data-text="the package cannot set a timeout on its own model calls. the capability language-model surface exposes no timeout field, so extraction inherits  default_chat_generation_timeout_ms , the engine's deliberate 300-second default on the server's own outbound model call, adjustable only globally through  chat_generation_timeout_ms . extraction does not stream, so that budget covers the whole wait for the first byte rather than the gap between tokens. the engine already ships a per-request override helper,  withllmrequesttimeout , and nothing calls it. expose a timeoutms option on the capability language-model surface in package-runtime.ts that forwards to the existing withllmrequesttimeout helper.">
         <header class="fhead">
           <span class="fnum">F27</span>
           <h4>The package cannot set a timeout on its own model calls.</h4>
@@ -1417,7 +1453,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Expose a timeoutMs option on the capability language-model surface in package-runtime.ts that forwards to the existing withLlmRequestTimeout helper.</p>
         
       </article>
-      <article class="finding" id="f28" data-sev="medium" data-eff="small" data-tags="ARCH UX">
+      <article class="finding" id="f28" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Running extraction at scale" data-tags="ARCH UX" data-text="re-extraction runs one source at a time.  reextract()  posts to  post /notes/:id/extract  for a single source and disables itself while a call is in flight, so a hundred sources means a hundred sequential round trips driven by hand. extraction never skips work:  preparelongtermmemorysource()  calls the model unconditionally, and it writes the fingerprint after the fact, serving only a post-hoc 409 concurrency guard, draft staleness labelling and preview freshness colouring. that guard can abort a re-extract after the user has already paid for the model call, when scope or modes changed concurrently. point reextract() in sourcesworkspace.tsx at the existing batch post /import/source-notes route with the multi-selected source ids.">
         <header class="fhead">
           <span class="fnum">F28</span>
           <h4>Re-extraction runs one source at a time.</h4>
@@ -1428,7 +1464,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Point reextract() in SourcesWorkspace.tsx at the existing batch POST /import/source-notes route with the multi-selected source ids.</p>
         
       </article>
-      <article class="finding" id="f30" data-sev="medium" data-eff="medium" data-tags="SCALE UX">
+      <article class="finding" id="f30" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Running extraction at scale" data-tags="SCALE UX" data-text="re-extraction and review decisions have no bulk path. batch routes are genuine across most of the surface:  post /import/source-notes  takes an array of up to 100 source ids at configurable concurrency, and  post /notes/batch ,  post /notes/permanent-delete  and  post /notes/transfer  all take batches, with the sources ui multi-selecting against them. the two operations a large corpus consumes most are the exceptions. re-extraction handles one source per request, and review accept and skip work per draft, so at 97 sources and roughly 1,150 claims the user drives the unbatched paths hundreds of times. add batch accept and skip routes modelled on post /notes/batch and drive them from runbatch() in reviewqueue.tsx.">
         <header class="fhead">
           <span class="fnum">F30</span>
           <h4>Re-extraction and review decisions have no bulk path.</h4>
@@ -1440,13 +1476,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="Getting oriented">
       <div class="chead">
         <h3>Getting oriented</h3>
         <span class="cmeta">5 findings</span>
       </div>
       
-      <article class="finding" id="f1" data-sev="medium" data-eff="small" data-tags="UX ARCH">
+      <article class="finding" id="f1" data-sev="medium" data-eff="small" data-grade="observed" data-cluster="Getting oriented" data-tags="UX ARCH" data-text="seven pipeline nouns are used in the interface and defined nowhere. the chain runs source note, extraction, evidence unit, mutation, draft, note, section, chunk, in that fixed order, and each term carries a distinct meaning. no glossary, tooltip or inline definition exists anywhere in the feature:  reviewqueue.tsx  renders drafts made of mutations and labels them with those words while explaining neither. the queue therefore asks the reviewer to accept or skip individual mutations without giving them a way to name the objects each mutation changes, and the only coping strategy left is to accept everything, which removes the point of having a review step. add a collapsible glossary block to ltmworkspace.tsx that defines source note, extraction, evidence unit, mutation, draft, note, section and chunk in one line each.">
         <header class="fhead">
           <span class="fnum">F1</span>
           <h4>Seven pipeline nouns are used in the interface and defined nowhere.</h4>
@@ -1457,7 +1493,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a collapsible glossary block to LtmWorkspace.tsx that defines source note, extraction, evidence unit, mutation, draft, note, section and chunk in one line each.</p>
         
       </article>
-      <article class="finding" id="f2" data-sev="low" data-eff="small" data-tags="UX">
+      <article class="finding" id="f2" data-sev="low" data-eff="small" data-grade="observed" data-cluster="Getting oriented" data-tags="UX" data-text="the sources screen opens on a tab that is empty by construction on a new chat.  sourcesworkspace.tsx  initialises its tab state with  usestate&lt;source&gt;( chats ) , so the workspace always lands on chat summaries, the first entry in  sourcetabs . a chat the engine has not yet summarised has no summary entries to list, and the panel renders  no new or retryable sources are ready to import.  without saying that a separate engine service produces summaries later, or that the adjacent characters tab already holds something importable. a first-run user reads the empty state literally and concludes the feature has nothing to work with, on the first screen that matters. initialise the tab state in sourcesworkspace.tsx to the first entry in sourcetabs that has importable items rather than hardcoding  chats .">
         <header class="fhead">
           <span class="fnum">F2</span>
           <h4>The Sources screen opens on a tab that is empty by construction on a new chat.</h4>
@@ -1468,7 +1504,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Initialise the tab state in SourcesWorkspace.tsx to the first entry in sourceTabs that has importable items rather than hardcoding "chats".</p>
         
       </article>
-      <article class="finding" id="f3" data-sev="medium" data-eff="large" data-tags="ARCH UX">
+      <article class="finding" id="f3" data-sev="medium" data-eff="large" data-grade="source" data-cluster="Getting oriented" data-tags="ARCH UX" data-text="a chat transcript cannot be ingested, only its summaries.  ltmsourceprovenanceschema  admits exactly three source kinds:  character ,  lorebook  and  chat_summary .  createnotebody  excludes  source  from the note-create schema, so source notes can originate only from the import routes, and no pasted-text or manual source path exists; for a chat,  interop.ts  reads only  chat.metadata , taking summary entries while skipping disabled ones, the legacy summary string, game session summaries and conversation summaries. it never reads raw messages. the engine's separate auto-summary service, which the package does not own, therefore sets both the content and the timing of what memory can learn from a conversation. add a raw transcript source kind to ltmsourceprovenanceschema with an interop.ts branch that reads chat messages instead of only chat.metadata summary entries.">
         <header class="fhead">
           <span class="fnum">F3</span>
           <h4>A chat transcript cannot be ingested, only its summaries.</h4>
@@ -1479,7 +1515,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a raw transcript source kind to ltmSourceProvenanceSchema with an interop.ts branch that reads chat messages instead of only chat.metadata summary entries.</p>
         
       </article>
-      <article class="finding" id="f4" data-sev="medium" data-eff="medium" data-tags="UX ARCH">
+      <article class="finding" id="f4" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Getting oriented" data-tags="UX ARCH" data-text="one workspace serves both the bulk review loop and the per-turn recall loop. the two loops have different rhythms and different sizes. bulk curation is bursty and offline, moving hundreds of proposals through the review queue, while recall runs automatically per turn and touches roughly twenty chunks; both live behind the same four-tab rail in  longtermmemorynavigation.tsx , which defaults to vault and carries a pending-review badge sized by the curation backlog. the feature reduces the per-turn account of recall to  lastinjectionsummary.tsx , a single collapsed readout, so the surface's layout, badge and default destination all pull toward batch review and away from what memory just did in the current conversation. add a recall destination to longtermmemorynavigation.tsx that hosts the lastinjectionsummary content as a full surface instead of a collapsed block inside the curation workspace.">
         <header class="fhead">
           <span class="fnum">F4</span>
           <h4>One workspace serves both the bulk review loop and the per-turn recall loop.</h4>
@@ -1490,7 +1526,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Add a Recall destination to LongTermMemoryNavigation.tsx that hosts the LastInjectionSummary content as a full surface instead of a collapsed block inside the curation workspace.</p>
         
       </article>
-      <article class="finding" id="f5" data-sev="low" data-eff="small" data-tags="UX ARCH">
+      <article class="finding" id="f5" data-sev="low" data-eff="small" data-grade="source" data-cluster="Getting oriented" data-tags="UX ARCH" data-text="the vault counts source notes as memories.  ltmnotetypeschema  treats  source  as an ordinary value, and the same note store holds those notes alongside real memories.  writeltmnotesummary()  in  index-state.ts  sums totals with no type exclusion, and that total feeds the navigation badge;  memoryvault.tsx  queries notes with no type parameter, renders source notes first among the  groupednotetypes  groups, and counts them in its shown total, offering only a status filter and free-text search. retrieval does exclude source notes, and another endpoint's schema excludes  source  explicitly, so the vault's displayed number overstates how many memories retrieval can actually reach, and no control reconciles the two figures. exclude notes of type source from the totals computed by writeltmnotesummary() in index-state.ts so the navigation badge and vault total count only recallable memories.">
         <header class="fhead">
           <span class="fnum">F5</span>
           <h4>The vault counts source notes as memories.</h4>
@@ -1502,13 +1538,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="Marinara Engine">
       <div class="chead">
         <h3>Marinara Engine</h3>
         <span class="cmeta">7 findings · 2 high</span>
       </div>
       
-      <article class="finding" id="f67" data-sev="medium" data-eff="medium" data-tags="ENGINE ARCH BUG">
+      <article class="finding" id="f67" data-sev="medium" data-eff="medium" data-grade="source" data-cluster="Marinara Engine" data-tags="ENGINE ARCH BUG" data-text="concluding a scene writes untyped memories onto a character card. the conclude handler in  scene.routes.ts  pushes an entry for every character in the scene, shaped  { from: personaname, fromcharid:  scene , summary:  [scene on &lt;date&gt;] &lt;summary&gt;  } . a second writer,  handlememorycommand() , resolves its target by fuzzy name match across the entire character list rather than the chat's participants.  charactermemories  is not a typed field: card  extensions  is  record&lt;string, unknown&gt; , so the key rides along unvalidated and three modules re-declare it locally. no client code reads it, no endpoint touches it, and the snapshot layer suppresses its writes, so nothing offers a view, edit, clear or version history and the only removal path is editing card extensions wholesale. declare charactermemories as a typed field in characterextensionsschema so the three local re-declarations share one validated shape.">
         <header class="fhead">
           <span class="fnum">F67</span>
           <h4>Concluding a scene writes untyped memories onto a character card.</h4>
@@ -1519,7 +1555,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Declare characterMemories as a typed field in characterExtensionsSchema so the three local re-declarations share one validated shape.</p>
         
       </article>
-      <article class="finding" id="f68" data-sev="medium" data-eff="small" data-tags="ENGINE UX">
+      <article class="finding" id="f68" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Marinara Engine" data-tags="ENGINE UX" data-text="card memories reach every chat using that character.  mergeconversationcharactermemories()  keeps entries whose  createdat  is at or after the start of the local day, so scene-local state enters the prompt of any conversation containing that character until the next local midnight. a second reader,  buildschedulecontinuitycontext() , uses a different window: memories since the schedule's week start, top 8. the entries themselves persist on the card forever and stay card-global in both cases. documentation covers the  [memory: …]  command and scene conclusion, but says nothing about the store's cross-chat scope. document in scenes.md that scene-conclusion memories are card-global and enter every chat with that character until local midnight.">
         <header class="fhead">
           <span class="fnum">F68</span>
           <h4>Card memories reach every chat using that character.</h4>
@@ -1530,7 +1566,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Document in scenes.md that scene-conclusion memories are card-global and enter every chat with that character until local midnight.</p>
         
       </article>
-      <article class="finding" id="f69" data-sev="medium" data-eff="small" data-tags="ENGINE BUG">
+      <article class="finding" id="f69" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Marinara Engine" data-tags="ENGINE BUG" data-text="summary entries without a message range sort by creation time.  sortchatsummaryentries()  sorts primarily on  rangestartindex , so entries that have one sort by narrative position. every automated entry and most manual ones, meaning a  sourcemode  of  last  or  agent , carry no range and collapse to  number.max_safe_integer , falling through to  createdat  and then original array index.  messagecount  and  messageids  sit on those same entries and would pin position; the sort never consults them. a summary written later about earlier messages therefore lands in the order it would take if it covered later material. fall back to the first messageids index for position in sortchatsummaryentries() when rangestartindex is absent.">
         <header class="fhead">
           <span class="fnum">F69</span>
           <h4>Summary entries without a message range sort by creation time.</h4>
@@ -1541,7 +1577,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Fall back to the first messageIds index for position in sortChatSummaryEntries() when rangeStartIndex is absent.</p>
         
       </article>
-      <article class="finding" id="f70" data-sev="low" data-eff="small" data-tags="ENGINE BUG">
+      <article class="finding" id="f70" data-sev="low" data-eff="small" data-grade="source" data-cluster="Marinara Engine" data-tags="ENGINE BUG" data-text="unsummarised day details are emitted in arbitrary order.  collectconversationkeydetails()  walks the day-details object in raw key order and emits what it finds. nothing on that path applies a chronological sort. key details for a day reach the prompt in whatever order the object happens to hold them. sort the day-details keys chronologically in collectconversationkeydetails() before emitting them.">
         <header class="fhead">
           <span class="fnum">F70</span>
           <h4>Unsummarised day details are emitted in arbitrary order.</h4>
@@ -1552,7 +1588,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Sort the day-details keys chronologically in collectConversationKeyDetails() before emitting them.</p>
         
       </article>
-      <article class="finding" id="f71" data-sev="medium" data-eff="small" data-tags="ENGINE USER">
+      <article class="finding" id="f71" data-sev="medium" data-eff="small" data-grade="source" data-cluster="Marinara Engine" data-tags="ENGINE USER" data-text="writing a day summary into a consolidated week is a silent no-op.  conversation-history-runtime.ts  builds a  daytoweek  map and runs  if (args.daytoweek.has(date)) continue; , skipping any day a consolidated week already covers. the store accepts a day summary written into such a range, and that summary then contributes nothing to the assembled history. no error, warning or log marks the skip, so the write reads as applied. reject the day-summary write with an explicit error when daytoweek already covers that date.">
         <header class="fhead">
           <span class="fnum">F71</span>
           <h4>Writing a day summary into a consolidated week is a silent no-op.</h4>
@@ -1563,7 +1599,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Reject the day-summary write with an explicit error when dayToWeek already covers that date.</p>
         
       </article>
-      <article class="finding" id="f72" data-sev="high" data-eff="large" data-tags="ENGINE ARCH">
+      <article class="finding" id="f72" data-sev="high" data-eff="large" data-grade="source" data-cluster="Marinara Engine" data-tags="ENGINE ARCH" data-text="the two summary subsystems do not know about each other. roleplay summaries live in  summaryentries  as a range-indexed list that  chat-summary-entries.ts  handles; conversation summaries live in a per-day map that  conversation-history-runtime.ts  consolidates into weeks. storage shape, ordering key, compression behaviour and date handling all differ, and neither path reads the other when assembling history. a story told partly in each mode ends up with two disconnected records and nothing that reconciles them. unify roleplay summaryentries and the conversation day map behind one summary store with a shared ordering key.">
         <header class="fhead">
           <span class="fnum">F72</span>
           <h4>The two summary subsystems do not know about each other.</h4>
@@ -1574,7 +1610,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Unify roleplay summaryEntries and the conversation day map behind one summary store with a shared ordering key.</p>
         
       </article>
-      <article class="finding" id="f73" data-sev="high" data-eff="medium" data-tags="ENGINE ARCH">
+      <article class="finding" id="f73" data-sev="high" data-eff="medium" data-grade="source" data-cluster="Marinara Engine" data-tags="ENGINE ARCH" data-text="roleplay summaries grow until they are deleted at a hard cap. conversation summaries consolidate day entries into weeks; the roleplay path has no equivalent step.  max_automated_chat_summary_entries = 200  in  chat-summary-entries.ts  caps automated entries, so the sequence ends in deletion rather than compaction. entries accumulate at full length until they hit the cap, and the cap then discards the excess outright, losing that material instead of condensing it. consolidate older automated summaryentries as they approach max_automated_chat_summary_entries, mirroring the daytoweek consolidation, instead of discarding the excess.">
         <header class="fhead">
           <span class="fnum">F73</span>
           <h4>Roleplay summaries grow until they are deleted at a hard cap.</h4>
@@ -1586,13 +1622,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="What the vault is fed">
       <div class="chead">
         <h3>What the vault is fed</h3>
         <span class="cmeta">8 findings · 1 high</span>
       </div>
       
-      <article class="finding" id="f74" data-sev="medium" data-eff="small" data-tags="CORPUS MODEL">
+      <article class="finding" id="f74" data-sev="medium" data-eff="small" data-grade="reported" data-cluster="What the vault is fed" data-tags="CORPUS MODEL" data-text="a summarised number kept its value and lost its subject. one summarised estimate in the corpus carried its figure through unchanged while the summariser swapped the thing it estimated for whatever theme dominated the surrounding entries. the result reads as internally consistent and plausible, so nothing downstream separates it from a correct claim. ingest turns it into a durable claim whose precision is exactly what makes it convincing. require the summariser prompt to restate the subject of any quantity in the same clause as the figure.">
         <header class="fhead">
           <span class="fnum">F74</span>
           <h4>A summarised number kept its value and lost its subject.</h4>
@@ -1603,7 +1639,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Require the summariser prompt to restate the subject of any quantity in the same clause as the figure.</p>
         
       </article>
-      <article class="finding" id="f75" data-sev="medium" data-eff="small" data-tags="CORPUS MODEL">
+      <article class="finding" id="f75" data-sev="medium" data-eff="small" data-grade="reported" data-cluster="What the vault is fed" data-tags="CORPUS MODEL" data-text="the summariser asserted firsts the source never claimed. entries in the corpus record events as happening for the first time on dates where they did not, and the summariser marked the same event a first on two different days. the superlative came from surrounding context rather than from anything in the source text. both versions arrive as ordinary dated assertions, and nothing at ingest distinguishes the inferred superlative from a stated one. forbid the summariser prompt from asserting a first unless the source text states it.">
         <header class="fhead">
           <span class="fnum">F75</span>
           <h4>The summariser asserted firsts the source never claimed.</h4>
@@ -1614,7 +1650,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Forbid the summariser prompt from asserting a first unless the source text states it.</p>
         
       </article>
-      <article class="finding" id="f76" data-sev="medium" data-eff="small" data-tags="CORPUS MODEL">
+      <article class="finding" id="f76" data-sev="medium" data-eff="small" data-grade="reported" data-cluster="What the vault is fed" data-tags="CORPUS MODEL" data-text="numbers and superlatives are where paraphrase changes meaning. compression across most of the corpus dropped detail without altering what a claim asserted. on bare quantities and on the words first, only and never, it instead resolved ambiguity toward the dominant nearby theme. in those cases the shorter text is not a lower-resolution version of the source but a different assertion, and it enters the vault carrying the confidence of a specific one. mark evidence units containing bare quantities or the words first, only or never as review-required so they never auto-apply.">
         <header class="fhead">
           <span class="fnum">F76</span>
           <h4>Numbers and superlatives are where paraphrase changes meaning.</h4>
@@ -1625,7 +1661,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Mark evidence units containing bare quantities or the words first, only or never as review-required so they never auto-apply.</p>
         
       </article>
-      <article class="finding" id="f77" data-sev="high" data-eff="medium" data-tags="CORPUS">
+      <article class="finding" id="f77" data-sev="high" data-eff="medium" data-grade="measured" data-cluster="What the vault is fed" data-tags="CORPUS" data-text="text produced by chunk boundaries becomes permanent memory. the summariser's chunker cuts the transcript, and text that exists only because of where it cut reached the corpus as content. one scene-continuation phrase occurred 37 times across the corpus and frequently doubled into a key-detail bullet, and the summariser emitted status filler as standalone bullets. some of those bullets weld a real fact onto the filler, so deleting them by pattern would have taken the fact with it. every one of them can become a permanent claim in the vault. cut the summariser's chunker on scene boundaries so it never emits continuation and status filler as content.">
         <header class="fhead">
           <span class="fnum">F77</span>
           <h4>Text produced by chunk boundaries becomes permanent memory.</h4>
@@ -1636,7 +1672,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Cut the summariser's chunker on scene boundaries so it never emits continuation and status filler as content.</p>
         <p class="fnote">bruh this wording is ass</p>
       </article>
-      <article class="finding" id="f78" data-sev="low" data-eff="medium" data-tags="CORPUS">
+      <article class="finding" id="f78" data-sev="low" data-eff="medium" data-grade="reported" data-cluster="What the vault is fed" data-tags="CORPUS" data-text="out-of-character planning is recorded as in-fiction events. the summariser renders out-of-character planning in the same form as things that happened, with no marker separating intention from event. the story later narrated one planning entry's contents as well, so the same material entered the corpus twice, once as a plan and once as an event. nothing downstream carries a field that would tell the two apart. have the summariser tag out-of-character planning entries with an explicit marker so extraction can skip them.">
         <header class="fhead">
           <span class="fnum">F78</span>
           <h4>Out-of-character planning is recorded as in-fiction events.</h4>
@@ -1647,7 +1683,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Have the summariser tag out-of-character planning entries with an explicit marker so extraction can skip them.</p>
         
       </article>
-      <article class="finding" id="f79" data-sev="medium" data-eff="medium" data-tags="CORPUS">
+      <article class="finding" id="f79" data-sev="medium" data-eff="medium" data-grade="reported" data-cluster="What the vault is fed" data-tags="CORPUS" data-text="one source bullet often carries several facts. the ingest contract asks for roughly one bullet per claim. corpus bullets frequently pack an event together with its cause and its resulting state, and extraction either turns such a bullet into one muddled claim or drops it for failing the expected shape. neither outcome preserves the separate facts, and nothing shows the loss at the bullet level because the text itself looks well formed. split a multi-fact bullet into separate evidence units in evidence-unit-extraction rather than producing one muddled unit or dropping it.">
         <header class="fhead">
           <span class="fnum">F79</span>
           <h4>One source bullet often carries several facts.</h4>
@@ -1658,7 +1694,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Split a multi-fact bullet into separate evidence units in evidence-unit-extraction rather than producing one muddled unit or dropping it.</p>
         
       </article>
-      <article class="finding" id="f80" data-sev="medium" data-eff="medium" data-tags="CORPUS MODEL">
+      <article class="finding" id="f80" data-sev="medium" data-eff="medium" data-grade="measured" data-cluster="What the vault is fed" data-tags="CORPUS MODEL" data-text="long summary entries get less accurate toward the end. the corpus held 97 entries totalling 53,933 tokens, with the largest at 1,405 tokens and 60 key details, and 17 entries over the size threshold. accuracy inside a long entry deteriorates as it runs on: dates and names get looser the further in they appear. cleanup brought the corpus to 96 entries and 45,646 tokens with a maximum entry of 776 tokens. the tail of a long entry supplies extraction its least reliable material, and nothing marks it as such. split source entries above a token threshold into separate extraction inputs in source-processing so no single entry runs long enough to degrade.">
         <header class="fhead">
           <span class="fnum">F80</span>
           <h4>Long summary entries get less accurate toward the end.</h4>
@@ -1669,7 +1705,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Split source entries above a token threshold into separate extraction inputs in source-processing so no single entry runs long enough to degrade.</p>
         
       </article>
-      <article class="finding" id="f81" data-sev="medium" data-eff="medium" data-tags="CORPUS ARCH">
+      <article class="finding" id="f81" data-sev="medium" data-eff="medium" data-grade="reported" data-cluster="What the vault is fed" data-tags="CORPUS ARCH" data-text="contradictions between source entries have no automatic resolution. when two source entries disagree, extraction takes both, and the run either records a conflict on a note or stores two claims that retrieval can return together. nothing arbitrates between them. the review queue never reads  mutation.note.conflicts  at all, so a  create_note  carrying a conflict presents the reviewer with no conflict information, and the vault renders  conflict.proposed  without ever showing  conflict.existing . the model can therefore receive both versions with no indication that they disagree. surface mutation.note.conflicts in review with existing beside proposed so the reviewer arbitrates before the vault stores both versions.">
         <header class="fhead">
           <span class="fnum">F81</span>
           <h4>Contradictions between source entries have no automatic resolution.</h4>
@@ -1681,13 +1717,13 @@
         
       </article>
     </div>
-    <div class="cluster">
+    <div class="cluster" data-cluster="Prototype workbench">
       <div class="chead">
         <h3>Prototype workbench</h3>
         <span class="cmeta">2 findings</span>
       </div>
       
-      <article class="finding" id="f82" data-sev="low" data-eff="small" data-tags="PROTO UX">
+      <article class="finding" id="f82" data-sev="low" data-eff="small" data-grade="reported" data-cluster="Prototype workbench" data-tags="PROTO UX" data-text="data-model facets and convenience facets look the same. this behaviour lives in the operator's own review workbench,  review-app.cjs , not in the package under review. the panel renders facets that reflect the underlying data model in the same visual form as facets that exist purely as query convenience. a reader cannot see the distinction the author intended, so the panel fails to convey the data model it partly exposes. give data-model facets a distinct visual treatment from convenience facets in the review-app.cjs facet panel.">
         <header class="fhead">
           <span class="fnum">F82</span>
           <h4>Data-model facets and convenience facets look the same.</h4>
@@ -1698,7 +1734,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Give data-model facets a distinct visual treatment from convenience facets in the review-app.cjs facet panel.</p>
         
       </article>
-      <article class="finding" id="f83" data-sev="low" data-eff="medium" data-tags="PROTO UX">
+      <article class="finding" id="f83" data-sev="low" data-eff="medium" data-grade="reported" data-cluster="Prototype workbench" data-tags="PROTO UX" data-text="the prototype workbench has a set of small interaction defects. these defects belong to the operator's own review workbench,  review-app.cjs , not to the package under review. hotkeys swallow copy; collapse-all leaves parts of the view expanded; the stored-content section never collapses at all; the facet panel dismisses on neither click-away nor escape; cross-references take no click. the clear button sits at the end of the facet row, so on mobile a user scrolls the row before reaching it. fix the listed defects in review-app.cjs by scoping hotkeys away from copy, making collapse-all and the stored-content block actually collapse, dismissing the facet panel on escape or click-away, linking cross-references, and moving the clear button to the start of the facet row.">
         <header class="fhead">
           <span class="fnum">F83</span>
           <h4>The prototype workbench has a set of small interaction defects.</h4>
@@ -1709,6 +1745,7 @@
         <p class="ffix"><span class="fixlabel">Smallest fix</span>Fix the listed defects in review-app.cjs by scoping hotkeys away from copy, making collapse-all and the stored-content block actually collapse, dismissing the facet panel on escape or click-away, linking cross-references, and moving the clear button to the start of the facet row.</p>
         
       </article>
+    </div></div>
     </div>
   </section>
   <section id="journeys">
@@ -2555,6 +2592,8 @@
     </p>
   </section>
 
+</div>
+<nav class="toc" id="toc" aria-label="Contents"></nav>
 </div>
 
 <script>
@@ -4133,34 +4172,154 @@ Object.keys(STATES).forEach(function(v){
 </script>
 
 
+
+
 <script>
+/* Table of contents, generated from the document so it cannot fall out of date. */
 (function(){
-  var bar=document.getElementById("filters"); if(!bar) return;
-  var out=document.getElementById("fcount");
-  var findings=[].slice.call(document.querySelectorAll(".finding"));
+  var toc=document.getElementById("toc"); if(!toc) return;
+  var parts=[];
+  parts.push('<p class="toc-title">Contents</p>');
+  document.querySelectorAll("section[id]").forEach(function(sec){
+    var h=sec.querySelector("h2"); if(!h) return;
+    parts.push('<a href="#'+sec.id+'" data-t="'+sec.id+'">'+h.textContent.trim()+'</a>');
+    if(sec.id==="findings"){
+      sec.querySelectorAll(".cluster").forEach(function(c,i){
+        var t=c.querySelector("h3"); if(!t) return;
+        if(!c.id) c.id="cl"+i;
+        parts.push('<a class="lvl2" href="#'+c.id+'" data-t="'+c.id+'">'+t.textContent.trim()+'</a>');
+      });
+    }
+    if(sec.id==="journeys"){
+      sec.querySelectorAll(".journey").forEach(function(j){
+        var t=j.querySelector("h3"); if(!t) return;
+        parts.push('<a class="lvl2" href="#'+j.id+'" data-t="'+j.id+'">'+t.textContent.trim()+'</a>');
+      });
+    }
+  });
+  toc.innerHTML=parts.join("");
+  var links=[].slice.call(toc.querySelectorAll("a"));
+  var targets=links.map(function(a){return document.getElementById(a.dataset.t);});
+  function mark(){
+    var y=window.scrollY+140, best=0;
+    targets.forEach(function(el,i){ if(el && el.offsetTop<=y) best=i; });
+    links.forEach(function(a,i){ a.classList.toggle("on", i===best); });
+  }
+  var tick=false;
+  window.addEventListener("scroll",function(){
+    if(tick) return; tick=true;
+    requestAnimationFrame(function(){ mark(); tick=false; });
+  },{passive:true});
+  mark();
+})();
+
+/* Findings facets. Multi-select inside a group is OR, across groups is AND. */
+(function buildFacets(){
+  var panel=document.getElementById("facetpanel"); if(!panel) return;
+  var body=document.querySelector(".findings-body");
+  var items=[].slice.call(document.querySelectorAll(".finding"));
   var clusters=[].slice.call(document.querySelectorAll(".cluster"));
-  function apply(mode){
+
+  var GROUPS=[
+    {key:"sev",   label:"Severity", order:["critical","high","medium","low"],
+     val:function(f){return [f.dataset.sev];}},
+    {key:"eff",   label:"Fix effort", order:["small","medium","large"],
+     val:function(f){return f.dataset.eff?[f.dataset.eff]:[];}},
+    {key:"grade", label:"Evidence", order:["source","observed","measured","reported"],
+     val:function(f){return [f.dataset.grade];}},
+    {key:"tags",  label:"Tags", order:null,
+     val:function(f){return (f.dataset.tags||"").split(/\s+/).filter(Boolean);}},
+    {key:"cluster", label:"Cluster", order:null,
+     val:function(f){return [f.dataset.cluster];}}
+  ];
+
+  var state={}; GROUPS.forEach(function(g){state[g.key]=new Set();});
+  var query="";
+
+  GROUPS.forEach(function(g){
+    var vals=new Set();
+    items.forEach(function(f){ g.val(f).forEach(function(v){ if(v) vals.add(v); }); });
+    g.values = g.order ? g.order.filter(function(v){return vals.has(v);})
+                       : [].slice.call(vals).sort();
+  });
+
+  function matchesExcept(f, skipKey){
+    if(query && (f.dataset.text||"").indexOf(query)<0) return false;
+    for(var i=0;i<GROUPS.length;i++){
+      var g=GROUPS[i]; if(g.key===skipKey) continue;
+      var sel=state[g.key]; if(!sel.size) continue;
+      var vs=g.val(f), hit=false;
+      for(var j=0;j<vs.length;j++) if(sel.has(vs[j])) { hit=true; break; }
+      if(!hit) return false;
+    }
+    return true;
+  }
+  function matches(f){ return matchesExcept(f,null); }
+
+  function render(){
+    var html='<input class="fsearch" id="fq" type="search" placeholder="Search findings" value="'+
+      query.replace(/"/g,"&quot;")+'">';
+    GROUPS.forEach(function(g){
+      html+='<div><p class="fgrouphead">'+g.label+'</p><div class="fgroupbox">';
+      g.values.forEach(function(v){
+        var n=items.filter(function(f){
+          return matchesExcept(f,g.key) && g.val(f).indexOf(v)>=0;
+        }).length;
+        var on=state[g.key].has(v);
+        html+='<span class="fopt'+(on?" on":"")+(n===0&&!on?" zero":"")+
+          '" data-g="'+g.key+'" data-v="'+String(v).replace(/"/g,"&quot;")+'">'+
+          '<span>'+v+'</span><span class="n">'+n+'</span></span>';
+      });
+      html+='</div></div>';
+    });
+    var shown=items.filter(matches).length;
+    html+='<p class="fsummary"><b>'+shown+'</b> of '+items.length+' findings</p>';
+    html+='<button class="fclear" type="button" id="fclear">Clear all</button>';
+    panel.innerHTML=html;
+    apply();
+  }
+
+  function apply(){
     var shown=0;
-    findings.forEach(function(f){
-      var keep = mode==="all"
-        || f.dataset.sev===mode
-        || (mode==="small" && f.dataset.eff==="small")
-        || (mode==="BUG" && (" "+f.dataset.tags+" ").indexOf(" BUG ")>=0);
-      f.classList.toggle("hidden", !keep);
+    items.forEach(function(f){
+      var keep=matches(f);
+      f.classList.toggle("hidden",!keep);
       if(keep) shown++;
     });
     clusters.forEach(function(c){
-      var any=c.querySelector(".finding:not(.hidden)");
-      c.classList.toggle("hidden", !any);
+      c.classList.toggle("hidden", !c.querySelector(".finding:not(.hidden)"));
     });
-    out.textContent = shown + " of " + findings.length + " shown";
+    var none=document.getElementById("noresult");
+    if(shown===0){
+      if(!none){
+        none=document.createElement("div");
+        none.id="noresult"; none.className="noresult";
+        none.textContent="No finding matches that combination.";
+        body.appendChild(none);
+      }
+    } else if(none){ none.remove(); }
   }
-  bar.addEventListener("click",function(e){
-    var b=e.target.closest(".fbtn"); if(!b) return;
-    bar.querySelectorAll(".fbtn").forEach(function(x){x.classList.toggle("on", x===b);});
-    apply(b.dataset.filter);
+
+  panel.addEventListener("click",function(e){
+    if(e.target.closest("#fclear")){
+      GROUPS.forEach(function(g){state[g.key].clear();});
+      query=""; render(); return;
+    }
+    var o=e.target.closest(".fopt"); if(!o) return;
+    var set=state[o.dataset.g];
+    if(set.has(o.dataset.v)) set.delete(o.dataset.v); else set.add(o.dataset.v);
+    render();
   });
-  apply("all");
+  panel.addEventListener("input",function(e){
+    if(e.target.id!=="fq") return;
+    query=e.target.value.trim().toLowerCase();
+    var pos=e.target.selectionStart;
+    render();
+    var box=document.getElementById("fq");
+    if(box){ box.focus(); box.setSelectionRange(pos,pos); }
+  });
+
+  render();
 })();
 </script>
 
