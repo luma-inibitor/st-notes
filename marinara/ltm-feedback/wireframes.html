@@ -43,7 +43,7 @@ h3{font-size:15px;margin:0 0 10px;color:var(--dim);font-weight:600}
 .step+.step::before{content:"→";margin:0 12px;color:var(--faint)}
 
 /* frames */
-.frames{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.frames{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(460px,1fr))}
 .frame{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;
   display:flex;flex-direction:column}
 .frame > figcaption{display:flex;gap:8px;align-items:center;padding:8px 12px;
@@ -53,23 +53,23 @@ h3{font-size:15px;margin:0 0 10px;color:var(--dim);font-weight:600}
 .screen{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
 
 /* greybox primitives */
-.bar{height:26px;border:1px solid var(--line);border-radius:6px;background:var(--fill);
+.bar{min-height:26px;border:1px solid var(--line);border-radius:6px;background:var(--fill);
   display:flex;align-items:center;padding:0 8px;font-size:11px;color:var(--dim);gap:8px}
 .bar.tall{height:auto;min-height:26px;padding:6px 8px;display:block;line-height:1.4}
-.row{display:flex;gap:8px;align-items:center}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;min-width:0}
 .col{display:flex;flex-direction:column;gap:8px}
-.grow{flex:1}
+.grow{flex:1;min-width:0}
 .box{border:1px solid var(--line);border-radius:6px;background:var(--fill-2);padding:8px;font-size:11.5px}
 .box.solid{background:var(--fill)}
 .rail{width:34%;min-width:120px}
 .ph{height:8px;border-radius:3px;background:var(--line);opacity:.55}
 .ph.s{width:35%} .ph.m{width:60%} .ph.l{width:85%} .ph.f{width:100%}
-.chip{display:inline-block;padding:1px 7px;border:1px solid var(--line-strong);border-radius:999px;
+.chip{display:inline-block;white-space:nowrap;flex:none;padding:1px 7px;border:1px solid var(--line-strong);border-radius:999px;
   font:600 10px/1.7 var(--mono);color:var(--dim);background:var(--panel)}
 .chip.on{background:var(--accent);color:var(--panel);border-color:var(--accent)}
 .chip.warn{border-color:var(--note-line);color:var(--note-ink);background:var(--note-bg)}
 .chip.bad{border-color:var(--bad-line);color:var(--bad);background:var(--bad-bg)}
-.btn{display:inline-block;padding:4px 10px;border:1px solid var(--line-strong);border-radius:6px;
+.btn{display:inline-block;white-space:nowrap;flex:none;padding:4px 10px;border:1px solid var(--line-strong);border-radius:6px;
   font-size:11.5px;background:var(--panel);color:var(--ink)}
 .btn.pri{background:var(--accent);color:var(--panel);border-color:var(--accent)}
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -112,7 +112,8 @@ h3{font-size:15px;margin:0 0 10px;color:var(--dim);font-weight:600}
   padding:0 6px;border-radius:4px;border:1px solid var(--line-strong);color:var(--dim);background:var(--panel)}
 .feas.rst{border-color:var(--note-line);color:var(--note-ink);background:var(--note-bg)}
 .feas.eng{border-color:var(--bad-line);color:var(--bad);background:var(--bad-bg)}
-@media (max-width:640px){ .frames{grid-template-columns:1fr} .rail{display:none} }
+@media (max-width:980px){ .frames{grid-template-columns:1fr} }
+@media (max-width:640px){ .rail{display:none} }
 </style>
 </head>
 <body>
@@ -849,7 +850,7 @@ candidates. Amber notes tie a frame to the findings it answers.</p>
         </div>
         <div class="box"><div class="row"><span class="grow">After compaction</span><span class="mono">12,880 / 20,000</span></div>
           <div class="meter"><i class="w65"></i></div></div>
-        <div class="box solid"><div class="row"><span class="grow">Gated on index health: the rebuild failed on 14 notes, so compaction stays blocked</span><span class="chip bad">blocked</span></div></div>
+        <div class="box solid"><div class="row"><span class="grow">Gated on index health</span><span class="chip bad">blocked</span></div></div>
         <div class="row"><span class="btn pri">Repair the index first</span><span class="btn">Export backup</span><span class="btn">Apply compaction</span></div>
       </div>
       <div class="note"><span class="fx">F49</span><span class="fx">F50</span><span class="fx">F53</span><span class="fx">F60</span>
