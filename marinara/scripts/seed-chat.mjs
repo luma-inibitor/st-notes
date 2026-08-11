@@ -20,7 +20,7 @@
 // Character fields use SillyTavern v2 card names (`first_mes`, not
 // `firstMessage`) and the create request wraps them in a `data` object.
 //
-// See docs/development/ui-ux-exploration-harness.md.
+// See ../ui-ux-exploration-harness.md.
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
