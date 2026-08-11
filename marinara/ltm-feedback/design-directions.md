@@ -21,7 +21,7 @@ That boundary is more generous than it looks. The package registers its own rout
 under its own prefix, owns its storage directory and its own schema, gets a
 revision-checked document store, can call a language model and an embedding model,
 and renders whatever it likes inside the two views the host mounts for it. Every
-derived signal, the whole facet engine, preflight, restore points, saved slices,
+derived signal, the whole facet engine, preview, restore points, saved slices,
 chronology, compaction and ingest-time deduplication are the package's own code.
 
 Four constraints shape the designs below.
@@ -98,18 +98,18 @@ no model calls, so compute time is not what stands in the way.
 ┌─ facets ───────────┐  ┌─ 1,142 claims · 340 shown · 61 decided ──────────────┐
 │ [clear]            │  │  group by [ target note ▾ ]   sort by [ risk ▾ ]     │
 │                    │  ├──────────────────────────────────────────────────────┤
-│ ▾ computed         │  │ ▾ char_dottore · 41 claims · trait 19.2k/20k  ⚠      │
+│ ▾ computed         │  │ ▾ char_wren · 41 claims · trait 19.2k/20k  ⚠      │
 │   restates vault 61│  │    ☐  high   restates vault 0.71                     │
 │   dupes incoming 75│  │       "…claim text…"                      [ edit ]   │
 │   keyword cap   24 │  │    ☐  med    new                                     │
 │   section cap   35 │  │       "…claim text…"                      [ edit ]   │
 │   weak match     9 │  │                                                      │
-│                    │  │ ▾ rel_dottore_lumine · 12 claims                     │
+│                    │  │ ▾ rel_wren_operator · 12 claims                     │
 │ ▾ from the model   │  │    ☐  high   overwrites  ▸ diff                      │
 │   disposition    … │  │       "…claim text…"                      [ edit ]   │
 │   risk           … │  └──────────────────────────────────────────────────────┘
 │   importance     … │
-│   drop reason    … │   [ apply 61 selected ]    preflight: 2 would fail  ⚠
+│   drop reason    … │   [ apply 61 selected ]    preview: 2 would fail  ⚠
 │                    │
 │ ▾ yours            │
 │   saved slices   … │
@@ -137,11 +137,11 @@ the surface is missing.
 chat, source or selected draft changes, which is what confines a batch to one
 draft even though the apply path already groups its requests by draft.
 
-### Apply is incremental, preflighted, and reported against the batch
+### Apply is incremental, previewed, and reported against the batch
 
 Three properties, each answering a specific failure.
 
-*Preflight before send.* Most apply-time failures are derivable from the selection
+*Preview before send.* Most apply-time failures are derivable from the selection
 before anything is submitted: section and keyword caps, missing link targets,
 ungrounded change claims, duplicate creates, scope mismatches. Showing "2 would
 fail" with the reasons converts a mid-batch abort into a decision made up front.
@@ -151,7 +151,7 @@ client side from the review payload, but projection accumulates an overlay that
 assumes every mutation in the draft applies in order, so an arbitrary subset
 projects differently. Getting that right in the client means porting the projector
 into the browser, where it will diverge from the real one the next time cap logic
-changes. A preflight route calling the same projection code cannot drift.
+changes. A preview route calling the same projection code cannot drift.
 
 *Progress against the batch, never the draft.* A partial apply keeps the draft
 pending and rewrites its mutation list to only the skipped items, so the draft is

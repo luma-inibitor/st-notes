@@ -4,7 +4,7 @@
     "title": "Long-Term Memory findings",
     "ltmPackage": "1.1.6",
     "engine": "2.4.1",
-    "updatedAt": "2026-08-11T00:52:45.341Z",
+    "updatedAt": "2026-08-11T03:07:59.444Z",
     "tagVocabulary": [
       "UX",
       "ARCH",
@@ -2031,7 +2031,7 @@
         }
       ],
       "edited": true,
-      "description": "A storage-contract failure means a projected note no longer validates against `ltmNoteSchema`, usually because it breached an array cap such as the 30-keyword or 250-link limits. `projectLtmDraftMutationGroup()` in `draft-projector.ts` catches the parse failure and rethrows it as \"Long-term memory projection for char_dottore exceeds its storage contract: \" followed by the validator's own message, which begins `[{\"code\":\"too_big\",\"maximum\":30,\"type\":\"array\", ...`. That message does name the note, unlike the section-limit errors, but the part identifying which cap it hit arrives as a serialized issue array the reader has to parse by hand.",
+      "description": "A storage-contract failure means a projected note no longer validates against `ltmNoteSchema`, usually because it breached an array cap such as the 30-keyword or 250-link limits. `projectLtmDraftMutationGroup()` in `draft-projector.ts` catches the parse failure and rethrows it as \"Long-term memory projection for char_wren exceeds its storage contract: \" followed by the validator's own message, which begins `[{\"code\":\"too_big\",\"maximum\":30,\"type\":\"array\", ...`. That message does name the note, unlike the section-limit errors, but the part identifying which cap it hit arrives as a serialized issue array the reader has to parse by hand.",
       "evidence": [
         {
           "file": "draft-projector.ts",

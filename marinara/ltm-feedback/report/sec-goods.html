@@ -1,0 +1,109 @@
+  <section id="goods">
+    <div class="sec-head">
+      <p class="eyebrow">Before the complaints</p>
+      <h2>What the architecture already gets right</h2>
+      <p class="prose">
+        Eighty-three findings follow, and nearly all of them describe a layer that reports what
+        the system is doing rather than the system itself. That distinction matters for deciding
+        what to change, so here is the part worth protecting. Several of these decisions are why
+        a migration of this size was possible at all, and two of them are better than what
+        comparable systems ship.
+      </p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <span class="card-tag">Information model</span>
+        <h4>Typed notes with per-type semantics</h4>
+        <p>
+          Character, relationship, world, thread, timeline event, tone and anchor, each with its
+          own rule about which sections accumulate and which supersede. This is a real model
+          rather than a bag of text, and it is what makes grouping a review queue by subject
+          possible at all.
+        </p>
+        <p class="src">isAdditiveLtmSection() · ltmNoteType</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Provenance</span>
+        <h4>Every claim can be traced to the text that produced it</h4>
+        <p>
+          Each mutation cites its source note, and each note links back through
+          <code>extracted_from</code>. When something looked wrong during the migration, tracing
+          it to the exact summary entry that produced it always worked. Very few systems in this
+          space do this, and none of the diagnosis behind these findings would have been
+          tractable without it.
+        </p>
+        <p class="src">evidence refs · extracted_from links</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Failure mode</span>
+        <h4>Conflicts get recorded, not resolved</h4>
+        <p>
+          When two claims disagree about a superseding value, the projector writes a conflict
+          instead of letting one silently win. The resulting failure mode is that a person has to
+          decide, which is the correct failure mode for a memory system. The gap is that nothing
+          surfaces the conflict for deciding, not that the engine mishandles it.
+        </p>
+        <p class="src">draft-projector.ts · conflicts[]</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Best in the apply path</span>
+        <h4>A partial selection pulls in what it depends on</h4>
+        <p>
+          Accepting a subset quietly includes the <code>create_note</code> that subset needs and
+          the timeline events its change claims ground against. Partial review is therefore safe
+          by default. This is the best-designed thing in the apply path, and the finding attached
+          to it concerns only the asymmetry between undecided and rejected.
+        </p>
+        <p class="src">filterAutoApplyDependencies() · applyInner()</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Resumability</span>
+        <h4>Partial accept returns the draft to pending</h4>
+        <p>
+          A half-finished review costs nothing and picks up where it stopped, because the apply
+          path rewrites the draft to exactly the unselected set. Incremental review across
+          several sittings rests entirely on this one behaviour.
+        </p>
+        <p class="src">applyInner() · updateDraftStatusUnlocked()</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">More than most offer</span>
+        <h4>Edit before accept, re-validated server side</h4>
+        <p>
+          The accept route takes fully edited mutations, re-validates them, and refuses to let a
+          caller change the kind or claim kind. Edit-before-accept is exactly the right primitive
+          for a review queue. The finding against it is that the control carries no label, not
+          that the capability is missing.
+        </p>
+        <p class="src">editedMutations on the accept route</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Anticipated the question</span>
+        <h4>Rejections carry a recovery target</h4>
+        <p>
+          A dropped candidate records its reason code, a human message, the source snippet, and a
+          recovery object naming the note type, note id, section key and status it would have
+          written to. Someone built this expecting to be asked why a claim vanished.
+        </p>
+        <p class="src">addRejectedSuggestions() · recovery{}</p>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Verification</span>
+        <h4>The injection count is checked against the real prompt</h4>
+        <p>
+          The dispatch record only counts an injection after confirming the artifact actually
+          appears in the messages that went out. The number is trustworthy when it moves. Its
+          problem is that it never moves to zero.
+        </p>
+        <p class="src">isLongTermMemoryPromptPresent()</p>
+      </div>
+    </div>
+  </section>
