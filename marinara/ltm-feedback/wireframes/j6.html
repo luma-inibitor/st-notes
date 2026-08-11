@@ -1,0 +1,99 @@
+<section class="journey" id="j6">
+  <div class="jhead"><span class="jnum">JOURNEY 6</span><h2>Keep it healthy</h2></div>
+  <p class="goal"><em>"I want this to still work in six months."</em>
+  See pressure building before it becomes a failure, prune what has stopped earning its place, and read
+  vault state in one view.</p>
+
+  <div class="flow">
+    <span class="step"><b>See</b> pressure as a gradient</span>
+    <span class="step"><b>Compact</b> a full section</span>
+    <span class="step"><b>Read</b> vault state in one place</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">6.1</span><span class="t">Cap pressure, before it is a wall</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Notes under pressure</span><span class="chip warn">none at a cap yet</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Wren · identity</span><span class="mono">19,240 / 20,000</span></div>
+          <div class="meter warn"><i class="w96"></i></div>
+          <div class="sp"></div>
+          <div class="row"><span class="grow">keywords</span><span class="mono">28 / 30</span></div>
+          <div class="meter warn"><i class="w95"></i></div>
+          <div class="sp"></div>
+          <div class="row"><span class="grow">contributions</span><span class="mono">91 / 100</span></div>
+          <div class="meter warn"><i class="w90"></i></div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow">Harbour district · world</span><span class="mono">6,180 / 20,000</span></div>
+          <div class="meter"><i class="w30"></i></div>
+        </div>
+        <div class="box solid"><div class="row"><span class="grow mono dim">identity holds traits, changes, dispositions, backstory and events against one cap</span></div></div>
+        <div class="row"><span class="btn pri">Compact</span><span class="btn">Split by claim kind</span></div>
+      </div>
+      <div class="note"><span class="fx">F48</span><span class="fx">F45</span><span class="fx">F54</span>
+      Three pressures, three meters, all three already computed at write time: characters, keywords and
+      contributions. The amber is uniform on purpose. Nothing on this vault has reached a cap, so nothing
+      here is drawn in the failure colour, and the least pressured of the three bars is not allowed to be
+      the reddest. Red is held back for a limit actually hit. Against that restraint, the present build
+      renders none of the three, which makes the first sign of a full note an apply that fails partway
+      through a batch. Splitting identity into separate section keys is a schema change, so it is marked
+      here rather than offered as a one-click action.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">6.2</span><span class="t">Compaction preview on an additive section</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Wren · identity · 91 contributions</span><span class="chip">preview</span></div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Restates a line already in this section <span class="faint">· names the line it restates</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Restates a line already in this section <span class="faint">· names the line it restates</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Restates two earlier lines taken together <span class="faint">· both shown before removal</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Says something no other line in the section says</span><span class="chip on">keep</span></div>
+        </div>
+        <div class="box"><div class="row"><span class="grow">After compaction</span><span class="mono">12,880 / 20,000</span></div>
+          <div class="meter"><i class="w65"></i></div></div>
+        <div class="box solid"><div class="row"><span class="grow">Gated on index health</span><span class="chip bad">blocked</span></div></div>
+        <div class="row"><span class="btn pri">Repair the index first</span><span class="btn">Export backup</span><span class="btn">Apply compaction</span></div>
+      </div>
+      <div class="note"><span class="fx">F49</span><span class="fx">F50</span><span class="fx">F53</span><span class="fx">F60</span>
+      Additive sections union forever, so a compaction pass has to exist. Every removal here is justified
+      one way only, by naming another line in the same section that already says it, and the reader sees
+      both lines before agreeing. A recall count of zero is not a reason and does not appear: on this
+      vault the semantic lane is dead and the index rebuild failed on 14 notes, which makes zero a
+      statement about reachability, not about worth, and deletion here has no undo. For the same reason
+      the action is gated until the index is repaired. Stored dedup today compares a claim against the
+      whole section as one blob, which cannot cross its threshold once a section holds real content, and
+      the write path never calls an embedding function at all.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">6.3</span><span class="t">Vault state in one view</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Vault health</span><span class="chip warn">degraded</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Memories</span><span class="mono">118</span></div>
+          <div class="row"><span class="grow">Source notes, hidden by default</span><span class="mono">43</span></div>
+          <div class="row"><span class="grow">Embedded chunks</span><span class="mono">0</span> <span class="chip bad">unavailable</span></div>
+          <div class="row"><span class="grow">Index state</span><span class="chip warn">dirty</span> <span class="faint mono">built 2 Mar 09:14</span></div>
+        </div>
+        <div class="list">
+          <div class="item"><span class="grow">Index error <span class="faint">· rebuild failed on 14 notes</span></span><span class="btn">Repair</span></div>
+          <div class="item"><span class="grow">Integrity check <span class="faint">· orphaned links found</span></span><span class="btn">Review</span></div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F64</span><span class="fx">F66</span><span class="fx">F65</span>
+      The current build already fetches everything this view needs. Its status response, requested once on
+      load, carries the embedding availability flag, the dirty flag, the index errors and the build
+      timestamp, and the integrity results sit one tab away. So this frame costs a render, not a request.
+      This is also the only place those fields are drawn, with frame 5.3 linking here instead of repeating
+      them under a second name. Two of the fields are read today and the rest are dropped on the floor,
+      which is how a vault with a dead semantic lane and
+      a dirty index comes to report itself as healthy. One verb for the fix, Repair, used here and
+      referred to as such from journey 5.</div>
+    </figure>
+
+  </div>
+</section>

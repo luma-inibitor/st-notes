@@ -81,7 +81,7 @@ The bootstrap step copies `.env.example` to `.env` and sets values suited to a t
 | `AUTO_UPDATE_ENABLED` | `false`            | Stops the instance changing under you mid-session.    |
 | `LOG_LEVEL`           | `info`             | Shows package activation and generation milestones.   |
 
-An existing `.env` is left alone unless you pass `--force-env`. The port defaults to 7860. See [Configuration](https://github.com/luma-inibitor/Marinara-Engine/blob/main/docs/CONFIGURATION.md) for every other variable.
+An existing `.env` is left alone unless you pass `--force-env`. The port defaults to 7860. See [Configuration](https://github.com/Pasta-Devs/Marinara-Engine/blob/main/docs/CONFIGURATION.md) for every other variable.
 
 ## Step 2: build and start the server
 
@@ -171,7 +171,7 @@ Connection flags are stored as the strings `"true"` and `"false"`, so read the r
 
 ## Step 5: install a capability package
 
-Optional agent features ship as downloadable packages rather than in the base build. See [Optional Agent and Capability Packages](https://github.com/luma-inibitor/Marinara-Engine/blob/main/docs/development/optional-agent-packages.md) for the model.
+Optional agent features ship as downloadable packages rather than in the base build. See [Optional Agent and Capability Packages](https://github.com/Pasta-Devs/Marinara-Engine/blob/main/docs/development/optional-agent-packages.md) for the model.
 
 ```bash
 node $HARNESS/bootstrap-instance.mjs --skip-env --skip-connection --install long-term-memory
@@ -413,7 +413,7 @@ Set `PLAYWRIGHT_BROWSERS_PATH` to the directory holding `chromium-*`, and `PLAYW
 
 ## Related guides
 
-- [Optional Agent and Capability Packages](https://github.com/luma-inibitor/Marinara-Engine/blob/main/docs/development/optional-agent-packages.md)
-- [Frontend Architecture (Developers)](https://github.com/luma-inibitor/Marinara-Engine/blob/main/docs/development/frontend.md)
-- [Configuration](https://github.com/luma-inibitor/Marinara-Engine/blob/main/docs/CONFIGURATION.md)
-- [Contributing](https://github.com/luma-inibitor/Marinara-Engine/blob/main/CONTRIBUTING.md)
+- [Optional Agent and Capability Packages](https://github.com/Pasta-Devs/Marinara-Engine/blob/main/docs/development/optional-agent-packages.md)
+- [Frontend Architecture (Developers)](https://github.com/Pasta-Devs/Marinara-Engine/blob/main/docs/development/frontend.md)
+- [Configuration](https://github.com/Pasta-Devs/Marinara-Engine/blob/main/docs/CONFIGURATION.md)
+- [Contributing](https://github.com/Pasta-Devs/Marinara-Engine/blob/main/CONTRIBUTING.md)

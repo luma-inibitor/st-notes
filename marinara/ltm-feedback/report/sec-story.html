@@ -1,0 +1,91 @@
+  <section id="what-happened">
+    <div class="sec-head">
+      <p class="eyebrow">The run</p>
+      <h2>What the operator actually did</h2>
+      <p class="prose">
+        These 83 findings are the ones a migration of this shape surfaces. A different corpus would
+        have surfaced different ones, so here is the run that produced them, in the order it
+        happened.
+      </p>
+    </div>
+
+    <p class="prose">
+      The starting position was one continuous story told across ten chats, four of them
+      conversation branches and six roleplay. The engine's two summary subsystems do not know about
+      each other, so the operator had been running a 38 KB script to backfill summaries and
+      character memories in both directions, revising it per chat across several engine versions.
+      By the time this began, summaries occupied <strong>71,635 tokens</strong> of context, and one
+      scene chat alone carried 30,719. That is what the vault was supposed to replace.
+    </p>
+    <p class="prose">
+      Planning the migration required reading the package source, because the pipeline runs on
+      seven nouns and the product defines none of them anywhere a user can reach. Understanding
+      the current state required more: no view enumerates chats, summary coverage, connections,
+      embedding health or card leakage, so the operator wrote a 503-line read-only diagnostic to
+      produce one. It immediately found three things the product had never mentioned: the story
+      spanned ten chats rather than the five the operator believed, two scene chats carried
+      conflicting backfills of the same history, and concluded scenes had been writing global
+      memory entries onto character cards that then leaked into every chat using those cards.
+    </p>
+    <p class="prose">
+      The next probe killed the vector lane. The capability embedding host is hard-wired to a local
+      ONNX embedder, whose Linux binaries link against glibc while Termux is bionic, so the binding
+      never loads. Rebuild still reported success and index health still read healthy while the
+      embedded chunk count sat at zero. Establishing that took a dedicated 178-line probe script.
+    </p>
+    <p class="prose">
+      Moving 97 cleaned entries into the vault, extracting them and rewiring five live chats took a
+      1,981-line orchestrator with 22 subcommands across nine steps, because none of those steps is
+      bulk-addressable through the interface. Extraction then failed four ways in sequence: the
+      engine's 300s outbound timeout killed long batches, a run with no progress channel sat silent
+      for minutes and read as a hang, one oversized entry threw
+      <code>ltm_model_output_truncated</code> and discarded the whole response, and the operator's
+      own resume cursor advanced past failed batches.
+    </p>
+    <p class="prose">
+      Then the worst one. Recall selected seven chunks at 99% relevance and the engine discarded all
+      seven, because a preset that assembles the prompt drops agent output unless it carries a
+      marker section. One preset was shared by four roleplay chats, so one missing section disabled
+      memory across four chats at once. Every layer reported success. The debug log said recall had
+      worked, which from the package's point of view was true.
+    </p>
+    <p class="prose">
+      Chasing why the vault felt thin turned up 200 auto-rejected candidates reachable through an
+      endpoint, 132 of them for untrusted subjects. The operator redid the extraction from cleaned
+      sources, which needed a lint pass, a briefing document for a second agent, and a vault-wipe
+      command that also cleared checkpoints. Reviewing the result meant 97 drafts, 1,142 claims and
+      161 notes, one draft at a time, against a story organised by subject: seeing 40 claims about
+      one person meant visiting 40 drafts. That produced a 2,545-line review workbench, served over
+      a local HTTP server because an Android <code>content://</code> URI breaks relative fetches
+      from a file. Applying it hit two hard walls with no prior warning, the 30-keyword cap and the
+      20,000-character section cap, the second of which failed 35 drafts with 35 identical messages
+      that name neither the note nor the section.
+    </p>
+
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Running tally</th><th></th></tr>
+      <tr><td>User code</td><td class="ours"><b>5,207 lines</b> across 4 scripts: <code>maridiag.cjs</code> 503, <code>embprobe.cjs</code> 178, <code>migrate.cjs</code> 1,981, <code>review-app.cjs</code> 2,545</td></tr>
+      <tr><td>Documents</td><td>5 written to explain the system to a person or to another agent, plus 2 upstream bug reports</td></tr>
+      <tr><td>Extractions</td><td>2 full runs; the first lost roughly a third of the corpus to one unset field</td></tr>
+      <tr><td>Apply failures</td><td>3 distinct modes: outbound timeout, keyword cap, section cap</td></tr>
+      <tr><td>Silent failures</td><td>4 that only reading source detected: injection, embeddings, backfills, rejections</td></tr>
+      <tr><td>Summary context</td><td><b>71,635 → 10,050 tokens</b>. The migration worked.</td></tr>
+    </table></div>
+
+    <p class="prose">
+      Several of those failures belong to the operator. Nobody ever set the extraction scope's chat
+      list, so the trusted roster came out empty and a third of the first run landed in the
+      rejection pile. Nobody normalised names before extraction, so one subject became
+      <code>char_wren</code> and <code>char_wren_ashgrove</code>, two notes splitting one history.
+      Two summarisation passes went into one source file without reconciliation, leaving the corpus
+      two accounts of the same day for ten dates. Backfills ran repeatedly into consolidated week
+      ranges, which the engine skips. A prompt-assembling preset stayed in use on four chats. GLM
+      5.2 won on price and performance and emits explicit <code>null</code> for optional object
+      fields, which the schema rejects, costing 28 more claims.
+    </p>
+    <p class="prose">
+      The argument is not that these were something other than mistakes. It is that a system whose
+      value proposition is remembering correctly over months let every one of them run silently for
+      weeks, and the operator found each one by reading source rather than by using the product.
+    </p>
+  </section>

@@ -1,0 +1,69 @@
+  <section id="orientation">
+    <div class="sec-head">
+      <p class="eyebrow">Introduction</p>
+      <!-- The contents rail is generated from each section's h2, so this section keeps
+           one for the rail and for screen readers while showing no display heading. -->
+      <h2 class="vh">Introduction</h2>
+      <p class="prose">
+        I moved a three-week story off Marinara Engine's built-in chat summaries and
+        into the Long-Term Memory vault, then wrote down everything the system did along the way.
+        This document collects <strong>83 findings</strong> with source code references.
+      </p>
+      <p class="prose">
+        This is a lot of shit. I tried editing down the Claude slop but it's still a slopfest.
+        Feel free to take as much or as little from this as you like.
+      </p>
+    </div>
+
+    <p class="subhead">Environment</p>
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Component</th><th>What ran</th></tr>
+      <tr><td>Engine</td><td><b>Marinara Engine 2.4.1</b> (<code>084baaf</code>)</td></tr>
+      <tr><td>Package</td><td><b>Long-Term Memory 1.1.6</b>, capability API 1.6, built against engine 2.4.1 (<code>c0ce4d8</code>)</td></tr>
+      <tr><td>Host</td><td>Termux on Android for the migration, and a Linux container for the first-run walkthrough. The Android host is where the native embedding binding cannot load.</td></tr>
+      <tr><td>Extraction model</td><td><b>GLM 5.2</b> ran both full extractions. Gemini Flash and DS v4 were evaluated and not used.</td></tr>
+      <tr><td>Embeddings</td><td>None. Local ONNX doesn't work on Android/Termux out of the box.</td></tr>
+      <tr><td>Corpus</td><td>One story across <b>10 chats</b>: 6 roleplay, 4 conversation branches. 97 summary entries spanning 2026-07-13 to 2026-08-06, which extraction turned into 1,142 claims across 161 notes.</td></tr>
+      <tr><td>Date</td><td>Early August 2026, against the source checkouts named above</td></tr>
+    </table></div>
+
+    <p class="subhead">Scope</p>
+    <p class="prose">
+      The review covers the package's review, apply, diagnostic and error surfaces, its extraction
+      and projection pipeline, and its retrieval and injection path as far as the prompt.
+    </p>
+    <p class="prose">Out of scope:</p>
+    <ul class="prose">
+      <li>Lorebook interop</li>
+      <li>World-state agent or any other agent interactions</li>
+      <li>Reconciliation between roleplay time and wall-clock time</li>
+      <li>Multi-persona setups</li>
+      <li>Group chats</li>
+      <li>Retrieval quality</li>
+    </ul>
+
+    <p class="subhead">How to read a finding</p>
+    <p class="prose">
+      Every finding carries four fields. Severity, evidence grade and effort are independent of one
+      another, so a critical finding can be a small fix and a low-severity one can be a large one.
+    </p>
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Field</th><th>Values</th><th>What each value means</th></tr>
+      <tr><td>Severity</td><td class="ours">critical · high · medium · low</td>
+        <td><b>Critical</b> marks a really bad bug or a failure of fundamental functionality.
+        <b>High</b> marks an interface that lies to the user, or a constraint most people hit.
+        <b>Medium</b> marks something workaroundable through the API, misleading rather than
+        incorrect, or a constraint only a power user reaches. <b>Low</b> marks something better
+        prompting fixes, something that may be model-dependent, or a clunky interface a user
+        surmounts by poking around.</td></tr>
+      <tr><td>Evidence grade</td><td class="ours">source · observed · measured · reported</td>
+        <td><b>Source</b> means Claude checked the source code.
+        <b>Observed</b> means it happened during the migration and left an artifact.
+        <b>Measured</b> means a number came out of analysis from user activity.
+        <b>Reported</b> means I personally ran into and discussed the issue with Claude.</td></tr>
+      <tr><td>Effort</td><td class="ours">small · medium · large</td>
+        <td>Claude estimate of effort to address a given issue.</td></tr>
+      <tr><td>Bug tag</td><td class="ours">present or absent</td>
+        <td>Distinguish between bugs and UI/UX issues, missing features, etc.</td></tr>
+    </table></div>
+  </section>

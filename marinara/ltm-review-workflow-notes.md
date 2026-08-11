@@ -24,7 +24,7 @@ iterating targets instead.
 This matters because a real session has 583 mutations across 71 identically
 named imports, but those touch a far smaller set of memories — dozens of
 sessions all say things about the same handful of characters. "The 41 things we
-learned about Kirei" is a reviewable unit. "6 changes from msgs 33-33" is not.
+learned about Wren" is a reviewable unit. "6 changes from msgs 33-33" is not.
 
 ### 2. There is no undo
 

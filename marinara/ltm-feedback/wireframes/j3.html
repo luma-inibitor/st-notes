@@ -1,0 +1,193 @@
+<section class="journey" id="j3">
+  <div class="jhead"><span class="jnum">JOURNEY 3</span><h2>Curate</h2></div>
+  <p class="goal"><em>"There are a thousand of these. Let me work through them in the order that makes sense to me."</em>
+  Compose a cross-section, work it to exhaustion, apply it, compose the next.</p>
+
+  <div class="flow">
+    <span class="step"><b>Compose</b> a slice from facets</span>
+    <span class="step"><b>Pivot</b> group and sort</span>
+    <span class="step"><b>Edit</b> in place</span>
+    <span class="step"><b>Resolve</b> conflicts</span>
+    <span class="step"><b>Apply</b> with preflight</span>
+  </div>
+
+  <div class="frames">
+
+    <figure class="frame">
+      <figcaption><span class="n">3.1</span><span class="t">Facets, grouped by where they come from</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Facets</span><span class="btn">Clear</span></div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>Computed here</b></span><span class="chip warn">heuristic</span></div>
+          <div class="sp"></div>
+          <div class="list">
+            <div class="item"><span class="cb on"></span><span class="grow">Restates the vault <span class="faint">· 61</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Duplicate of another incoming claim <span class="faint">· 75</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Keyword cap reached <span class="faint">· 24</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Section cap reached <span class="faint">· 35</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Reworded restatement <span class="faint">· count unavailable, semantic lane dead</span></span><span class="chip bad">off</span></div>
+          </div>
+        </div>
+        <div class="box solid">
+          <div class="row"><span class="grow"><b>From the model</b></span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="chip">risk</span><span class="chip">importance</span><span class="chip">weak subject match 9</span><span class="chip">overwrites a stored value 47</span></div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>Yours</b></span><span class="chip">saved slices</span></div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F42</span>
+      Three bands, so a shingle heuristic is never mistaken for a schema field, and every band
+      carries a live count against the 838 in the queue. The disabled facet states why it is
+      disabled instead of returning a silent zero, which on this vault would read as a clean
+      result. <code>match.basis</code> is already computed during subject resolution and already
+      travels into rejection details; threading it onto the mutation is the small remaining step
+      that lets a reviewer pull out claims bound by a spelling variation alone. The four rewrites
+      of the server-side dedup algorithm are cited where they belong, on the write path, not here:
+      two of them run before review, so fixing them shrinks these counts rather than filling
+      this rail.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.2</span><span class="t">One list, two independent controls</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">838 claims · 61 shown · 61 selected</span><span class="chip">24 decided</span></div>
+        <div class="row"><span class="btn">group by: target note</span><span class="btn">sort by: risk</span></div>
+        <div class="box solid">
+          <div class="row"><span class="grow"><b>Wren</b> <span class="faint">· character note</span></span><span class="chip warn">trait 19,240 / 20,000</span></div>
+          <div class="sp"></div>
+          <div class="meter warn"><i class="w96"></i></div>
+        </div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line <span class="faint">· restates the vault</span></span><span class="chip">merges</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line <span class="faint">· new</span></span><span class="chip warn">overwrites</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Claim text, one line <span class="faint">· its source note changed since this draft was built</span></span><span class="chip bad">stale</span></div>
+        </div>
+        <div class="box"><div class="row"><span class="grow">Written without review</span><span class="chip bad">not in this list</span></div>
+          <div class="sp"></div>
+          <div class="row faint">Low-risk chat-summary material goes straight to the vault. This queue is a subset of what the run wrote, and says so.</div>
+        </div>
+        <div class="box"><div class="row"><span class="grow faint mono">selection and edits held across regroup and re-sort</span></div></div>
+      </div>
+      <div class="note"><span class="fx">F31</span><span class="fx">F32</span><span class="fx">F33</span><span class="fx">F34</span><span class="fx">F36</span><span class="fx">F29</span><span class="fx">F43</span>
+      The data needed to organise this work by subject is already on the wire: <code>targets[]</code>
+      is consumed today, it just renders as an unlabeled wrapper with no header. Giving it a header
+      and a pivot is therefore a presentation change, not a new query. Group-by and sort act on one
+      list and the facet set survives a pivot, so a slice is composed once and worked to exhaustion.
+      A stale row is marked in the list rather than at apply time, since freshness is recomputed on
+      every review read and a reviewer composing a slice today can otherwise select rows that will
+      fail later because the source note moved underneath them. The auto-applied band is stated for
+      the same reason: with the low-risk gate open, the reviewed set is not the vault, and a queue
+      that hides that is telling a reviewer they have seen everything. Selection persists across
+      regroup and re-sort only. Holding it across a reload needs client storage this package does
+      not have, so the frame does not promise it; today selection additionally resets on any change
+      of chat, source or draft, which confines a batch to one draft even though the apply path
+      already groups by draft.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.3</span><span class="t">A row opened for editing</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Editing claim</span><span class="chip">merges into trait</span><span class="btn">Close</span></div>
+        <div class="input area">Claim text, editable in place</div>
+        <div class="row mono faint">412 characters in this contribution</div>
+        <div class="meter warn"><i class="w96"></i></div>
+        <div class="row mono faint">19,240 of 20,000 characters in the projected section</div>
+        <div class="box solid">
+          <div class="row"><span class="grow"><b>Evidence</b> <span class="faint">· from lorebook entry 12</span></span></div>
+          <div class="sp"></div>
+          <div class="ph l"></div><div class="ph m"></div>
+        </div>
+        <div class="box">
+          <div class="row"><span class="grow">Links to</span><span class="chip">Timeline: harbour arrival</span></div>
+          <div class="sp"></div>
+          <div class="row"><span class="chip warn">keywords 28 / 30</span><span class="chip">contributions 91 / 100</span></div>
+        </div>
+        <div class="row"><span class="btn pri">Save edit</span><span class="btn">Accept as written</span><span class="btn">Drop</span></div>
+      </div>
+      <div class="note"><span class="fx">F44</span><span class="fx">F45</span><span class="fx">F46</span>
+      An in-place editor already exists on this path and already persists a text change, which is
+      more than most of this pipeline offers. Three things are added around it. It is a labelled
+      control on the row rather than a panel below the diagnostics, and it reaches the link,
+      keyword, status and subject mutations that today render as nothing at all for four of the
+      seven kinds. Two counters are shown with different labels, the contribution being written and
+      the section it lands in, so one denominator never carries two meanings; the section counter
+      is live against the 20,000 cap and blocks save there, where today the editor trims silently
+      with no counter and no marker at the cut. A link mutation resolves its target id to a title
+      through the lookup the queue already applies elsewhere, instead of showing a bare id.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.4</span><span class="t">A conflict, with three ways out</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Conflict on <span class="mono">trait</span></span><span class="chip bad">contradicts stored</span></div>
+        <div class="box">
+          <div class="row"><span class="grow"><b>Stored</b></span><span class="chip">recalled 21 times · last 2 Mar</span></div>
+          <div class="sp"></div>
+          <div class="ph l"></div>
+        </div>
+        <div class="box solid">
+          <div class="row"><span class="grow"><b>Proposed</b> <span class="faint">· from a chat summary</span></span></div>
+          <div class="sp"></div>
+          <div class="ph m"></div>
+        </div>
+        <div class="row"><span class="btn">Keep stored</span><span class="btn">Replace</span><span class="btn pri">Keep both, in order</span></div>
+        <div class="box"><span class="dim">Keeping both files the stored line as earlier and the proposed line as later.</span></div>
+      </div>
+      <div class="note"><span class="fx">F35</span><span class="fx">F47</span>
+      The review row reads <code>mutation.note.conflicts</code> and shows existing beside proposed,
+      with a third option, because most contradictions in a long story are the relationship moving
+      rather than a factual dispute. The recall count on the stored text says how much the model has
+      been leaning on what is about to be overwritten. Today the queue never reads conflicts at all,
+      the vault renders only the proposed side, and the per-chunk counts are written to disk and
+      returned by no route.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.5</span><span class="t">Apply, preflighted and reported</span><span class="feas rst">restart</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">Apply 61 selected</span><span class="chip warn">2 would fail</span></div>
+        <div class="list">
+          <div class="item"><span class="grow">Section cap exceeded on the trait section <span class="faint">· 2 rows marked</span></span><span class="btn">Show</span></div>
+          <div class="item"><span class="grow">Dropped rows still available as dependencies</span><span class="chip">auto-included</span></div>
+        </div>
+        <div class="box solid"><div class="row"><span class="cb on"></span><span class="grow">Take a restore point first <span class="faint">· there is no undo</span></span></div></div>
+        <div class="meter warn"><i class="w75"></i></div>
+        <div class="row mono faint">46 of 61 applied · 13 remaining · 2 skipped and marked</div>
+      </div>
+      <div class="note"><span class="fx">F37</span><span class="fx">F38</span><span class="fx">F39</span><span class="fx">F40</span><span class="fx">F41</span>
+      A preflight route runs the same projection code the server applies, so knowable failures land
+      on the offending rows before submit instead of arriving as an atomic whole-draft error;
+      computing this in the browser would fork the projector, so it stays on a route. Dependency
+      recovery searches the pre-rejection pool, applied rows are flagged rather than deleted from
+      the draft, and progress counts against the batch rather than a shrinking draft. The restore
+      point is a backup export, which already exists and is already routed. Real undo needs the
+      commit journals retained past <code>publish()</code>, which is a larger change and is not
+      assumed here.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.6</span><span class="t">The same surface at the median size</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">12 claims from one character card</span><span class="chip">all shown</span></div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line</span><span class="chip">merges</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line</span><span class="chip">merges</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Claim text, one line <span class="faint">· weak subject match</span></span><span class="chip warn">check</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line</span><span class="chip">merges</span></div>
+        </div>
+        <div class="box solid"><span class="dim">No facet rail, no group-by, no sort. Twelve rows are read end to end faster than a filter is composed.</span></div>
+        <div class="row"><span class="btn pri">Accept selected</span><span class="btn">Accept all</span><span class="btn">Show facets</span></div>
+      </div>
+      <div class="note"><span class="fx">F31</span>
+      Everything above this frame is drawn at the size of a migration, and the machinery earns its
+      keep there. It does not earn its keep at a dozen rows, where a rail of six facets is more
+      surface than the work it filters. The controls collapse to one escape hatch, and the list is
+      the whole interface. Scale decides this, not loop: the same journey, the same route and the
+      same row component, with the composition step removed because there is nothing to compose.
+      A queue built only for 838 makes the common case feel like the rare one.</div>
+    </figure>
+
+  </div>
+</section>

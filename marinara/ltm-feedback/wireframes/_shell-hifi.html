@@ -1,0 +1,1033 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interface proposals for the Long-Term Memory package, drawn against Marinara Engine's real surfaces.">
+<title>Long-Term Memory — interface proposals</title>
+
+<style>
+  /* ── Tokens ──────────────────────────────────────────────────────────
+     Dark-first: the bare :root carries dark because the Engine is a dark
+     app. Light is the deliberate override. One accent, and it marks
+     exactly one thing: memory. */
+  :root {
+    --ground:#07060f; --sheet:#0e0d1c; --frame:#121122; --frame-2:#1a1830;
+    --frame-3:#232043; --stroke:#35315c; --stroke-soft:#252242;
+    --ink:#ece9ff; --ink-2:#aca6c9; --ink-3:#7a7496;
+    --accent:#8fd6c4; --accent-ink:#06120e; --accent-2:#9db4ff;
+    --good:#7ee0b8; --warn:#ffcf8a; --bad:#ff9e9e;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.9);
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){ :root:not([data-theme="dark"]){
+    --ground:#f4f4f7; --sheet:#ffffff; --frame:#ffffff; --frame-2:#f1f0f6;
+    --frame-3:#e5e3ef; --stroke:#c7c3d8; --stroke-soft:#e2e0ea;
+    --ink:#16142a; --ink-2:#514c६9; --ink-3:#847e9b;
+    --accent:#1d7a66; --accent-ink:#ffffff; --accent-2:#3d5bb8;
+    --good:#1c8560; --warn:#8a5a10; --bad:#a03434;
+    --shadow:0 14px 40px -24px rgba(20,16,50,.4);
+  }}
+  :root[data-theme="light"]{
+    --ground:#f4f4f7; --sheet:#ffffff; --frame:#ffffff; --frame-2:#f1f0f6;
+    --frame-3:#e5e3ef; --stroke:#c7c3d8; --stroke-soft:#e2e0ea;
+    --ink:#16142a; --ink-2:#514c69; --ink-3:#847e9b;
+    --accent:#1d7a66; --accent-ink:#ffffff; --accent-2:#3d5bb8;
+    --good:#1c8560; --warn:#8a5a10; --bad:#a03434;
+    --shadow:0 14px 40px -24px rgba(20,16,50,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 24px 96px;
+    display:grid;grid-template-columns:minmax(0,1fr) 216px;gap:40px;align-items:start}
+  .docmain{min-width:0;max-width:1180px}
+  .toc{position:sticky;top:0;max-height:100vh;overflow-y:auto;padding:26px 0 40px;
+    font-size:.82rem;line-height:1.45}
+  .toc-title{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);margin:0 0 10px}
+  .toc a{display:block;color:var(--ink-3);text-decoration:none;padding:3px 9px;border-radius:5px;
+    border-left:2px solid transparent}
+  .toc a:hover{color:var(--ink);background:var(--frame-2)}
+  .toc a.lvl2{padding-left:19px;font-size:.78rem}
+  .toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--frame-2)}
+  .toc .grp{margin-top:14px}
+  @media (max-width:1080px){
+    .wrap{grid-template-columns:minmax(0,1fr)}
+    .toc{display:none}
+  }
+
+  h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.2}
+  h1{font-size:clamp(2rem,4.6vw,3.1rem);font-weight:800;letter-spacing:-.028em}
+  h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:750;letter-spacing:-.02em}
+  h3{font-size:1.13rem;font-weight:700;letter-spacing:-.01em}
+  h4{font-size:.95rem;font-weight:700}
+  p{margin:0}
+  .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-3);margin:0}
+  .lede{color:var(--ink-2);font-size:1.06rem;max-width:64ch}
+  .prose{color:var(--ink-2);max-width:68ch}
+  .prose strong{color:var(--ink);font-weight:650}
+  code{font-family:var(--mono);font-size:.86em;background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:4px;padding:.08em .34em;color:var(--ink)}
+
+  .masthead{border-bottom:1px solid var(--stroke);padding:56px 0 34px;
+    display:flex;flex-direction:column;gap:20px}
+
+  /* Visible to screen readers and to the generated contents rail, not to the eye. */
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;
+    clip-path:inset(50%);white-space:nowrap;margin:-1px;padding:0;border:0}
+
+  section{padding-top:68px}
+  /* Anchored landing spots clear the top of the viewport by the same offset the
+     sticky facet panel uses, so a scrolled-to heading is never jammed against it. */
+  section[id],.cluster,.finding,.journey{scroll-margin-top:18px}
+  .sec-head{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
+  .card{background:var(--sheet);border:1px solid var(--stroke-soft);border-radius:12px;
+    padding:18px 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .card-tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--accent-2)}
+  .card p{color:var(--ink-2);font-size:.9rem;line-height:1.55}
+  .card .src{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
+    border-top:1px dashed var(--stroke-soft);padding-top:9px;margin-top:auto;word-break:break-word}
+
+  .journey{border:1px solid var(--stroke);border-radius:16px;background:var(--sheet);
+    padding:26px;margin-top:22px;display:flex;flex-direction:column;gap:24px}
+  .j-head{display:flex;flex-direction:column;gap:10px}
+  .j-title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .j-badge{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.1em;
+    color:var(--accent-ink);background:var(--accent);border-radius:5px;padding:3px 9px}
+  .j-thesis{color:var(--ink-2);max-width:70ch}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--stroke-soft);padding-bottom:14px}
+  .tab{font-family:var(--mono);font-size:.73rem;color:var(--ink-2);background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:999px;padding:6px 13px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;transition:background .15s,color .15s,border-color .15s}
+  .tab:hover{border-color:var(--stroke);color:var(--ink)}
+  .tab .num{color:var(--ink-3)}
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);
+    color:var(--accent-ink);font-weight:700}
+  .tab[aria-selected="true"] .num{color:var(--accent-ink);opacity:.7}
+  .tab:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+
+  .stage{display:flex;flex-direction:column;gap:16px}
+  .caption{font-family:var(--mono);font-size:.76rem;line-height:1.6;color:var(--ink-2);
+    background:var(--frame-2);border:1px solid var(--stroke-soft);
+    border-left:2px solid var(--accent-2);border-radius:0 8px 8px 0;padding:11px 14px}
+  .caption b{color:var(--ink)}
+  .fx{display:inline-block;font-family:var(--mono);font-size:.66rem;font-weight:700;
+    border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:5px;opacity:.85}
+  .feas{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--stroke);border-radius:4px;padding:1px 6px;color:var(--ink-3);background:var(--frame-2)}
+  .feas.rst{border-color:color-mix(in srgb,var(--warn) 55%,transparent);color:var(--warn)}
+  .feas.eng{border-color:color-mix(in srgb,var(--bad) 55%,transparent);color:var(--bad)}
+  .feas.now{border-color:color-mix(in srgb,var(--ink-3) 60%,transparent);color:var(--ink-3);
+    background:transparent;border-style:dashed}
+
+  .rack{display:grid;grid-template-columns:minmax(0,1fr) 232px;gap:22px;align-items:start}
+  @media (max-width:860px){.rack{grid-template-columns:minmax(0,1fr)}}
+  .rack-cell{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .rack-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-3);display:flex;gap:8px;align-items:center}
+
+  /* ══ Device chrome ══════════════════════════════════════════════════ */
+  .dev{background:var(--frame);border:1px solid var(--stroke);border-radius:10px;overflow:hidden;
+    position:relative;font-size:11px;line-height:1.35;color:var(--ink-2);box-shadow:var(--shadow)}
+  .dev-desk{display:grid;grid-template-columns:104px minmax(0,1fr);height:412px}
+  .dev-desk.drawer{grid-template-columns:96px minmax(0,1fr) 224px}
+  .dev-phone{display:flex;flex-direction:column;height:412px}
+
+  .side{border-right:1px solid var(--stroke-soft);background:var(--frame-2);padding:8px 7px;
+    display:flex;flex-direction:column;gap:7px;min-width:0}
+  .side-title{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .chat-row{border:1px solid var(--stroke-soft);border-radius:5px;padding:4px 6px;font-size:9px;
+    color:var(--ink-2);background:var(--frame);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chat-row.on{border-color:var(--accent-2);background:var(--frame-3);color:var(--ink)}
+
+  .main{display:flex;flex-direction:column;min-width:0;background:var(--frame)}
+  .topbar{height:26px;border-bottom:1px solid var(--stroke-soft);display:flex;align-items:center;
+    gap:6px;padding:0 8px;background:var(--frame-2);flex-shrink:0;font-family:var(--mono);
+    font-size:9px;color:var(--ink-3);letter-spacing:.06em}
+  .ico{width:13px;height:13px;border:1px solid var(--stroke);border-radius:3px;flex-shrink:0;
+    display:grid;place-items:center;font-size:8px;color:var(--ink-3)}
+  .ico.hot{border-color:var(--accent);color:var(--accent);
+    background:color-mix(in srgb,var(--accent) 16%,transparent);
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .ico.wide{width:auto;padding:0 5px}
+
+  /* workspace tab rail */
+  .rail{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--stroke-soft);
+    background:var(--frame-2);flex-shrink:0;flex-wrap:wrap}
+  .rt{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:5px;
+    border:1px solid var(--stroke-soft);color:var(--ink-3);background:var(--frame)}
+  .rt.on{background:var(--frame-3);border-color:var(--stroke);color:var(--ink);font-weight:700}
+  .rt.new{border-color:var(--accent);color:var(--accent)}
+  .rt .b{margin-left:5px;color:var(--accent)}
+
+  .pane{flex:1;overflow:hidden;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+  .pane.split{flex-direction:row;gap:8px;padding:8px}
+  .facets{width:132px;flex-shrink:0;display:flex;flex-direction:column;gap:5px;
+    border-right:1px solid var(--stroke-soft);padding-right:8px;overflow:hidden}
+  .fgroup{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-3);margin-top:3px}
+  .fac{display:flex;gap:5px;align-items:center;font-size:9px;color:var(--ink-2);
+    border:1px solid transparent;border-radius:4px;padding:2px 4px}
+  .fac.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+  .fac .c{margin-left:auto;font-family:var(--mono);font-size:8px;color:var(--ink-3)}
+  .listcol{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;overflow:hidden}
+
+  .hdr{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;
+    color:var(--ink-3);flex-shrink:0}
+  .hdr .grow{flex:1}
+  .sel{font-family:var(--mono);font-size:8.5px;border:1px solid var(--stroke-soft);
+    border-radius:4px;padding:2px 6px;color:var(--ink-2);background:var(--frame-2)}
+
+  .grp{font-family:var(--mono);font-size:9px;color:var(--ink);background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:5px;padding:4px 6px;display:flex;
+    gap:6px;align-items:center}
+  .grp .c{margin-left:auto;color:var(--ink-3)}
+
+  .row{border:1px solid var(--stroke-soft);border-radius:5px;padding:5px 6px;background:var(--frame);
+    display:flex;gap:6px;align-items:flex-start;font-size:9.5px;color:var(--ink-2);min-width:0}
+  .row.on{border-color:var(--accent-2);background:var(--frame-3);color:var(--ink)}
+  .row.warnrow{border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .row.badrow{border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+  .row .cb{width:10px;height:10px;border:1px solid var(--stroke);border-radius:2px;flex-shrink:0;margin-top:2px}
+  .row .cb.on{background:var(--accent);border-color:var(--accent)}
+  .row .t{flex:1;min-width:0}
+  .row .meta{font-family:var(--mono);font-size:8px;color:var(--ink-3)}
+
+  .tag{font-family:var(--mono);font-size:8px;border:1px solid var(--stroke-soft);border-radius:999px;
+    padding:0 5px;color:var(--ink-3);white-space:nowrap}
+  .tag.acc{border-color:var(--accent);color:var(--accent)}
+  .tag.warn{border-color:color-mix(in srgb,var(--warn) 50%,transparent);color:var(--warn)}
+  .tag.bad{border-color:color-mix(in srgb,var(--bad) 50%,transparent);color:var(--bad)}
+  .tag.good{border-color:color-mix(in srgb,var(--good) 50%,transparent);color:var(--good)}
+
+  .btn{font-family:var(--mono);font-size:8.5px;border:1px solid var(--stroke);border-radius:4px;
+    padding:2px 7px;color:var(--ink-2);background:var(--frame-2);white-space:nowrap}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+
+  .mtr{height:4px;border-radius:2px;background:var(--frame-3);overflow:hidden}
+  .mtr>i{display:block;height:100%;background:var(--ink-3)}
+  .mtr.warn>i{background:var(--warn)}
+  .mtr.acc>i{background:var(--accent)}
+  .w30{width:30%}.w50{width:50%}.w65{width:65%}.w75{width:75%}.w90{width:90%}.w95{width:95%}.w96{width:96%}
+
+  .fld{border:1px solid var(--stroke);border-radius:4px;background:var(--frame-2);
+    padding:4px 6px;font-size:9.5px;color:var(--ink);min-height:18px}
+  .fld.area{min-height:38px}
+  .fld.ph{color:var(--ink-3)}
+  .note-s{font-size:9px;color:var(--ink-3);font-style:italic}
+  .empty{border:1px dashed var(--stroke-soft);border-radius:5px;padding:12px 8px;text-align:center;
+    font-family:var(--mono);font-size:8.5px;color:var(--ink-3)}
+
+  /* chat surfaces */
+  .msgs{flex:1;overflow:hidden;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;gap:7px}
+  .msg{display:flex;gap:6px;align-items:flex-start}
+  .msg .av{width:14px;height:14px;border-radius:50%;border:1px solid var(--stroke);flex-shrink:0;background:var(--frame-2)}
+  .msg .bd{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .msg .who{font-family:var(--mono);font-size:8px;color:var(--ink-3);letter-spacing:.04em}
+  .msg .tx{font-size:9.5px;line-height:1.45;color:var(--ink-2)}
+  .bar-line{height:5px;border-radius:3px;background:var(--frame-3)}
+  .bar-line+.bar-line{margin-top:3px}
+  .inputbar{height:26px;border-top:1px solid var(--stroke-soft);display:flex;align-items:center;
+    padding:0 8px;gap:6px;flex-shrink:0;background:var(--frame-2)}
+
+  .drawer{border-left:1px solid var(--stroke-soft);background:var(--frame-2);display:flex;
+    flex-direction:column;min-width:0;overflow:hidden}
+  .drawer-head{padding:6px 8px;border-bottom:1px solid var(--stroke-soft);font-family:var(--mono);
+    font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+    display:flex;align-items:center;gap:6px}
+  .drawer-body{padding:8px;display:flex;flex-direction:column;gap:6px;overflow:hidden;min-width:0}
+  .drawer-body *{min-width:0;overflow-wrap:anywhere}
+
+  .kv{display:flex;gap:6px;font-size:9px;color:var(--ink-2)}
+  .kv .k{color:var(--ink-3);font-family:var(--mono);font-size:8.5px}
+  .kv .v{margin-left:auto;font-family:var(--mono);font-size:8.5px;color:var(--ink)}
+
+  .flowrail{display:flex;flex-direction:column;gap:9px}
+  .flow-track{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px}
+  .fstep{border:1px solid var(--stroke-soft);border-radius:8px;background:var(--frame-2);
+    padding:8px 11px;display:flex;flex-direction:column;gap:2px;min-width:132px;flex:1}
+  .fstep .sn{font-family:var(--mono);font-size:.62rem;color:var(--ink-3);letter-spacing:.1em}
+  .fstep .st{font-size:.82rem;color:var(--ink);font-weight:650}
+  .fstep .sd{font-size:.74rem;color:var(--ink-2)}
+  .fstep.term{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+  .arrow{align-self:center;color:var(--ink-3);font-size:.8rem}
+
+  .tradeoffs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .to{border:1px solid var(--stroke-soft);border-radius:10px;background:var(--frame-2);padding:14px 15px}
+  .to h4{margin-bottom:7px;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
+  .to ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:5px}
+  .to li{font-size:.83rem;color:var(--ink-2)}
+  .to.win h4{color:var(--good)} .to.cost h4{color:var(--warn)} .to.build h4{color:var(--accent-2)}
+
+  .dev-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:14px}
+  .dev-table th{text-align:left;font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--stroke);
+    padding:0 12px 8px 0;vertical-align:bottom;font-weight:700}
+  .dev-table td{border-bottom:1px solid var(--stroke-soft);padding:10px 12px 10px 0;
+    color:var(--ink-2);vertical-align:top}
+  .dev-table td:first-child{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+  .dev-table td b{color:var(--ink);font-weight:650}
+  .dev-table td.ours{color:var(--accent)}
+  .tablewrap{overflow-x:auto}
+  .dev-table.wrap td:first-child{white-space:normal;font-family:var(--sans);
+    font-size:.85rem;color:var(--ink-2)}
+  .dev-table.wrap td{min-width:0}
+  .prose ul,.prose ol{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+  .prose li{color:var(--ink-2)}
+  /* A list that is itself the prose block, rather than nested inside one. */
+  ul.prose,ol.prose{list-style:disc;margin:10px 0 0;padding-left:20px;
+    color:var(--ink-2);line-height:1.6}
+  ul.prose li,ol.prose li{color:var(--ink-2);margin-top:6px}
+  ul.prose li:first-child,ol.prose li:first-child{margin-top:0}
+  .subhead{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent-2);margin:32px 0 0}
+
+  /* findings */
+  .cluster{margin-top:34px}
+  .chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:10px;
+    border-bottom:1px solid var(--stroke)}
+  .cmeta{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);margin-left:auto}
+  .finding{border-bottom:1px solid var(--stroke-soft);padding:18px 0}
+  .finding:last-child{border-bottom:0}
+  .fhead{display:flex;gap:10px;align-items:baseline}
+  .fnum{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);flex:none;padding-top:2px}
+  .fhead h4{font-size:1rem;font-weight:650;color:var(--ink);line-height:1.35}
+  .fhead{cursor:pointer}
+  .ftoggle{flex:none;width:17px;height:17px;margin-top:1px;border:1px solid var(--stroke);
+    border-radius:4px;background:var(--frame-2);cursor:pointer;display:grid;place-items:center;padding:0}
+  .ftoggle:hover{border-color:var(--accent)}
+  .ftoggle .caret{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;
+    border-top:5px solid var(--ink-3);transition:transform .12s}
+  .ftoggle:hover .caret{border-top-color:var(--accent)}
+  .finding.shut .ftoggle .caret{transform:rotate(-90deg)}
+  .finding.shut .fbody{display:none}
+  .finding.shut{padding:11px 0}
+  .fbody{display:block}
+  .fchips{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0 9px 30px}
+  .fchip{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;
+    border:1px solid var(--stroke);border-radius:999px;padding:1px 7px;color:var(--ink-3)}
+  .fchip.sev-critical{border-color:var(--bad);color:var(--bad)}
+  .fchip.sev-high{border-color:var(--warn);color:var(--warn)}
+  .fchip.eff{border-color:var(--accent);color:var(--accent)}
+  .fchip.tag-bug{border-color:var(--accent-2);color:var(--accent-2)}
+  .fdesc{margin-left:30px;color:var(--ink-2);font-size:.93rem;max-width:76ch}
+  .evrow{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 0 30px}
+  .ev{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:4px;padding:2px 7px}
+  .ev b{color:var(--ink-2);font-weight:600}
+  .ffix{margin:11px 0 0 30px;color:var(--ink-2);font-size:.9rem;max-width:76ch;
+    border-left:2px solid var(--accent);padding-left:11px}
+  .fixlabel{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+  .fnote{margin:9px 0 0 30px;font-size:.85rem;color:var(--ink-3);font-style:italic;max-width:74ch}
+  .filterbar{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:6px}
+  .flabel{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .fbtn{font-family:var(--mono);font-size:.7rem;border:1px solid var(--stroke-soft);border-radius:999px;
+    padding:4px 11px;background:var(--frame-2);color:var(--ink-2);cursor:pointer}
+  .fbtn:hover{border-color:var(--stroke);color:var(--ink)}
+  .fbtn.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+  .fcount{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);margin-left:auto}
+  .rollup td:nth-child(1){white-space:nowrap}
+  .rollup td:nth-child(4),.rollup td:nth-child(5),.rollup td:nth-child(6){
+    font-family:var(--mono);font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+  .rollup a{color:var(--accent);text-decoration:none}
+  .finding.hidden,.cluster.hidden{display:none}
+  @media (max-width:640px){.fchips,.fdesc,.ffix,.evrow,.fnote{margin-left:0}}
+
+  .findings-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:28px;align-items:start}
+  .facetpanel{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px;overscroll-behavior:contain;
+    border:1px solid var(--stroke-soft);border-radius:12px;background:var(--sheet);padding:14px;
+    max-height:calc(100vh - 36px);overflow-y:auto}
+  /* Narrow: the rail has nowhere to sit, so it becomes a band at the top of the
+     list and scrolls away with the page. This block must stay AFTER the base
+     .facetpanel rule — same specificity, so source order decides the winner. */
+  @media (max-width:900px){
+    .findings-layout{grid-template-columns:minmax(0,1fr)}
+    .facetpanel{position:static;top:auto;max-height:none;overflow:visible;
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr));gap:10px 16px;align-items:start}
+    .facetpanel .fsearch,.facetpanel .fsummary,.facetpanel .fclear{grid-column:1/-1}
+  }
+  .fsearch{width:100%;border:1px solid var(--stroke);border-radius:7px;background:var(--frame-2);
+    color:var(--ink);font-family:var(--sans);font-size:.82rem;padding:7px 9px}
+  .fsearch::placeholder{color:var(--ink-3)}
+  .fgrouphead{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ink-3);margin-bottom:5px}
+  .fgroupdd{border-top:1px solid var(--stroke-soft);padding-top:9px}
+  .fgroupdd>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;
+    margin-bottom:0;user-select:none}
+  .fgroupdd>summary::-webkit-details-marker{display:none}
+  .fgroupdd>summary::after{content:"";width:0;height:0;margin-left:auto;
+    border-left:4px solid transparent;border-right:4px solid transparent;
+    border-top:5px solid var(--ink-3);transition:transform .12s}
+  .fgroupdd[open]>summary::after{transform:rotate(180deg)}
+  .fgroupdd>summary:hover{color:var(--ink)}
+  .fgroupdd[open]>summary{margin-bottom:6px}
+  .ddn{font-family:var(--mono);font-size:.6rem;color:var(--ground);background:var(--accent);
+    border-radius:999px;padding:0 5px;line-height:1.5}
+  /* Chips, not rows: five groups and 33 options do not fit a rail one line each. */
+  .fgroupbox{display:flex;flex-wrap:wrap;gap:4px}
+  .fopt{display:inline-flex;align-items:baseline;gap:4px;font-size:.74rem;color:var(--ink-2);
+    cursor:pointer;padding:2px 7px;border-radius:999px;border:1px solid var(--stroke-soft);
+    background:var(--frame-2);line-height:1.5;white-space:nowrap;max-width:100%;user-select:none}
+  .fopt>span:first-child{overflow:hidden;text-overflow:ellipsis}
+  .fopt:hover{border-color:var(--ink-3);color:var(--ink)}
+  .fopt.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+  .fopt .n{font-family:var(--mono);font-size:.64rem;color:var(--ink-3)}
+  .fopt.on .n{color:var(--accent)}
+  .fopt.zero{opacity:.38}
+  .fsummary{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
+    border-top:1px solid var(--stroke-soft);padding-top:11px}
+  .fsummary b{color:var(--accent)}
+  .fclear{font-family:var(--mono);font-size:.68rem;border:1px solid var(--stroke);border-radius:6px;
+    padding:4px 9px;background:var(--frame-2);color:var(--ink-2);cursor:pointer;align-self:flex-start}
+  .fclear:hover{border-color:var(--accent);color:var(--accent)}
+  .fbtnrow{display:flex;flex-wrap:wrap;gap:7px}
+  .noresult{border:1px dashed var(--stroke);border-radius:10px;padding:26px;text-align:center;
+    color:var(--ink-3);font-family:var(--mono);font-size:.8rem}
+
+  /* the three accountability tables share one column rhythm, so the eye
+     can move between them without re-measuring */
+  #deviations .dev-table{table-layout:fixed;width:100%}
+  #deviations .dev-table th:nth-child(1),#deviations .dev-table td:nth-child(1){width:13%}
+  #deviations .dev-table th:nth-child(2),#deviations .dev-table td:nth-child(2){width:21%}
+  #deviations .dev-table th:nth-child(3),#deviations .dev-table td:nth-child(3){width:20%}
+  #deviations .dev-table th:nth-child(4),#deviations .dev-table td:nth-child(4){width:46%}
+  #deviations .dev-table td:first-child{white-space:normal;overflow-wrap:anywhere}
+  #deviations .dev-table td{overflow-wrap:anywhere}
+  @media (max-width:760px){
+    #deviations .dev-table{table-layout:auto}
+    #deviations .dev-table th:nth-child(n),#deviations .dev-table td:nth-child(n){width:auto}
+  }
+
+  .theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);
+    font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
+    background:var(--sheet);border:1px solid var(--stroke);border-radius:999px;padding:7px 13px;
+    cursor:pointer;box-shadow:var(--shadow)}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--accent-2)}
+  @media print{.theme-toggle{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="docmain">
+
+  <header class="masthead">
+    <p class="eyebrow">Marinara Engine · Long-Term Memory · UI/UX proposal</p>
+    <h1>LTM Consolidated Feedback</h1>
+    <p class="lede">
+      Interface proposals for the <code>long-term-memory</code> agent. Feedback is based on using
+      the agent to ingest ~100 summaries, producing over 1k mutation candidates.
+      Based on the experience, Claude consolidated issue findings and proposes six user journeys.
+    </p>
+  </header>
+
+  <section id="ground">
+    <div class="sec-head">
+      <p class="eyebrow">Before the drawings</p>
+      <h2>What the package is allowed to do</h2>
+      <p class="prose">
+        These proposals are scoped to what a capability package can build without an engine
+        change, because the package maintainer may not own the engine. Four facts from the
+        source decide the shape of everything below, and one of them costs a proposal outright.
+      </p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="card-tag">Generous</span>
+        <h4>Most of this is the package's own code</h4>
+        <p>
+          It registers arbitrary routes under its own prefix, owns its storage directory and its
+          schema, gets a revision-checked document store, and can call both a language model and
+          an embedding model. Every derived signal, the facet engine, apply preview, restore points
+          and compaction are all in reach.
+        </p>
+        <p class="src">capability-module-runtime.service.ts · activateOne</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Constraint</span>
+        <h4>Nothing can be pushed to the client</h4>
+        <p>
+          There is no event channel of any kind: no server-sent events helper, no websocket, no
+          invalidation signal. Every live surface here polls a route, which is exactly what the
+          package already does for its debug log.
+        </p>
+        <p class="src">no EventSource or WebSocket anywhere in packages/client/src</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Constraint</span>
+        <h4>A new route means a restart</h4>
+        <p>
+          Route paths cannot appear after the server is listening, so adding one is a release
+          decision rather than a runtime one. Frames that need a new route are marked, because
+          that changes how they ship, not whether they can.
+        </p>
+        <p class="src">capability-route-registration.service.ts · createRouteCollector</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Costs a proposal</span>
+        <h4>Nothing can render in the transcript</h4>
+        <p>
+          The conversation mounts are chosen by a package's declared kind, which this package
+          does not have, and they sit outside the message list regardless. Message content is
+          sanitised through a fixed allowlist that strips capability elements. So the recall
+          report cannot sit beside the message it explains.
+        </p>
+        <p class="src">ConversationView.tsx · ChatMessage.tsx · sanitizeChatHtml</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="journeys">
+    <div class="sec-head">
+      <p class="eyebrow">The proposals</p>
+      <h2>Six journeys</h2>
+      <p class="prose">
+        Each is drawn in several states, from the moment a person wants something to the moment
+        they have it. <strong>Click the state chips</strong> to step through; desktop and phone
+        move together. Every state carries a feasibility mark and the findings it answers.
+      </p>
+    </div>
+    <div class="journey" id="j1">
+      <div class="j-head"><div class="j-title"><span class="j-badge">1</span><h3>First run</h3></div>
+      <p class="j-thesis">Switch it on and reach visible proof it worked. Today this journey ends in
+      nothing recalled, so the failure is drawn before the fix is.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j1"></div>
+      <div class="stage" data-stage="j1"></div>
+      <div class="flowrail" data-flow="j1"></div>
+      <div class="tradeoffs" data-trade="j1"></div>
+    </div>
+
+    <div class="journey" id="j2">
+      <div class="j-head"><div class="j-title"><span class="j-badge">2</span><h3>Import and extract</h3></div>
+      <p class="j-thesis">Narrow a large library, pick the material, confirm who the run may write
+      about, and read what it cost without opening the review queue to find out.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j2"></div>
+      <div class="stage" data-stage="j2"></div>
+      <div class="flowrail" data-flow="j2"></div>
+      <div class="tradeoffs" data-trade="j2"></div>
+    </div>
+
+    <div class="journey" id="j3">
+      <div class="j-head"><div class="j-title"><span class="j-badge">3</span><h3>Curate</h3></div>
+      <p class="j-thesis">Eight hundred claims, decided in slices rather than one at a time. The unit
+      of work is a composed cross-section, not a draft.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j3"></div>
+      <div class="stage" data-stage="j3"></div>
+      <div class="flowrail" data-flow="j3"></div>
+      <div class="tradeoffs" data-trade="j3"></div>
+    </div>
+
+    <div class="journey" id="j4">
+      <div class="j-head"><div class="j-title"><span class="j-badge">4</span><h3>Browse and correct</h3></div>
+      <p class="j-thesis">Find the memory that is wrong, then fix it. The same facet engine as review,
+      over what is stored rather than what is proposed.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j4"></div>
+      <div class="stage" data-stage="j4"></div>
+      <div class="flowrail" data-flow="j4"></div>
+      <div class="tradeoffs" data-trade="j4"></div>
+    </div>
+
+    <div class="journey" id="j5">
+      <div class="j-head"><div class="j-title"><span class="j-badge">5</span><h3>Why didn't it remember</h3></div>
+      <p class="j-thesis">The report cannot sit beside the message it explains, so it is built where
+      the package does have surfaces, and it keeps a history worth walking back through.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j5"></div>
+      <div class="stage" data-stage="j5"></div>
+      <div class="flowrail" data-flow="j5"></div>
+      <div class="tradeoffs" data-trade="j5"></div>
+    </div>
+
+    <div class="journey" id="j6">
+      <div class="j-head"><div class="j-title"><span class="j-badge">6</span><h3>Keep it healthy</h3></div>
+      <p class="j-thesis">Caps that read as a gradient rather than a wall, and a compaction pass that
+      shows what it would remove before it removes it.</p></div>
+      <div class="tabs" role="tablist" data-tabs="j6"></div>
+      <div class="stage" data-stage="j6"></div>
+      <div class="flowrail" data-flow="j6"></div>
+      <div class="tradeoffs" data-trade="j6"></div>
+    </div>
+  </section>
+
+  <section id="deviations">
+    <div class="sec-head">
+      <p class="eyebrow">Accountability</p>
+      <h2>Where these drawings use words the product does not</h2>
+      <p class="prose">
+        Everything inside a device frame uses the package's own shipped strings, checked against
+        its locale file and its derived enum labels. The captions beside the frames are our
+        commentary and stay in our voice. This table lists every place the frames depart from the
+        product's vocabulary, and why. If a row looks wrong to you, the frame is wrong, not the
+        table.
+      </p>
+    </div>
+
+    <p class="subhead">The product has a word, and we deliberately avoid it</p>
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Where</th><th>Product's word</th><th>What we drew</th><th>Why</th></tr>
+      <tr><td>J1, all states</td><td><b>Draft</b>, <b>mutation</b>, evidence unit</td>
+        <td class="ours">plain claim text</td>
+        <td>This is the finding, not an oversight. None of the three nouns is defined anywhere a user can reach, and the first run is the one surface that has to be legible without them. Journeys 2 and 3 use <b>mutations</b> and <b>draft</b> verbatim, because by then the reader is in the review queue, where the product uses those words.</td></tr>
+      <tr><td>J1, accept step</td><td><b>Rewrite memory</b>, <b>Merge into memory</b></td>
+        <td class="ours">no disposition shown</td>
+        <td>Same reason. Disposition is a pipeline concept, and the first accept step shows only the text and the modes.</td></tr>
+    </table></div>
+
+    <p class="subhead">The product has no word for it</p>
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Where</th><th>Nearest shipped</th><th>What we drew</th><th>Why</th></tr>
+      <tr><td>J3, J4, J6</td><td><b>Evidence</b>, <b>Add to section</b></td><td class="ours">contribution</td>
+        <td>No user-facing noun exists for one stored line inside a section. <b>Evidence</b> is a different field on the same record. The word also has to stay distinct from "the projected section", so one denominator never carries two meanings.</td></tr>
+      <tr><td>J3, J4, J6</td><td><b>Limits:</b>, <b>Budget</b></td><td class="ours">near a limit, over the limit</td>
+        <td>The product ships the caps and a binary budget rejection, and nothing for approaching one. Extended from <b>Limits</b> rather than coining a phrase.</td></tr>
+      <tr><td>J2, scope</td><td><b>Subjects</b>, <code>untrusted_subject</code></td><td class="ours">trusted subjects, roster</td>
+        <td>"Trusted subject" appears only inside a rejection reason. No surface lists them and none counts them, which is the finding.</td></tr>
+      <tr><td>J3, facets</td><td><b>Duplicate text</b>, <b>Deduplications</b></td><td class="ours">restates the vault</td>
+        <td>The product's duplicate vocabulary describes an exact-text compare, which is the mechanism the finding says cannot fire here. Reusing it verbatim would assert the opposite of what the frame shows.</td></tr>
+      <tr><td>J3, saved slices</td><td><b>Recall style</b> presets</td><td class="ours">save this slice</td>
+        <td>Filters are not persistable in the product, and its only preset vocabulary belongs to recall settings rather than to a review selection.</td></tr>
+      <tr><td>J3, J4, conflicts</td><td><b>Conflicts</b>, a vault field</td><td class="ours">keep existing, take proposed, keep both</td>
+        <td>The product records conflicts and ships no way to resolve one. Its severities carry no display labels at all. Every button here is ours, and deliberately not mapped onto <b>Accept</b> and <b>Skip</b>, which are review-queue verbs and would misrepresent a vault action.</td></tr>
+      <tr><td>J3, apply</td><td><b>Export backup</b></td><td class="ours">take a restore point first</td>
+        <td>Export, preview and import all exist, and nothing frames them as something to do before a bulk action.</td></tr>
+      <tr><td>J5, history</td><td><b>Latest recall workflow</b>, <b>activity record</b></td><td class="ours">record, Recall History</td>
+        <td>The product writes one readout for the most recent recall and keeps nothing per turn. Extended from <b>activity record</b>. A destination called simply <b>Recall</b> would collide with the settings tab of that name.</td></tr>
+      <tr><td>J5, dropped reasons</td><td><b>Budget</b>, <b>Score threshold</b></td><td class="ours">Available modes</td>
+        <td>The budget pass computes mode ineligibility, and its enum has no value for it, so no label was ever derived. The row borrows the exact name of the field that causes it instead of inventing a reason.</td></tr>
+      <tr><td>J5, discarded turn</td><td><b>{n} selected</b></td><td class="ours">assembled, discarded at assembly</td>
+        <td>This step happens during engine prompt assembly, which writes no record at all today. That is why the state is marked as needing an engine change.</td></tr>
+      <tr><td>J6, compaction</td><td><b>Merge into memory</b>, <b>Run selected maintenance</b></td><td class="ours">Merge restated lines</td>
+        <td>No maintenance action compacts anything. Rather than coin a verb, the pass becomes one more Vault Maintenance action, using the product's nearest verb and its existing run-and-preview framing.</td></tr>
+      <tr><td>J4, J6</td><td>none; the counts ship on disk</td><td class="ours">recalled 21 times</td>
+        <td>Per-chunk recall counts increment on every injection and no route returns them, so nobody ever wrote a string for them.</td></tr>
+      <tr><td>J4, recall tags</td><td>none</td><td class="ours">unreachable</td>
+        <td>Ours, and it is the finding: the product shows the same zero for a memory nobody needed and a memory the index cannot see.</td></tr>
+      <tr><td>J1, sources</td><td>none</td><td class="ours">later, not a source kind</td>
+        <td>No shipped string separates "none yet, but there will be" from "none, ever". Three causes of a zero, one word for all of them.</td></tr>
+    </table></div>
+
+    <p class="subhead">Two shipped words collided, and we picked one</p>
+    <div class="tablewrap"><table class="dev-table">
+      <tr><th>Where</th><th>The collision</th><th>What we drew</th><th>Why</th></tr>
+      <tr><td>Everywhere</td><td><b>Skip</b> against <b>Rejected</b></td><td class="ours">both, kept apart</td>
+        <td>The product keeps two negatives distinct and an earlier draft of these frames merged them. <b>Skip</b> is the reviewer's action on a mutation. <b>Rejected</b> and <b>Suggestions that weren't saved</b> belong to extraction candidates that never became a draft.</td></tr>
+      <tr><td>Every rail</td><td>desktop <b>Memory Vault</b> against mobile <b>Memories</b></td><td class="ours">both, by viewport</td>
+        <td>The product ships long and short label sets and picks by width. These frames now do the same; earlier they used a form the product never renders.</td></tr>
+      <tr><td>J3, J4 against J6</td><td><b>memory</b> against <b>note</b></td><td class="ours">both, by surface</td>
+        <td>The record is a memory everywhere a user browses and a note in maintenance copy. That inconsistency is shipped, so each frame matches the surface it depicts instead of smoothing it over.</td></tr>
+      <tr><td>J3, apply</td><td><b>Preview</b> against <b>Integrity check</b></td><td class="ours">preview</td>
+        <td>Preview is the product's word for a dry run, so the frames use it rather than a coined synonym.</td></tr>
+      <tr><td>J5, J6</td><td>index repair</td><td class="ours">Reindex recall data</td>
+        <td>One shipped action name, used identically in both journeys, so the same fix never appears under two verbs.</td></tr>
+    </table></div>
+
+    <p class="prose">
+      One convention, stated so nobody mistakes it for a claim: device title bars are drawn in
+      uppercase as wireframe chrome. Every string inside a pane matches the product's own
+      capitalisation.
+    </p>
+  </section>
+
+</div>
+<nav class="toc" id="toc" aria-label="Contents"></nav>
+</div>
+
+<script>
+"use strict";
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+/*JOURNEY_DATA*/
+
+function feasMark(f){
+  if(!f) return "";
+  var cls = f==="restart"?"feas rst":f==="engine"?"feas eng":f==="today"?"feas now":"feas";
+  var txt = f==="restart"?"new route":f==="engine"?"needs engine":f==="today"?"today":"in package";
+  return '<span class="'+cls+'">'+txt+'</span>';
+}
+function fxList(a){return (a||[]).map(function(x){return '<span class="fx">F'+x+'</span>';}).join("");}
+
+function renderStage(v, idx){
+  var s = STATES[v][idx];
+  var stage = document.querySelector('[data-stage="'+v+'"]');
+  stage.innerHTML =
+    '<p class="caption">'+fxList(s.fx)+s.caption+'</p>'+
+    '<div class="rack">'+
+      '<div class="rack-cell"><span class="rack-label">Desktop · 1600×1000 '+feasMark(s.feas)+'</span>'+s.desk+'</div>'+
+      '<div class="rack-cell"><span class="rack-label">Phone · 390×844</span>'+s.phone+'</div>'+
+    '</div>';
+}
+
+Object.keys(STATES).forEach(function(v){
+  var tabs = document.querySelector('[data-tabs="'+v+'"]');
+  if(!tabs) return;
+  tabs.innerHTML = STATES[v].map(function(s,i){
+    return '<button class="tab" role="tab" type="button" data-i="'+i+'" aria-selected="'+(i===0)+'">'+
+      '<span class="num">'+s.num+'</span>'+esc(s.label)+'</button>';
+  }).join("");
+  tabs.addEventListener("click",function(e){
+    var btn = e.target.closest(".tab"); if(!btn) return;
+    tabs.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",String(b===btn));});
+    renderStage(v, Number(btn.dataset.i));
+  });
+  renderStage(v,0);
+
+  var flow = document.querySelector('[data-flow="'+v+'"]');
+  if(flow && FLOWS[v]){
+    flow.innerHTML = '<span class="rack-label">User journey</span><div class="flow-track">'+
+      FLOWS[v].map(function(st){
+        return '<div class="fstep'+(st.term?" term":"")+'"><span class="sn">'+esc(st.n)+
+          '</span><span class="st">'+esc(st.t)+'</span><span class="sd">'+esc(st.d)+'</span></div>';
+      }).join('<span class="arrow">→</span>')+'</div>';
+  }
+
+  var tr = document.querySelector('[data-trade="'+v+'"]');
+  if(tr && TRADE[v]){
+    var t = TRADE[v];
+    var col=function(cls,title,items){
+      return '<div class="to '+cls+'"><h4>'+title+'</h4><ul>'+
+        items.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
+    };
+    tr.innerHTML = col("win","Where it helps",t.win)+col("cost","Where it falls short",t.cost)+col("build","Build notes",t.build);
+  }
+});
+</script>
+
+
+
+
+<script>
+/* Table of contents, generated from the document so it cannot fall out of date. */
+(function(){
+  var toc=document.getElementById("toc"); if(!toc) return;
+  var parts=[];
+  parts.push('<p class="toc-title">Contents</p>');
+  document.querySelectorAll("section[id]").forEach(function(sec){
+    var h=sec.querySelector("h2"); if(!h) return;
+    parts.push('<a href="#'+sec.id+'" data-t="'+sec.id+'">'+h.textContent.trim()+'</a>');
+    if(sec.id==="findings"){
+      sec.querySelectorAll(".cluster").forEach(function(c,i){
+        var t=c.querySelector("h3"); if(!t) return;
+        if(!c.id) c.id="cl"+i;
+        parts.push('<a class="lvl2" href="#'+c.id+'" data-t="'+c.id+'">'+t.textContent.trim()+'</a>');
+      });
+    }
+    if(sec.id==="journeys"){
+      sec.querySelectorAll(".journey").forEach(function(j){
+        var t=j.querySelector("h3"); if(!t) return;
+        parts.push('<a class="lvl2" href="#'+j.id+'" data-t="'+j.id+'">'+t.textContent.trim()+'</a>');
+      });
+    }
+  });
+  toc.innerHTML=parts.join("");
+  var links=[].slice.call(toc.querySelectorAll("a"));
+  var targets=links.map(function(a){return document.getElementById(a.dataset.t);});
+  function mark(){
+    var y=window.scrollY+140, best=0;
+    targets.forEach(function(el,i){ if(el && el.offsetTop<=y) best=i; });
+    links.forEach(function(a,i){ a.classList.toggle("on", i===best); });
+  }
+  var tick=false;
+  window.addEventListener("scroll",function(){
+    if(tick) return; tick=true;
+    requestAnimationFrame(function(){ mark(); tick=false; });
+  },{passive:true});
+  mark();
+})();
+
+/* Findings facets. Multi-select inside a group is OR, across groups is AND. */
+(function buildFacets(){
+  var panel=document.getElementById("facetpanel"); if(!panel) return;
+  var body=document.querySelector(".findings-body");
+  var items=[].slice.call(document.querySelectorAll(".finding"));
+  var clusters=[].slice.call(document.querySelectorAll(".cluster"));
+
+  var GROUPS=[
+    {key:"sev",   label:"Severity", order:["critical","high","medium","low"],
+     val:function(f){return [f.dataset.sev];}},
+    {key:"eff",   label:"Fix effort", order:["small","medium","large"],
+     val:function(f){return f.dataset.eff?[f.dataset.eff]:[];}},
+    {key:"grade", label:"Evidence", order:["source","observed","measured","reported"],
+     val:function(f){return [f.dataset.grade];}},
+    {key:"tags",  label:"Tags", order:null,
+     val:function(f){return (f.dataset.tags||"").split(/\s+/).filter(Boolean);}},
+    {key:"cluster", label:"Cluster", order:null, dd:true,
+     val:function(f){return [f.dataset.cluster];}}
+  ];
+  /* Twelve long cluster names overflow the rail and push Clear/Collapse out of
+     reach, so that group folds into a disclosure. render() rebuilds the panel's
+     innerHTML on every interaction, so the open state has to live out here. */
+  var ddOpen={};
+
+  var state={}; GROUPS.forEach(function(g){state[g.key]=new Set();});
+  var query="";
+
+  GROUPS.forEach(function(g){
+    var vals=new Set();
+    items.forEach(function(f){ g.val(f).forEach(function(v){ if(v) vals.add(v); }); });
+    /* vals is a Set, which has no .length — slice.call would yield []. */
+    var loose=[]; vals.forEach(function(v){ loose.push(v); });
+    g.values = g.order ? g.order.filter(function(v){return vals.has(v);})
+                       : loose.sort();
+  });
+
+  function matchesExcept(f, skipKey){
+    if(query && (f.dataset.text||"").indexOf(query)<0) return false;
+    for(var i=0;i<GROUPS.length;i++){
+      var g=GROUPS[i]; if(g.key===skipKey) continue;
+      var sel=state[g.key]; if(!sel.size) continue;
+      var vs=g.val(f), hit=false;
+      for(var j=0;j<vs.length;j++) if(sel.has(vs[j])) { hit=true; break; }
+      if(!hit) return false;
+    }
+    return true;
+  }
+  function matches(f){ return matchesExcept(f,null); }
+
+  function render(){
+    var html='<input class="fsearch" id="fq" type="search" placeholder="Search findings" value="'+
+      query.replace(/"/g,"&quot;")+'">';
+    GROUPS.forEach(function(g){
+      if(!g.values.length) return;
+      var picked=state[g.key].size;
+      if(g.dd){
+        html+='<details class="fgroupdd"'+(ddOpen[g.key]?" open":"")+' data-dd="'+g.key+'">'+
+          '<summary class="fgrouphead">'+g.label+
+          (picked?'<span class="ddn">'+picked+'</span>':'')+'</summary><div class="fgroupbox">';
+      } else {
+        html+='<div><p class="fgrouphead">'+g.label+'</p><div class="fgroupbox">';
+      }
+      g.values.forEach(function(v){
+        var n=items.filter(function(f){
+          return matchesExcept(f,g.key) && g.val(f).indexOf(v)>=0;
+        }).length;
+        var on=state[g.key].has(v);
+        var safe=String(v).replace(/"/g,"&quot;");
+        html+='<span class="fopt'+(on?" on":"")+(n===0&&!on?" zero":"")+
+          '" data-g="'+g.key+'" data-v="'+safe+'" title="'+safe+' — '+n+'">'+
+          '<span>'+v+'</span><span class="n">'+n+'</span></span>';
+      });
+      html+= g.dd ? '</div></details>' : '</div></div>';
+    });
+    var shown=items.filter(matches).length;
+    html+='<p class="fsummary"><b>'+shown+'</b> of '+items.length+' findings</p>';
+    html+='<div class="fbtnrow"><button class="fclear" type="button" id="fclear">Clear all</button>'+
+      '<button class="fclear" type="button" id="toggleall" data-open="true">Collapse all</button></div>';
+    panel.innerHTML=html;
+    apply();
+  }
+
+  function apply(){
+    var shown=0;
+    items.forEach(function(f){
+      var keep=matches(f);
+      f.classList.toggle("hidden",!keep);
+      if(keep) shown++;
+    });
+    clusters.forEach(function(c){
+      c.classList.toggle("hidden", !c.querySelector(".finding:not(.hidden)"));
+    });
+    var none=document.getElementById("noresult");
+    if(shown===0){
+      if(!none){
+        none=document.createElement("div");
+        none.id="noresult"; none.className="noresult";
+        none.textContent="No finding matches that combination.";
+        body.appendChild(none);
+      }
+    } else if(none){ none.remove(); }
+  }
+
+  /* Filtering changes how many findings exist above the fold, so the page would
+     otherwise slide under the pointer on every toggle. Park the section head at
+     the top instead, which keeps the rail and the count line where they were. */
+  function pin(){
+    var sec=document.getElementById("findings");
+    if(sec) sec.scrollIntoView({block:"start"});
+  }
+  panel.addEventListener("click",function(e){
+    if(e.target.closest("#fclear")){
+      GROUPS.forEach(function(g){state[g.key].clear();});
+      query=""; render(); pin(); return;
+    }
+    var o=e.target.closest(".fopt"); if(!o) return;
+    var set=state[o.dataset.g];
+    if(set.has(o.dataset.v)) set.delete(o.dataset.v); else set.add(o.dataset.v);
+    render(); pin();
+  });
+  /* "toggle" does not bubble, so listen in the capture phase. */
+  panel.addEventListener("toggle",function(e){
+    var dd=e.target.dataset && e.target.dataset.dd;
+    if(dd) ddOpen[dd]=e.target.open;
+  },true);
+  panel.addEventListener("input",function(e){
+    if(e.target.id!=="fq") return;
+    query=e.target.value.trim().toLowerCase();
+    var pos=e.target.selectionStart;
+    render();
+    var box=document.getElementById("fq");
+    if(box){ box.focus(); box.setSelectionRange(pos,pos); }
+  });
+
+  render();
+})();
+</script>
+
+
+<script>
+/* Findings collapse to title and badges. Expanded is the default, because a
+   reader opening this cold should see a document, not a list of headlines. */
+(function(){
+  var body=document.querySelector(".findings-body"); if(!body) return;
+
+  function setOne(f, open){
+    f.classList.toggle("shut", !open);
+    var t=f.querySelector(".ftoggle");
+    if(t){ t.setAttribute("aria-expanded", String(open));
+           t.setAttribute("aria-label", (open?"Collapse":"Expand")+" this finding"); }
+  }
+  function collapseAll(open){
+    [].slice.call(document.querySelectorAll(".finding")).forEach(function(f){ setOne(f, open); });
+    var btn=document.getElementById("toggleall");
+    if(btn){ btn.textContent = open ? "Collapse all" : "Expand all"; btn.dataset.open = String(open); }
+  }
+
+  body.addEventListener("click", function(e){
+    if(e.target.closest("a,code")) return;
+    var head=e.target.closest(".fhead"); if(!head) return;
+    var f=head.closest(".finding");
+    setOne(f, f.classList.contains("shut"));
+  });
+
+  document.addEventListener("click", function(e){
+    var b=e.target.closest("#toggleall"); if(!b) return;
+    collapseAll(b.dataset.open !== "true");
+  });
+
+  /* A link from the roll-up must land on readable prose. */
+  function openTarget(){
+    var id=location.hash.slice(1); if(!id) return;
+    var f=document.getElementById(id);
+    if(f && f.classList.contains("finding")){ setOne(f, true); f.scrollIntoView({block:"center"}); }
+  }
+  window.addEventListener("hashchange", openTarget);
+  openTarget();
+})();
+</script>
+
+<button class="theme-toggle" type="button" id="themeToggle" aria-live="polite">Theme</button>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById("themeToggle");
+  btn.addEventListener("click",function(){
+    var explicit=root.getAttribute("data-theme");
+    var dark = explicit ? explicit==="dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    root.setAttribute("data-theme", dark?"light":"dark");
+  });
+})();
+</script>
+
+<script>
+/* Same-document anchors, made to work behind a rewriting host.
+   htmlpreview.github.io fetches the raw file and injects <base href="…raw.githubusercontent.com/…">
+   right after <head>. With a base present, href="#f12" no longer resolves same-document: it
+   resolves against the base, so a click navigates away to raw.githubusercontent.com instead of
+   scrolling. That host also rewrites static a[href] anchors once, before any inline script runs,
+   which leaves every link the contents rail and the findings body build at runtime unrewritten.
+   This handler resolves fragments itself, so it is correct with or without a <base>. */
+(function(){
+  function sameDocFragment(a){
+    var raw=a.getAttribute("href");
+    if(!raw) return null;
+    if(raw.charAt(0)==="#") return raw.slice(1);
+    /* Resolved elsewhere, but differing from this document only by hash. */
+    var here=location.href.split("#")[0];
+    var there=a.href.split("#")[0];
+    if(a.hash && there===here) return a.hash.slice(1);
+    return null;
+  }
+
+  function el(id){
+    if(!id) return null;
+    var t=null;
+    try{ t=document.getElementById(decodeURIComponent(id)); }catch(e){}
+    return t || document.getElementById(id);
+  }
+
+  /* The facet engine hides non-matching findings outright. Scrolling to one is a
+     scroll to nothing, so clear the filters through the panel's own control and
+     let that script stay the owner of its state. */
+  function unhide(t){
+    var hiddenHere = t.classList && t.classList.contains("hidden");
+    var box = t.closest ? t.closest(".cluster") : null;
+    var hiddenBox = box && box.classList.contains("hidden");
+    if(!hiddenHere && !hiddenBox) return;
+    var clear=document.getElementById("fclear");
+    if(clear) clear.click();
+  }
+
+  /* Same reasoning for collapse: dispatch a click on the finding's own toggle so
+     the collapse script remains the single writer of the shut class. */
+  function expand(t){
+    if(!t.classList || !t.classList.contains("finding")) return;
+    if(!t.classList.contains("shut")) return;
+    var btn=t.querySelector(".ftoggle");
+    if(btn){ btn.click(); }
+    if(t.classList.contains("shut")){          /* belt and braces if that script is absent */
+      t.classList.remove("shut");
+      if(btn){ btn.setAttribute("aria-expanded","true");
+               btn.setAttribute("aria-label","Collapse this finding"); }
+    }
+  }
+
+  function go(id, push){
+    var t=el(id);
+    if(!t) return false;
+    unhide(t);
+    t=el(id) || t;
+    expand(t);
+    if(push){
+      var base=location.href.split("#")[0];
+      try{ history.replaceState(null,"",base+"#"+id); }
+      catch(e){ try{ history.replaceState(null,"","#"+id); }catch(e2){} }
+    }
+    t.scrollIntoView({block:"start"});
+    return true;
+  }
+
+  document.addEventListener("click", function(e){
+    if(e.defaultPrevented) return;
+    if(e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a=e.target.closest ? e.target.closest("a[href]") : null;
+    if(!a) return;
+    if(a.hasAttribute("download") || (a.getAttribute("target")||"")==="_blank") return;
+    var id=sameDocFragment(a);
+    if(id===null || id==="") return;
+    e.preventDefault();
+    go(id, true);
+  }, true);
+
+  /* Landing straight on #f12: the target may be collapsed, filtered out, or not
+     yet in the DOM — findings can be rendered at runtime, and htmlpreview writes
+     the document after its own load. Run on both milestones, once each. */
+  var done=false;
+  function onArrive(){
+    if(done) return;
+    var id=location.hash.slice(1);
+    if(!id) { done=true; return; }
+    if(go(id, false)) done=true;
+  }
+  if(document.readyState!=="loading") onArrive();
+  document.addEventListener("DOMContentLoaded", onArrive);
+  window.addEventListener("load", onArrive);
+  window.addEventListener("hashchange", function(){ done=false; onArrive(); });
+})();
+</script>
+</body>
+</html>

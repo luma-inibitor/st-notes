@@ -1,0 +1,2735 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "title": "Long-Term Memory findings",
+    "ltmPackage": "1.1.6",
+    "engine": "2.4.1",
+    "updatedAt": "2026-08-11T17:53:10.097Z",
+    "tagVocabulary": [
+      "UX",
+      "ARCH",
+      "SCALE",
+      "USER",
+      "ENV",
+      "MODEL",
+      "BUG",
+      "ENGINE",
+      "CORPUS",
+      "PROTO"
+    ],
+    "severityVocabulary": [
+      "critical",
+      "high",
+      "medium",
+      "low"
+    ],
+    "gradeVocabulary": [
+      "source",
+      "observed",
+      "measured",
+      "reported"
+    ],
+    "decisionVocabulary": [
+      "keep",
+      "cut",
+      "rework",
+      "merge"
+    ],
+    "effortVocabulary": [
+      "small",
+      "medium",
+      "large"
+    ]
+  },
+  "findings": [
+    {
+      "id": "vocabulary-undefined",
+      "order": 1,
+      "statement": "Seven pipeline nouns are used in the interface and defined nowhere.",
+      "tags": [
+        "UX",
+        "ARCH"
+      ],
+      "severity": "medium",
+      "grade": "observed",
+      "group": "Mental model and first run",
+      "cluster": "Getting oriented",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The chain runs source note, extraction, evidence unit, mutation, draft, note, section, chunk, in that fixed order, and each term carries a distinct meaning. No glossary, tooltip or inline definition exists anywhere in the feature: `ReviewQueue.tsx` renders drafts made of mutations and labels them with those words while explaining neither. The queue therefore asks the reviewer to accept or skip individual mutations without giving them a way to name the objects each mutation changes, and the only coping strategy left is to accept everything, which removes the point of having a review step.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "draft and mutation rendering"
+        },
+        {
+          "file": "LtmWorkspace.tsx",
+          "symbol": "review summary"
+        }
+      ],
+      "fix": "Add a collapsible glossary block to LtmWorkspace.tsx that defines source note, extraction, evidence unit, mutation, draft, note, section and chunk in one line each.",
+      "effort": "small"
+    },
+    {
+      "id": "default-source-tab-opens-empty",
+      "order": 2,
+      "statement": "The Sources screen opens on a tab that is empty by construction on a new chat.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "low",
+      "grade": "observed",
+      "group": "Mental model and first run",
+      "cluster": "Getting oriented",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`SourcesWorkspace.tsx` initialises its tab state with `useState<Source>(\"chats\")`, so the workspace always lands on Chat Summaries, the first entry in `sourceTabs`. A chat the engine has not yet summarised has no summary entries to list, and the panel renders \"No new or retryable sources are ready to import.\" without saying that a separate engine service produces summaries later, or that the adjacent Characters tab already holds something importable. A first-run user reads the empty state literally and concludes the feature has nothing to work with, on the first screen that matters.",
+      "evidence": [
+        {
+          "file": "SourcesWorkspace.tsx",
+          "symbol": "sourceTabs, useState<Source>(\"chats\")"
+        },
+        {
+          "file": "en.json",
+          "symbol": "ui.longTermMemory.sourcesworkspace.noNewOrRetryableSourcesAreReadyToImport"
+        }
+      ],
+      "fix": "Initialise the tab state in SourcesWorkspace.tsx to the first entry in sourceTabs that has importable items rather than hardcoding \"chats\".",
+      "effort": "small"
+    },
+    {
+      "id": "only-summaries-are-ingestible",
+      "order": 3,
+      "statement": "A chat transcript cannot be ingested, only its summaries.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Mental model and first run",
+      "cluster": "Getting oriented",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`ltmSourceProvenanceSchema` admits exactly three source kinds: `character`, `lorebook` and `chat_summary`. `createNoteBody` excludes `source` from the note-create schema, so source notes can originate only from the import routes, and no pasted-text or manual source path exists; for a chat, `interop.ts` reads only `chat.metadata`, taking summary entries while skipping disabled ones, the legacy summary string, game session summaries and conversation summaries. It never reads raw messages. The engine's separate auto-summary service, which the package does not own, therefore sets both the content and the timing of what memory can learn from a conversation.",
+      "evidence": [
+        {
+          "file": "interop.ts",
+          "symbol": "source branches"
+        },
+        {
+          "file": "schema.ts",
+          "symbol": "ltmSourceProvenanceSchema, createNoteBody"
+        }
+      ],
+      "fix": "Add a raw transcript source kind to ltmSourceProvenanceSchema with an interop.ts branch that reads chat messages instead of only chat.metadata summary entries.",
+      "effort": "large"
+    },
+    {
+      "id": "curation-and-recall-share-one-surface",
+      "order": 4,
+      "statement": "One workspace serves both the bulk review loop and the per-turn recall loop.",
+      "tags": [
+        "UX",
+        "ARCH"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Mental model and first run",
+      "cluster": "Getting oriented",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The two loops have different rhythms and different sizes. Bulk curation is bursty and offline, moving hundreds of proposals through the review queue, while recall runs automatically per turn and touches roughly twenty chunks; both live behind the same four-tab rail in `LongTermMemoryNavigation.tsx`, which defaults to Vault and carries a pending-review badge sized by the curation backlog. The feature reduces the per-turn account of recall to `LastInjectionSummary.tsx`, a single collapsed readout, so the surface's layout, badge and default destination all pull toward batch review and away from what memory just did in the current conversation.",
+      "evidence": [
+        {
+          "file": "LongTermMemoryNavigation.tsx",
+          "symbol": "tab rail and pending badge"
+        },
+        {
+          "file": "LtmWorkspace.tsx",
+          "symbol": "review summary"
+        },
+        {
+          "file": "LastInjectionSummary.tsx",
+          "symbol": "last-injection readout"
+        }
+      ],
+      "fix": "Add a Recall destination to LongTermMemoryNavigation.tsx that hosts the LastInjectionSummary content as a full surface instead of a collapsed block inside the curation workspace.",
+      "effort": "medium"
+    },
+    {
+      "id": "source-notes-counted-as-memories",
+      "order": 5,
+      "statement": "The vault counts source notes as memories.",
+      "tags": [
+        "UX",
+        "ARCH"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Mental model and first run",
+      "cluster": "Getting oriented",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`ltmNoteTypeSchema` treats `source` as an ordinary value, and the same note store holds those notes alongside real memories. `writeLtmNoteSummary()` in `index-state.ts` sums totals with no type exclusion, and that total feeds the navigation badge; `MemoryVault.tsx` queries notes with no type parameter, renders source notes first among the `groupedNoteTypes` groups, and counts them in its shown total, offering only a status filter and free-text search. Retrieval does exclude source notes, and another endpoint's schema excludes `source` explicitly, so the vault's displayed number overstates how many memories retrieval can actually reach, and no control reconciles the two figures.",
+      "evidence": [
+        {
+          "file": "index-state.ts",
+          "symbol": "writeLtmNoteSummary()"
+        },
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "groupedNoteTypes"
+        },
+        {
+          "file": "schema.ts",
+          "symbol": "ltmNoteTypeSchema"
+        }
+      ],
+      "fix": "Exclude notes of type source from the totals computed by writeLtmNoteSummary() in index-state.ts so the navigation badge and vault total count only recallable memories.",
+      "effort": "small"
+    },
+    {
+      "id": "preset-voids-injection",
+      "order": 6,
+      "statement": "A prompt-assembling preset can discard recall entirely.",
+      "tags": [
+        "ENGINE",
+        "ARCH",
+        "UX"
+      ],
+      "severity": "critical",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "Recall that silently does nothing",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`generate.routes.ts` guards the injection block with `if (handledByPresetSection || !presetOwnsAgentPlacement)`. A preset that assembles the whole prompt sets `presetOwnsAgentPlacement`, and if it carries no `agent_data` marker section for `long-term-memory` the route skips the branch entirely: it appends no text, pushes no context injection, and never assigns `longTermMemoryRecallReceipt`. That receipt is load-bearing, because `recordGenerationLongTermMemoryDispatch()` records an injection only when it has one and can confirm the artifact in the dispatched messages, so nothing lands in the record and the readout keeps showing the last successful run. One preset shared by four chats disabled memory in all four at once, with every layer still reporting success.",
+      "evidence": [
+        {
+          "file": "generate.routes.ts",
+          "symbol": "presetOwnsAgentPlacement"
+        },
+        {
+          "file": "generation-injection.ts",
+          "symbol": "recordGenerationLongTermMemoryDispatch()"
+        }
+      ],
+      "fix": "In generate.routes.ts assign a longTermMemoryRecallReceipt marked as skipped when presetOwnsAgentPlacement is set with no long-term-memory agent_data section so the dispatch record shows that the package dropped recall.",
+      "effort": "medium"
+    },
+    {
+      "id": "injection-readout-has-no-negative-state",
+      "order": 7,
+      "statement": "The last-injection readout keeps showing an old count when nothing is injected.",
+      "tags": [
+        "UX",
+        "ARCH",
+        "BUG"
+      ],
+      "severity": "high",
+      "grade": "observed",
+      "group": "Does recall reach the model",
+      "cluster": "Recall that silently does nothing",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`LastInjectionSummary.tsx` renders a `<details>` element that the stored recall receipt drives entirely; expanded, it lists each recalled memory with token counts and links into the vault. A turn that injects nothing produces no receipt, and `recordGenerationLongTermMemoryDispatch()` writes a record only when a receipt exists and it can confirm the artifact in the dispatched messages, so no write happens and the previous run's values stay on screen. The readout has no zero state and no timestamp, which lets a healthy-looking count describe a generation that ran long ago while the current turn got nothing.",
+      "evidence": [
+        {
+          "file": "LastInjectionSummary.tsx",
+          "symbol": "receipt rendering"
+        },
+        {
+          "file": "generation-injection.ts",
+          "symbol": "recordGenerationLongTermMemoryDispatch()"
+        }
+      ],
+      "fix": "Have recordGenerationLongTermMemoryDispatch() write a zero-count record with a timestamp when a turn injects nothing so LastInjectionSummary.tsx can render an explicit nothing-injected state instead of stale values.",
+      "effort": "medium"
+    },
+    {
+      "id": "imports-are-born-roleplay-only",
+      "order": 8,
+      "statement": "Memories from character and lorebook imports are eligible in Roleplay only.",
+      "tags": [
+        "ARCH",
+        "UX",
+        "BUG"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "Recall that silently does nothing",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The model never chooses mode. `interop.ts` stamps character and lorebook imports with all three modes and `extractionMode: \"roleplay\"`, and `source-extraction.ts` compiles a single `resolvedMode` that falls to roleplay when there is no `chatId` and no explicit mode, so extracting an imported source outside a chat produces roleplay-only memories; `MemoryVault.tsx` hardcodes `modes: [\"roleplay\"]` in `newNote` for manual creation as well. The mode filter in `retrieval.ts` drops ineligible memories before ranking. Chat-derived extraction gets this right, since the extract handler stamps `[ltmModeForChatMode(chat.mode)]`, so a user who completes the documented first run against a character import in a Conversation chat ends with a vault that recalls nothing.",
+      "evidence": [
+        {
+          "file": "interop.ts",
+          "symbol": "import stamping"
+        },
+        {
+          "file": "source-extraction.ts",
+          "symbol": "resolvedMode"
+        },
+        {
+          "file": "retrieval.ts",
+          "symbol": "mode filter"
+        },
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "newNote"
+        }
+      ],
+      "fix": "Make resolvedMode in source-extraction.ts and newNote in MemoryVault.tsx default to all three modes when no chat mode is known instead of falling back to roleplay.",
+      "effort": "small"
+    },
+    {
+      "id": "mode-eligibility-invisible-at-accept",
+      "order": 9,
+      "statement": "Mode eligibility cannot be seen or set while accepting a memory.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "Recall that silently does nothing",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`ReviewQueue.tsx` prints the source's modes as read-only text and exposes no control over them, so the reviewer sees the value at the moment of decision but cannot change it. The only editable surface is the per-mode checkbox set inside the `MemoryVault.tsx` note editor, plus the bulk `batch(\"modes\")` action: leaving review, opening the vault, locating the note and opening its editor. That field decides whether a memory is ever eligible for recall, and accept time fixes it to whatever stamp the source already carries.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "modes display"
+        },
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "note editor, batch(\"modes\")"
+        }
+      ],
+      "fix": "Replace the read-only modes text in ReviewQueue.tsx with the per-mode checkbox control from the MemoryVault.tsx note editor and send the chosen modes with the accept call.",
+      "effort": "medium"
+    },
+    {
+      "id": "nothing-recalled-is-one-message",
+      "order": 10,
+      "statement": "Five different recall outcomes present as the same absence.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "No account of what recall did",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "An empty vault, no lexical or vector match, a score below threshold, a budget drop and ineligibility for the current chat mode all end at the same empty readout. `budget.ts` already computes a typed `rejectionReason` per discarded candidate, drawn from `budget`, `lower_rank`, `score_threshold`, `duplicate_text` and `missing_chunk`; it populates those rejected candidates only when `explain` is set, which comes from `recall.debugEnabled`, and the result goes to the debug log rather than to the recall readout. The single question users ask about a memory system, why it did not remember, has one undifferentiated answer built from data the engine computes on every turn.",
+      "evidence": [
+        {
+          "file": "budget.ts",
+          "symbol": "LtmBudgetRejectedCandidate, rejectionReason"
+        },
+        {
+          "file": "generation-injection.ts",
+          "symbol": "prepareGenerationLongTermMemory()"
+        }
+      ],
+      "fix": "Populate rejected candidates in budget.ts unconditionally rather than only when explain is set and show the dominant rejectionReason in the recall readout.",
+      "effort": "small"
+    },
+    {
+      "id": "explain-data-mostly-never-leaves-the-process",
+      "order": 11,
+      "statement": "Most per-candidate recall scoring is computed and never emitted.",
+      "tags": [
+        "UX",
+        "ARCH"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "No account of what recall did",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Per candidate, `LtmRankedCandidate` carries `score`, `normalizedScore`, `finalNormalizedScore`, `relevanceScore`, `reasons[]`, `lanes[]`, `laneScores{}`, `rawLaneScores{}` and `cooldownPenalty`, gaining `tier` and `estimatedTokens` on selected candidates and `rejectionReason` on rejected ones. `prepareGenerationLongTermMemory()` emits one `recall_explanation` event carrying note id, section key, relevance score, lanes, reasons, estimated tokens and rejection reason, and only when debug recording is on; `ActivityView.tsx` renders that event. Nothing emits `laneScores`, `rawLaneScores`, `normalizedScore`, `finalNormalizedScore`, the raw fused `score`, `tier` or `cooldownPenalty` at all, so with debug off the entire recall surface amounts to note titles and token counts.",
+      "evidence": [
+        {
+          "file": "ranking.ts",
+          "symbol": "LtmRankedCandidate"
+        },
+        {
+          "file": "budget.ts",
+          "symbol": "LtmBudgetRejectedCandidate"
+        },
+        {
+          "file": "generation-injection.ts",
+          "symbol": "prepareGenerationLongTermMemory()"
+        },
+        {
+          "file": "ActivityView.tsx",
+          "symbol": "recall_explanation rendering"
+        }
+      ],
+      "fix": "Include laneScores, rawLaneScores, normalizedScore, finalNormalizedScore, the fused score, tier and cooldownPenalty in the recall_explanation event emitted by prepareGenerationLongTermMemory().",
+      "effort": "small"
+    },
+    {
+      "id": "recency-weighting-is-unreachable",
+      "order": 12,
+      "statement": "The recency weighting branch is unreachable.",
+      "tags": [
+        "ARCH",
+        "BUG"
+      ],
+      "severity": "critical",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "No account of what recall did",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [
+        {
+          "id": "ann-msnr600q-2gb9z",
+          "text": "marked critical on the assumption this isn't known to maintainers",
+          "createdAt": "2026-08-10T21:37:47.162Z"
+        }
+      ],
+      "edited": true,
+      "description": "`reciprocalRankFuse(lanes, options = {})` in `ranking.ts` reads `options.cooldowns` to set `cooldownPenalty` and scale a candidate's score, and the `LtmRankCooldown` type exists to feed it. The sole caller, `retrieveLongTermMemory` in `retrieval.ts`, invokes `reciprocalRankFuse(lanes)` with no options object, leaving `cooldowns` unconditionally `undefined` so the penalty branch never executes. Nothing else derives a score from age either: the five lanes are direct-metadata, BM25, keyword, graph and vector, neither ranking nor budgeting reads `chunk.updatedAt`, and only `retention.ts` consumes the `lastInjectedAt` value that `usage.ts` writes, for pruning. Ranking runs entirely age-blind, and the declared cooldown is a caller-supplied multiplier rather than anything derived from recency.",
+      "evidence": [
+        {
+          "file": "ranking.ts",
+          "symbol": "reciprocalRankFuse(), LtmRankCooldown"
+        },
+        {
+          "file": "retrieval.ts",
+          "symbol": "retrieveLongTermMemory()"
+        },
+        {
+          "file": "usage.ts",
+          "symbol": "lastInjectedAt"
+        },
+        {
+          "file": "retention.ts",
+          "symbol": "pruning read of lastInjectedAt"
+        }
+      ],
+      "fix": "Pass a cooldowns option derived from each candidate's lastInjectedAt into reciprocalRankFuse() from retrieveLongTermMemory() in retrieval.ts.",
+      "effort": "medium"
+    },
+    {
+      "id": "no-chronology-between-event-memories",
+      "order": 13,
+      "statement": "Recalled events reach the model with no chronological order.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "No account of what recall did",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`applyLtmBudget` and `tierFor` in `budget.ts` order selected chunks by tier, then score, then `chunk.id`, and `timeline_event` sits in tier 3, so the bullets inside a `[TIMELINE]` block that `serializeLongTermMemoryPrompt` emits appear in relevance order tie-broken by an id string. Notes, sections and chunks carry no in-world date or time field, only wall-clock `createdAt` and `updatedAt`, and the serializer renders no timestamp of any kind into the prompt. The model receives a set of events with no sequence, grouping or stated relation between them, which bites hardest in Conversation mode, where the engine does inject a current-context block with real time and date that the memories cannot connect to.",
+      "evidence": [
+        {
+          "file": "budget.ts",
+          "symbol": "applyLtmBudget(), tierFor()"
+        },
+        {
+          "file": "prompt.ts",
+          "symbol": "serializeLongTermMemoryPrompt()"
+        },
+        {
+          "file": "schema.ts",
+          "symbol": "ltmSectionSchema, ltmMemoryChunkSchema"
+        }
+      ],
+      "fix": "Add an optional in-world timestamp field to ltmSectionSchema that extraction populates and that serializeLongTermMemoryPrompt() uses to order TIMELINE bullets.",
+      "effort": "large"
+    },
+    {
+      "id": "injected-lines-cannot-be-attributed",
+      "order": 14,
+      "statement": "The model cannot tell which memory an injected line came from.",
+      "tags": [
+        "ARCH"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "No account of what recall did",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`chunkNoteSections` in `chunking.ts` never copies a section's structured `evidence[]` onto the chunk, and the chunk schema has no evidence field, so the injector cannot reach supporting quotes by construction. At serialization, `memoryTitle` in `prompt.ts` groups character and relationship chunks under a note title, while it emits `world`, `timeline_event`, `thread`, `tone` and `scene` chunks as bare bullets under a category header with no title, no id and no section key. The user can trace a recalled note afterwards through the last-injection summary; the model reading a `[WORLD]` or `[TIMELINE]` bullet cannot attribute it to a memory or weigh it by the evidence behind it.",
+      "evidence": [
+        {
+          "file": "chunking.ts",
+          "symbol": "chunkNoteSections()"
+        },
+        {
+          "file": "prompt.ts",
+          "symbol": "memoryTitle()"
+        },
+        {
+          "file": "LastInjectionSummary.tsx",
+          "symbol": "recalled note list"
+        }
+      ],
+      "fix": "Emit the owning note title and section key alongside every world, timeline_event, thread, tone and scene bullet in memoryTitle() in prompt.ts.",
+      "effort": "small"
+    },
+    {
+      "id": "embedding-lane-can-die-silently",
+      "order": 15,
+      "statement": "A vault rebuild reports success after embedding nothing.",
+      "tags": [
+        "ENV",
+        "ARCH",
+        "UX",
+        "BUG"
+      ],
+      "severity": "critical",
+      "grade": "observed",
+      "group": "Does recall reach the model",
+      "cluster": "Recall that silently does nothing",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`capability-embedding.service.ts` exports a frozen object that returns `localEmbed(...)` unconditionally against the space id `local:Xenova/all-MiniLM-L6-v2:q8:mean:normalized:v1`, with no remote provider and no fallback, even though the engine's own recall path supports remote connections, dedicated embedding connections and a local sidecar. When the native binding is missing, `hasNativeOnnxRuntimeBinding` returns false with a single info log, embedding returns null, and `markLtmIndexesClean` still marks the indexes clean so the rebuild returns normally and index health reads healthy. The `/status` response does carry `embeddingsAvailable: false`, but no client surface mentions embeddings at all: a search for \"embed\" across the stock client and its locale file turns up nothing, and the detail view shows only a total indexed chunk count, which stays high while the semantic lane is dead. Retrieval keeps returning results from the remaining lanes, so nothing catches the degradation without a purpose-written probe.",
+      "evidence": [
+        {
+          "file": "capability-embedding.service.ts",
+          "symbol": "localEmbed host"
+        },
+        {
+          "file": "local-embedder.ts",
+          "symbol": "hasNativeOnnxRuntimeBinding()"
+        },
+        {
+          "file": "rebuild.ts",
+          "symbol": "markLtmIndexesClean()"
+        },
+        {
+          "file": "ltmStatusResponseSchema",
+          "symbol": "embeddingsAvailable"
+        }
+      ],
+      "fix": "Render the embeddingsAvailable field already returned by /status as a degraded semantic lane warning in LongTermMemoryDetail.tsx.",
+      "effort": "small"
+    },
+    {
+      "id": "index-rebuild-failure-invisible",
+      "order": 16,
+      "statement": "A memory can save successfully and stay invisible to recall.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "critical",
+      "grade": "source",
+      "group": "Does recall reach the model",
+      "cluster": "Recall that silently does nothing",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`applyInner()` in `reconciliation.ts` writes the draft to `accepted` before it rebuilds, then calls `rebuildLongTermMemoryIndexes` inside a try/catch. A failure records `indexRebuildStatus: \"failed\"` and `indexRebuildError` on the draft, logs the error, and still returns the applied draft as a success. `ReviewQueue.tsx` surfaces this only as a transient line in the batch result, \"Changes were saved, but the index rebuild failed: {{value1}}\", and no component ever reads `indexRebuildStatus` afterwards. The vault stores the note and displays it correctly, while retrieval, which reads the indexes, cannot see it.",
+      "evidence": [
+        {
+          "file": "reconciliation.ts",
+          "symbol": "applyInner()"
+        },
+        {
+          "file": "rebuild.ts",
+          "symbol": "rebuildLongTermMemoryIndexes()"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "indexRebuildFailures"
+        }
+      ],
+      "fix": "Leave the indexes marked dirty in applyInner() in reconciliation.ts when rebuildLongTermMemoryIndexes throws so vault health reports the failure instead of reading healthy.",
+      "effort": "small"
+    },
+    {
+      "id": "empty-trusted-roster-still-enforces",
+      "order": 17,
+      "statement": "An extraction scope with no chats rejects every claim as untrusted.",
+      "tags": [
+        "ARCH",
+        "UX",
+        "BUG"
+      ],
+      "severity": "critical",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [
+        {
+          "id": "ann-msnrgaej-5e75w",
+          "text": "seems kinda niche",
+          "createdAt": "2026-08-10T21:45:47.179Z"
+        }
+      ],
+      "edited": true,
+      "description": "The roster builder collects trusted subjects from the persona ids of the chats that the extraction scope resolves, so a scope carrying no chat ids yields a roster with zero entries. `loadTrustedLtmSubjectCatalog()` always constructs the catalog object, and `enforceTrustedSubjects` switches on whenever that object exists, so an empty roster enforces exactly as a populated one does. Nothing inspects roster size before the run spends the model call; the drops surface afterward, one per candidate, as `untrusted_subject`. The stock \"All available\" import target passes no scope at all, which is the configuration that produces the empty roster.",
+      "evidence": [
+        {
+          "file": "subject-identity.ts",
+          "symbol": "loadTrustedLtmSubjectCatalog()"
+        },
+        {
+          "file": "source-extraction.ts",
+          "symbol": "enforceTrustedSubjects"
+        },
+        {
+          "file": "SourcesWorkspace.tsx",
+          "symbol": "import targets"
+        }
+      ],
+      "fix": "Skip enforceTrustedSubjects in source-extraction.ts when loadTrustedLtmSubjectCatalog() returns a roster with zero entries.",
+      "effort": "small"
+    },
+    {
+      "id": "persona-scope-not-settable-in-ui",
+      "order": 18,
+      "statement": "The persona scope field cannot be set through the interface.",
+      "tags": [
+        "UX",
+        "ARCH"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [
+        {
+          "id": "ann-msnr8cl1-3gsvb",
+          "text": "i don't think i personally ran into this so marked low prio",
+          "createdAt": "2026-08-10T21:39:36.757Z"
+        }
+      ],
+      "edited": true,
+      "description": "The vault's scope editor renders an existing persona id only as a removable pill. Its add controls are a chat or group select and a character-id input, and no add-persona control exists anywhere in the feature, so only the API or chat-scope resolution ever populates the field. Of the stock import targets only \"current chat\" carries a `personaId`. The effect stays second-order in any case: the roster builds from `scope.chatIds`, and `personaId` changes only which existing notes enter the catalog.",
+      "evidence": [
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "scope editor"
+        },
+        {
+          "file": "subject-identity.ts",
+          "symbol": "loadTrustedLtmSubjectCatalog()"
+        },
+        {
+          "file": "SourcesWorkspace.tsx",
+          "symbol": "import targets"
+        }
+      ],
+      "fix": "Add an add-persona control to the scope editor in MemoryVault.tsx beside the existing chat, group and character-id inputs.",
+      "effort": "small"
+    },
+    {
+      "id": "rejected-candidates-are-easy-to-miss",
+      "order": 19,
+      "statement": "Rejected candidates sit in a collapsed panel scoped to one source.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The panel itself is substantial. `/rejected-suggestions` feeds a panel titled \"Suggestions that weren't saved\", which shows per item the proposed content, a mapped \"Why it wasn't saved\" label, a \"What was expected\" line built from the `recovery` object, a suggested fix, and two actions: Recover manually, which hands off to the vault prefilled, and Delete. It renders as a `<details>` element collapsed by default and scoped to the currently selected source, so it stays invisible from every other part of the workspace. A run that discards a third of its candidates therefore leaves no mark anywhere the user is already looking.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "recoveryLabel()"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "onRecoverCandidate"
+        },
+        {
+          "file": "routes.ts",
+          "symbol": "/rejected-suggestions"
+        }
+      ],
+      "fix": "Show the count returned by /rejected-suggestions as a badge on the review queue header and open the details panel when that count is non-zero.",
+      "effort": "small"
+    },
+    {
+      "id": "block-reasons-are-raw-enum-names",
+      "order": 20,
+      "statement": "Draft block reasons render as raw enum names.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`rejectionReasonLabels` and a parallel fix table map extraction drop reasons, giving all eleven a distinct human label and a distinct suggested remedy. The eight draft block reason codes get neither: each renders as a humanized enum name plus the raw message, with no explanation of what it means or what caused it. Nothing aggregates or groups either set by cause, so the reviewer reads forty instances of one underlying problem forty separate times.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "rejectionReasonLabels"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "block reason rendering"
+        }
+      ],
+      "fix": "Add the eight draft block reason codes to rejectionReasonLabels and its parallel suggested-fix table in ReviewQueue.tsx.",
+      "effort": "small"
+    },
+    {
+      "id": "completion-summary-omits-what-was-dropped",
+      "order": 21,
+      "statement": "The extraction summary omits how many candidates were dropped.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The outcome state is honest about itself: `summarizeExtractionOutcome()` returns `partial_success` whenever a run keeps anything and drops or deduplicates anything, and the import panel renders a warning-toned \"Partial success\" badge. The numbers next to it are requested, wrote, succeeded, failed, cancelled, missing and write failures. `totalCandidates`, `keptUnits` and `droppedUnits` appear nowhere in that summary, so only the review queue, a navigation away, reveals the size of the loss.",
+      "evidence": [
+        {
+          "file": "evidence-unit-extraction.ts",
+          "symbol": "summarizeExtractionOutcome()"
+        },
+        {
+          "file": "SourcesWorkspace.tsx",
+          "symbol": "importResultSummary"
+        }
+      ],
+      "fix": "Include totalCandidates, keptUnits and droppedUnits from summarizeExtractionOutcome() in the importResultSummary rendered by SourcesWorkspace.tsx.",
+      "effort": "small"
+    },
+    {
+      "id": "null-for-optional-fails-the-whole-unit",
+      "order": 22,
+      "statement": "An explicit null on an optional field discards the whole claim.",
+      "tags": [
+        "MODEL",
+        "ARCH",
+        "BUG"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The evidence-unit schema declares optional fields `.optional()` and never `.nullable()`, so a unit carrying `\"dimensions\": null` fails parsing and extraction discards it whole as `invalid_format`. `normalizeEvidenceUnitResponse()` rewrites only `id`, `sourceHash` and `links`, and it does coerce a non-array `links` to an empty array, so the pass that runs immediately before validation already knows how to normalize junk of this shape. One full extraction run produced 28 of 200 rejections that were exactly this: `dimensions` or `dimensionChanges` set to null.",
+      "evidence": [
+        {
+          "file": "evidence-unit-extraction.ts",
+          "symbol": "normalizeEvidenceUnitResponse()"
+        },
+        {
+          "file": "evidence-unit-extraction.ts",
+          "symbol": "parseEvidenceUnitPayload"
+        },
+        {
+          "file": "schema",
+          "symbol": "ltmEvidenceUnitSchema"
+        }
+      ],
+      "fix": "Strip null-valued optional fields in normalizeEvidenceUnitResponse() before parseEvidenceUnitPayload validates the unit.",
+      "effort": "small"
+    },
+    {
+      "id": "structured-output-needs-are-unstated",
+      "order": 23,
+      "statement": "The structured-output requirements for a model are documented nowhere.",
+      "tags": [
+        "MODEL",
+        "ARCH",
+        "UX"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Extraction actually needs generic OpenAI-compatible `json_schema` with `strict: false`, not strict mode and not tool calling; the code avoids strict mode deliberately because the schema uses `format`, `pattern`, length bounds, `uniqueItems` and conditional subschemas that it rejects. A degradation path exists too: `isResponseFormatUnsupportedError()` triggers a retry with the response format removed, and `extractJsonObject()` salvages fenced or embedded JSON, which is precisely the regime where null-for-optional and shape drift bite hardest. No document states any of this where a user choosing a model can read it, so the user establishes a model's compatibility by paying for a full run and reading the wreckage.",
+      "evidence": [
+        {
+          "file": "evidence-unit-extraction.ts",
+          "symbol": "evidenceUnitResponseFormat"
+        },
+        {
+          "file": "evidence-unit-extraction.ts",
+          "symbol": "isResponseFormatUnsupportedError()"
+        },
+        {
+          "file": "evidence-unit-extraction.ts",
+          "symbol": "extractJsonObject"
+        }
+      ],
+      "fix": "State the json_schema with strict false requirement in the extraction model help text in MemorySettings.tsx.",
+      "effort": "small"
+    },
+    {
+      "id": "truncated-output-discards-everything",
+      "order": 24,
+      "statement": "Hitting the output limit discards the entire extraction.",
+      "tags": [
+        "MODEL",
+        "ARCH"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "A finish reason of length or max-tokens makes `runLongTermMemoryEvidenceUnitExtraction()` throw `ltm_model_output_truncated`, and the handler drops the entire response instead of parsing up to the last complete unit, even though a valid JSON prefix sits in the buffer. Stock settings expose `maxOutputTokens`, clamped between 512 and 32,768 and floored by the model's own limit, so the ceiling tunes but the failure stays all-or-nothing. The user pays for the call in full and nothing from it survives.",
+      "evidence": [
+        {
+          "file": "evidence-unit-extraction.ts",
+          "symbol": "runLongTermMemoryEvidenceUnitExtraction()"
+        },
+        {
+          "file": "MemorySettings.tsx",
+          "symbol": "maxOutputTokens"
+        }
+      ],
+      "fix": "Parse the buffered response up to the last complete evidence unit in runLongTermMemoryEvidenceUnitExtraction() instead of throwing ltm_model_output_truncated.",
+      "effort": "medium"
+    },
+    {
+      "id": "no-size-guard-before-the-model-call",
+      "order": 25,
+      "statement": "Nothing caps the size of a source note before extraction.",
+      "tags": [
+        "ARCH"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "One input-side guard exists: `preflightExtractionPromptContext()` throws `ltm_model_context_capacity` before any model call when the assembled prompt would need trimming. It early-returns unless the provider reports a known context window, so a provider that reports none skips the check entirely. Import applies no byte-size limit to a source note and performs no chunking; the code states outright that it never truncates source text and directs the user to split it by hand.",
+      "evidence": [
+        {
+          "file": "evidence-unit-extraction.ts",
+          "symbol": "preflightExtractionPromptContext()"
+        }
+      ],
+      "fix": "Apply a fixed fallback character budget in preflightExtractionPromptContext() when the provider reports no context window instead of early-returning unchecked.",
+      "effort": "small"
+    },
+    {
+      "id": "extraction-progress-is-unobservable",
+      "order": 26,
+      "statement": "A long extraction run reports no progress until it finishes.",
+      "tags": [
+        "SCALE",
+        "ARCH",
+        "UX"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Running extraction at scale",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`POST /import/source-notes` accepts up to 100 `sourceIds` at an `importConcurrency` of 1 to 10, so batching is real, but it runs as one long synchronous request that returns only a terminal report. No SSE stream, websocket, polling interval, job table or pollable operation status exists anywhere; the route mints an `operationId` per call and echoes it back with no way to query it. The only mid-flight control is a client-side abort, which the server does honor. A run lasting tens of minutes therefore looks exactly like a hang until it returns.",
+      "evidence": [
+        {
+          "file": "routes.ts",
+          "symbol": "/import/source-notes"
+        },
+        {
+          "file": "SourcesWorkspace.tsx",
+          "symbol": "import panel"
+        }
+      ],
+      "fix": "Return POST /import/source-notes as an SSE stream that emits a per-source completion event the import panel in SourcesWorkspace.tsx renders as progress.",
+      "effort": "medium"
+    },
+    {
+      "id": "package-cannot-set-its-own-timeout",
+      "order": 27,
+      "statement": "The package cannot set a timeout on its own model calls.",
+      "tags": [
+        "ARCH",
+        "BUG"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Running extraction at scale",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The capability language-model surface exposes no timeout field, so extraction inherits `DEFAULT_CHAT_GENERATION_TIMEOUT_MS`, the engine's deliberate 300-second default on the server's own outbound model call, adjustable only globally through `CHAT_GENERATION_TIMEOUT_MS`. Extraction does not stream, so that budget covers the whole wait for the first byte rather than the gap between tokens. The engine already ships a per-request override helper, `withLlmRequestTimeout`, and nothing calls it.",
+      "evidence": [
+        {
+          "file": "package-runtime.ts",
+          "symbol": "capability language-model surface"
+        },
+        {
+          "file": "base-provider.ts",
+          "symbol": "withLlmRequestTimeout"
+        },
+        {
+          "file": "runtime-config.ts",
+          "symbol": "getChatGenerationTimeoutMs"
+        }
+      ],
+      "fix": "Expose a timeoutMs option on the capability language-model surface in package-runtime.ts that forwards to the existing withLlmRequestTimeout helper.",
+      "effort": "medium"
+    },
+    {
+      "id": "re-extraction-is-one-at-a-time",
+      "order": 28,
+      "statement": "Re-extraction runs one source at a time.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Running extraction at scale",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`reextract()` posts to `POST /notes/:id/extract` for a single source and disables itself while a call is in flight, so a hundred sources means a hundred sequential round trips driven by hand. Extraction never skips work: `prepareLongTermMemorySource()` calls the model unconditionally, and it writes the fingerprint after the fact, serving only a post-hoc 409 concurrency guard, draft staleness labelling and preview freshness colouring. That guard can abort a re-extract after the user has already paid for the model call, when scope or modes changed concurrently.",
+      "evidence": [
+        {
+          "file": "SourcesWorkspace.tsx",
+          "symbol": "reextract()"
+        },
+        {
+          "file": "source-processing.ts",
+          "symbol": "canMarkCurrent()"
+        },
+        {
+          "file": "routes.ts",
+          "symbol": "extract handler"
+        }
+      ],
+      "fix": "Point reextract() in SourcesWorkspace.tsx at the existing batch POST /import/source-notes route with the multi-selected source ids.",
+      "effort": "small"
+    },
+    {
+      "id": "draft-freshness-flips-with-no-notification",
+      "order": 29,
+      "statement": "Editing a source silently blocks its pending drafts.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`draftFreshness()` derives freshness on every review read and stores nothing, comparing the draft's own fingerprint against one it recomputes from the source note's live content. Any drift in a fingerprint input flips it: the source section's text or evidence, the note title or id, provenance, modes, extraction mode, or normalized scope, which covers chat, group and character ids while deliberately excluding `personaId`. Once the reviewer opens the queue the block announces itself clearly, with the pill reading Stale, a red panel reading \"Source Stale: The source or extraction context changed after this extraction.\", exclusion from bulk apply, and a 409 on applying anyway. The transition itself stays silent: nothing emits an event, notification or log entry, so nothing prompts anyone to go and look.",
+      "evidence": [
+        {
+          "file": "draft-review.ts",
+          "symbol": "draftFreshness()"
+        },
+        {
+          "file": "source-hash.ts",
+          "symbol": "extractionFingerprintForLtmSourceMaterial"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "freshnessLabel"
+        }
+      ],
+      "fix": "Add a stale-draft count computed from draftFreshness() to the review summary in LtmWorkspace.tsx so the transition is visible without opening the queue.",
+      "effort": "small"
+    },
+    {
+      "id": "bulk-gaps-are-specific",
+      "order": 30,
+      "statement": "Re-extraction and review decisions have no bulk path.",
+      "tags": [
+        "SCALE",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Extraction",
+      "cluster": "Running extraction at scale",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Batch routes are genuine across most of the surface: `POST /import/source-notes` takes an array of up to 100 source ids at configurable concurrency, and `POST /notes/batch`, `POST /notes/permanent-delete` and `POST /notes/transfer` all take batches, with the Sources UI multi-selecting against them. The two operations a large corpus consumes most are the exceptions. Re-extraction handles one source per request, and review accept and skip work per draft, so at 97 sources and roughly 1,150 claims the user drives the unbatched paths hundreds of times.",
+      "evidence": [
+        {
+          "file": "routes.ts",
+          "symbol": "/import/source-notes"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "runBatch()"
+        },
+        {
+          "file": "SourcesWorkspace.tsx",
+          "symbol": "reextract()"
+        }
+      ],
+      "fix": "Add batch accept and skip routes modelled on POST /notes/batch and drive them from runBatch() in ReviewQueue.tsx.",
+      "effort": "medium"
+    },
+    {
+      "id": "one-hard-coded-grouping-axis",
+      "order": 31,
+      "statement": "The review queue can only be grouped one way.",
+      "tags": [
+        "SCALE",
+        "UX",
+        "ARCH"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Organising the review queue",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The queue fixes the hierarchy at source, then draft, then target, then mutation. It consumes `targets[]`, so the data for organising the work by subject already rides the wire, but a target renders as an unlabeled wrapper element with no header, which makes even the existing grouping imperceptible. The query hard-codes `/drafts/review?status=pending`, and the view carries no pivot, group-by, sort, filter or search control of any kind. Reviewing one character means visiting every draft that happens to touch them.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "target mapping and fallbackTargets"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "/drafts/review query"
+        }
+      ],
+      "fix": "Pivot ReviewQueue.tsx to group rows under the target memory title that targets[] already returns.",
+      "effort": "medium"
+    },
+    {
+      "id": "selection-is-wiped-on-navigation",
+      "order": 32,
+      "statement": "Review selection is cleared whenever the view changes.",
+      "tags": [
+        "UX",
+        "BUG"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Organising the review queue",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The machinery for a wide batch is present: per-mutation checkboxes, a select-all with indeterminate state, a sticky batch bar offering \"Accept eligible (n)\", \"Skip selected (n)\" and \"Clear\", and a `runBatch()` that already groups its outgoing requests by draft. An effect resets `selectedIds` on any change of chat, source or selected draft, destroying the selection before it can ever span two drafts. Bulk action works, but permanently within one draft at a time, and nothing ever exercises the request layer's grouping.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "selectedIds reset effect"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "runBatch()"
+        }
+      ],
+      "fix": "Narrow the selectedIds reset effect in ReviewQueue.tsx so selection clears only on chat change, not on source or draft change.",
+      "effort": "small"
+    },
+    {
+      "id": "in-progress-review-state-is-lost",
+      "order": 33,
+      "statement": "Unsubmitted review state does not survive a reload.",
+      "tags": [
+        "SCALE",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Organising the review queue",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Decisions themselves survive, because each click POSTs immediately to `/drafts/:id/accept` or `/skip`, so applied work never goes missing. Only React state holds `selectedIds` and `editedById`: the current selection and every unsubmitted edit to a note title, section text or per-section importance. The feature's only `localStorage` users are the onboarding flag and the admin secret, so a reload or a navigation away discards the whole in-progress pass.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "runBatch()"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "selectedIds/editedById reset effect"
+        }
+      ],
+      "fix": "Persist selectedIds and editedById to localStorage keyed by chat id so a reload restores the in-progress pass.",
+      "effort": "small"
+    },
+    {
+      "id": "no-review-progress-or-keyboard-path",
+      "order": 34,
+      "statement": "The review queue shows depth but never progress.",
+      "tags": [
+        "SCALE",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Organising the review queue",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The review summary renders counts of sources, pending mutations, ready and blocked, all of which describe how much remains rather than how much the reviewer has handled. No component computes an \"x of y reviewed\" figure. Key handling in the feature amounts to roving-tab arrows and Escape or Enter in shared controls, with no accept, reject or next shortcut, so a pass over hundreds of mutations runs entirely on the mouse and gives no sense of an end.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "review summary"
+        },
+        {
+          "file": "LtmWorkspace.tsx",
+          "symbol": "key handling"
+        }
+      ],
+      "fix": "Compute a reviewed-of-total figure from the counts already in the review summary and render it as a progress line above the queue.",
+      "effort": "small"
+    },
+    {
+      "id": "conflicts-are-absent-from-review",
+      "order": 35,
+      "statement": "Review never shows that a mutation contradicts stored content.",
+      "tags": [
+        "ARCH",
+        "UX",
+        "BUG"
+      ],
+      "severity": "critical",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`ReviewQueue.tsx` never reads `mutation.note.conflicts`; the string \"conflict\" does not occur in the file at all. The queue presents a `create_note` carrying recorded conflicts with no conflict information and no options, identical in every way to one that contradicts nothing stored. Only the vault renders conflicts anywhere, read-only, showing field, resolution status and `conflict.proposed` while never displaying `conflict.existing`, so the product never compares proposed content against stored content at any point.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "conflict rendering (absent)"
+        },
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "conflict block"
+        }
+      ],
+      "fix": "Render mutation.note.conflicts on the review row showing conflict.existing beside conflict.proposed.",
+      "effort": "medium"
+    },
+    {
+      "id": "destructive-and-additive-accepts-look-alike",
+      "order": 36,
+      "statement": "Additive and overwriting mutations look identical in review.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`dispositionForMutation()` already computes whether a mutation merges into a section or replaces its contents, and `isAdditiveLtmSection()` fixes which sections are additive: timeline always, world always, character except `items` and `progression`, relationship only `history`, tone only `observations`. Every row therefore carries the answer, and the review queue renders no visual distinction between the two cases. A reviewer working quickly through a batch cannot tell which accepts append to a belief and which overwrite one.",
+      "evidence": [
+        {
+          "file": "draft-projector.ts",
+          "symbol": "dispositionForMutation()"
+        },
+        {
+          "file": "draft-projector.ts",
+          "symbol": "isAdditiveLtmSection()"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "mutation row"
+        }
+      ],
+      "fix": "Label every mutation row with the disposition value dispositionForMutation() already computes so rewrites read differently from merges.",
+      "effort": "small"
+    },
+    {
+      "id": "whole-draft-invariants-are-invisible-until-apply",
+      "order": 37,
+      "statement": "Draft-wide invariants are only checked at apply time.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`preflight()` enforces rules that span the claims inside one draft: every mutation citing its source note, every link target existing or created in the same batch, every change claim's target ending up linked to a timeline event grounded in the same source, no duplicate `create_note` for one id, no writes to source or scene notes, and matching scope. Nothing evaluates any of it while the reviewer decides. It arrives afterward as an atomic whole-draft failure carrying messages such as \"Timeline event {id} must link to draft source {sourceNoteId}.\" and \"Long-term memory {id} must link to a timeline event grounded in the same source.\"",
+      "evidence": [
+        {
+          "file": "reconciliation.ts",
+          "symbol": "preflight()"
+        }
+      ],
+      "fix": "Expose preflight() through a dry-run review endpoint the queue calls on selection change so invariant failures land on the offending rows.",
+      "effort": "medium"
+    },
+    {
+      "id": "rejecting-is-unrecoverable-while-undecided-is-safe",
+      "order": 38,
+      "statement": "Rejecting a mutation removes it from dependency recovery.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`filterAutoApplyDependencies()` and the `autoIncludedMutationIds` accumulation in `applyInner()` pull in what a partial selection needs, drawing `add_link` mutations and their `create_note` from `draft.mutations`. Apply removes rejected mutations from the draft before that pass runs, so the pool the recovery mechanism searches no longer holds them, while it still holds undecided ones. Rejecting a dependency can fail an entire draft where leaving it untouched would have been safe. The instinct this punishes is tidying up: a duplicate `add_link` is already idempotent, since `changesForMutation` returns `[]` when the link exists and application runs through `uniqueLinks()`, so keeping a redundant link costs nothing.",
+      "evidence": [
+        {
+          "file": "reconciliation.ts",
+          "symbol": "filterAutoApplyDependencies()"
+        },
+        {
+          "file": "reconciliation.ts",
+          "symbol": "applyInner()"
+        },
+        {
+          "file": "draft-projector.ts",
+          "symbol": "uniqueLinks()"
+        }
+      ],
+      "fix": "Run filterAutoApplyDependencies() over the full pre-rejection mutation pool so a rejected dependency can still be auto-included.",
+      "effort": "small"
+    },
+    {
+      "id": "applying-cannot-be-undone",
+      "order": 39,
+      "statement": "There is no way to undo an applied draft.",
+      "tags": [
+        "ARCH"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [
+        {
+          "id": "ann-msnsljq1-2cu6w",
+          "text": "Scored high for impact, but deliberately not a priority ask. Real undo means retaining transaction journals instead of deleting them on commit, which is a big lift; the operator does not want the maintainer to prioritise it. Worth stating as context for why bulk accept is risky, not as a request.",
+          "createdAt": "2026-08-10T22:17:52.153Z"
+        }
+      ],
+      "edited": true,
+      "description": "`commitLtmMutation()` writes a journal holding the before-state of every touched file, promotes it to committed, and then `publish()` calls `remove()` to delete it once the events are appended. The journal serves crash recovery, which `recoverLtmMutations()` performs at startup, not history: no revert route exists, no per-note version list, and no retained before-state after a successful commit. That is the standing condition against which a bulk accept of hundreds of mutations lands as a single irreversible write.",
+      "evidence": [
+        {
+          "file": "mutation-transaction.ts",
+          "symbol": "commitLtmMutation()"
+        },
+        {
+          "file": "mutation-transaction.ts",
+          "symbol": "publish()"
+        },
+        {
+          "file": "mutation-transaction.ts",
+          "symbol": "recoverLtmMutations()"
+        }
+      ],
+      "fix": "Retain the last N committed transaction journals instead of unlinking them in `publish()`, noting that the operator raises this as context for why bulk accept is risky and explicitly not as a priority ask.",
+      "effort": "large"
+    },
+    {
+      "id": "fourteen-of-twenty-five-apply-failures-are-knowable-early",
+      "order": 40,
+      "statement": "Most apply-time failures are knowable before anything is submitted.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Apply-time failure comes from two places: the whole-draft invariants in `preflight()`, and the projection limits `mergeSection()` enforces, including the 20,000-character text cap and the 100-contribution cap. The selected mutations plus the current state of the vault already determine fourteen of the twenty-five distinct failure modes before anyone submits, and the review queue evaluates none of them. The reviewer learns about a preventable failure only after committing a selection, and it arrives as an atomic whole-draft error rather than as a mark on the row that caused it.",
+      "evidence": [
+        {
+          "file": "reconciliation.ts",
+          "symbol": "preflight()"
+        },
+        {
+          "file": "draft-projector.ts",
+          "symbol": "mergeSection()"
+        }
+      ],
+      "fix": "Add a preview endpoint that runs preflight() and the mergeSection() cap checks over the current selection so knowable failures appear as row-level marks before submit.",
+      "effort": "medium"
+    },
+    {
+      "id": "partial-apply-rewrites-the-draft",
+      "order": 41,
+      "statement": "A partial apply erases the record of what was already applied.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`applyInner()` finishes a partial accept by calling `updateDraftStatusUnlocked(id, \"pending\", { applyState: \"not_started\", mutations: <only the skipped items> })`. That call replaces the mutation list rather than annotating it, so the accepted work vanishes from the draft with nothing recording that it happened, and `applyState` reads as though nobody has ever touched the draft. A draft that is nine-tenths reviewed becomes indistinguishable from a small fresh one.",
+      "evidence": [
+        {
+          "file": "reconciliation.ts",
+          "symbol": "applyInner()"
+        }
+      ],
+      "fix": "Have applyInner() mark applied mutations with an applied flag instead of replacing draft.mutations with only the skipped ones.",
+      "effort": "medium"
+    },
+    {
+      "id": "weak-subject-matches-are-not-flagged",
+      "order": 42,
+      "statement": "How confidently a claim was bound to a character never reaches review.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Subject resolution matches a claim's subject against a trusted catalogue and records how it made the match, ranking bases that include `exact_name`, `unique_alias`, `spelling_variation` and `trait_or_qualified_alias`. Rejection details and events carry `match.basis` through as `matchBasis`, and nothing ever attaches it to the mutation the reviewer sees. The queue presents a claim bound to a character by a single fuzzy spelling match exactly like one bound by an exact name, so the claims most likely to land on the wrong person are the ones nobody can pick out of the queue.",
+      "evidence": [
+        {
+          "file": "subject-identity.ts",
+          "symbol": "matchBasis"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "mutation row"
+        }
+      ],
+      "fix": "Thread match.basis from subject-identity.ts onto the mutation so the review row can badge every non-exact_name binding.",
+      "effort": "medium"
+    },
+    {
+      "id": "auto-apply-is-unannounced",
+      "order": 43,
+      "statement": "Some memories are applied without review and without notice.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Extraction that loses work quietly",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`lowRisk()` gates the path: it requires `risk === \"low\"`, excludes scene-prefixed notes and excludes any note carrying `conflicts`. Reconciliation writes mutations that clear it straight into the vault, and they never appear in the review queue. Eligibility depends on the source, so chat-summary material can take that path while character and lorebook material cannot. Nothing in the interface names which sources bypass review, and nothing lists what the package wrote on the user's behalf, so the reviewed set and the vault's contents diverge with no surface acknowledging it.",
+      "evidence": [
+        {
+          "file": "reconciliation.ts",
+          "symbol": "lowRisk()"
+        }
+      ],
+      "fix": "List mutations that passed the lowRisk() gate in reconciliation.ts as an already-applied section in ReviewQueue.tsx.",
+      "effort": "medium"
+    },
+    {
+      "id": "the-editor-is-unlabeled-and-partial",
+      "order": 44,
+      "statement": "Edit-before-accept is unlabeled and undiscoverable.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`MutationEditor` sits inside an expanded mutation panel, below the evidence and diagnostics; accept submits its values as `editedMutations` and the server re-validates them. It carries no Edit label, button or icon, and it renders nothing at all for `add_link`, `set_keywords`, `set_status` and `set_subjects`, leaving four of the seven mutation kinds uneditable. A reviewer who wants to correct a claim rather than take it or drop it has to expand a row and scroll past two other blocks, and nothing indicates that anything sits down there.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "MutationEditor"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "editedMutations assembly"
+        }
+      ],
+      "fix": "Add a visible Edit control on the mutation row that opens MutationEditor.",
+      "effort": "small"
+    },
+    {
+      "id": "section-text-is-silently-truncated",
+      "order": 45,
+      "statement": "The editor silently truncates section text at the cap.",
+      "tags": [
+        "UX",
+        "BUG"
+      ],
+      "severity": "critical",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The editor applies `boundedTrim` and a `maxLength` at the 20,000-character section cap, cutting text with no counter, no warning and no marker at the cut point. `mergeSection()` enforces the same limit server-side with the error \"A projected section exceeds the 20,000-character text limit.\", so the editor's trim keeps the reviewer from ever meeting that error, at the cost of dropping content unannounced. Nothing else in the feature displays cap pressure either: no component renders a character counter, a keyword count or the `contributions` field.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "boundedTrim / maxLength"
+        },
+        {
+          "file": "draft-projector.ts",
+          "symbol": "mergeSection()"
+        }
+      ],
+      "fix": "Replace boundedTrim in the editor with a live character counter against the 20,000-character cap that blocks save rather than cutting text.",
+      "effort": "small"
+    },
+    {
+      "id": "link-targets-are-invisible",
+      "order": 46,
+      "statement": "A link mutation never shows what it points at.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Elsewhere the queue resolves ids to titles broadly, and rows offer \"Open memory\" and \"Open source\", so showing what a mutation touches is the established pattern. An `add_link` row is the exception: it never surfaces its target, and `MutationEditor` returns nothing for that kind either, so a reviewer can neither inspect nor correct the row. Faced with four near-identical link proposals pointing at timeline events, that reviewer has no way to tell the referenced events apart. The projection preview compounds it by printing `change.before` and `change.after` raw rather than passing them through `humanizeReviewText()`.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "humanizeReviewText()"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "change preview"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "MutationEditor"
+        }
+      ],
+      "fix": "Resolve an add_link mutation's target id to its note title in the row using the id-to-title lookup the queue already applies elsewhere.",
+      "effort": "small"
+    },
+    {
+      "id": "no-usage-signal-on-what-is-being-replaced",
+      "order": 47,
+      "statement": "Per-chunk recall counts are recorded and never surfaced.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Review",
+      "cluster": "Reviewing without seeing consequences",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [
+        {
+          "id": "ann-msnv2nh5-17ce0",
+          "text": "Corrected: an earlier pass reported that no cumulative recall counter existed anywhere. It does, per chunk, in the usage store. The finding is that it is never exposed, which makes the fix small rather than medium.",
+          "createdAt": "2026-08-10T23:27:09.402Z"
+        }
+      ],
+      "edited": true,
+      "description": "Usage tracking already counts recall per chunk: `ltmUsageChunkSchema` carries `retrievalCount`, `injectionCount`, `totalInjectedTokens`, `lastRetrievedAt` and `lastInjectedAt`, and `usage.ts` increments the first two on every injection. Only `retention.ts` reads them, consulting `lastInjectedAt` for pruning decisions, and no route returns them, so no interface can show them. A reviewer accepting a mutation that overwrites a stored section cannot tell whether that text has been feeding the model on every generation or whether retrieval has never reached it once, even though the count exists on disk.",
+      "evidence": [
+        {
+          "file": "usage.ts",
+          "symbol": "lastInjectedAt"
+        },
+        {
+          "file": "LastInjectionSummary.tsx",
+          "symbol": "last-injection readout"
+        },
+        {
+          "file": "ActivityView.tsx",
+          "symbol": "recall workflow view"
+        }
+      ],
+      "fix": "Return `retrievalCount` and `injectionCount` from the usage store on note and review responses so interfaces can display the counts the store already writes.",
+      "effort": "small"
+    },
+    {
+      "id": "caps-are-cliffs",
+      "order": 48,
+      "statement": "Seven storage caps are enforced at write time with no warning.",
+      "tags": [
+        "ARCH",
+        "UX",
+        "SCALE"
+      ],
+      "severity": "critical",
+      "grade": "source",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The limits run to thirty keywords, a hundred tags, two hundred fifty links, two hundred fifty conflicts, twenty thousand section characters, a hundred contributions and a hundred evidence refs. `mergeSection()` in `draft-projector.ts` throws on breach with \"A projected section exceeds the 20,000-character text limit.\" or \"A projected section exceeds the 100-contribution limit.\", while no component renders a character counter, a keyword count, or the `contributions` field at all. The interface exposes one cap behaviour only: the vault editor silently truncates section text at 20,000 characters. An apply therefore fails partway through a batch, and that failure gives the first indication that a note was near full.",
+      "evidence": [
+        {
+          "file": "draft-projector.ts",
+          "symbol": "mergeSection()"
+        },
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "TokenEditor"
+        },
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "maxLength / boundedTrim"
+        }
+      ],
+      "fix": "Return each target note's current section length, contribution count and keyword count in the draft review response so rows show cap pressure before apply.",
+      "effort": "medium"
+    },
+    {
+      "id": "saturation-is-the-steady-state",
+      "order": 49,
+      "statement": "Sections and keyword lists grow without pruning until they hit their caps.",
+      "tags": [
+        "ARCH",
+        "SCALE"
+      ],
+      "severity": "critical",
+      "grade": "source",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Every apply unions additive sections. `isAdditiveLtmSection()` marks timeline sections always additive, character sections additive except `items` and `progression`, relationship only `history`, world always, and tone only `observations`, and nothing anywhere decays, compacts or expires stored content. Any long-running story therefore ends with every cap full rather than merely risking it, and the product states this nowhere.",
+      "evidence": [
+        {
+          "file": "draft-projector.ts",
+          "symbol": "isAdditiveLtmSection()"
+        },
+        {
+          "file": "draft-projector.ts",
+          "symbol": "mergeSection()"
+        }
+      ],
+      "fix": "Add a compaction pass that rewrites additive sections as they approach their caps instead of only unioning contributions in mergeSection().",
+      "effort": "large"
+    },
+    {
+      "id": "stored-dedup-cannot-fire",
+      "order": 50,
+      "statement": "Duplicate detection against stored content cannot fire on a large section.",
+      "tags": [
+        "ARCH",
+        "SCALE"
+      ],
+      "severity": "high",
+      "grade": "measured",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`existingSectionCandidates()` in `dedup.ts` pushes exactly one candidate per section, the whole trimmed `section.text` as a single blob with no line splitting, and `deduplicateUnits()` requires a Jaccard score of at least `lexicalThreshold = 0.85`. An exact-duplicate claim of about eleven tokens scores 0.478 against a 226-character section, 0.186 at 568 characters, 0.060 at 2 KB, and 0.040 at 5 KB and above, so no section holding real content can reach the threshold. `seenInBatch` compares unit against unit, and that path does work. The guard against restatement goes quiet precisely on the notes large enough to need it.",
+      "evidence": [
+        {
+          "file": "dedup.ts",
+          "symbol": "existingSectionCandidates()"
+        },
+        {
+          "file": "dedup.ts",
+          "symbol": "deduplicateUnits()"
+        },
+        {
+          "file": "measurement",
+          "symbol": "ported tokenize/jaccardSimilarity run against sections of growing size"
+        }
+      ],
+      "fix": "Have existingSectionCandidates() emit one candidate per stored contribution instead of one blob per section.",
+      "effort": "small"
+    },
+    {
+      "id": "tokenizer-hides-most-of-a-long-section",
+      "order": 51,
+      "statement": "Similarity comparison ignores everything past the first five hundred tokens.",
+      "tags": [
+        "ARCH"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`tokenize()` in `utils.ts` slices its token list with `.slice(0, 500)` and filters out every token shorter than `minLength = 4`, so short words never participate in similarity and the comparison only ever sees a prefix of a long section. A 20 KB section scores identically to a 5 KB one. Any claim restating material from the tail of a saturated section passes the duplicate check, because nothing ever examines that tail.",
+      "evidence": [
+        {
+          "file": "utils.ts",
+          "symbol": "tokenize()"
+        },
+        {
+          "file": "measurement",
+          "symbol": "ported tokenize() truncation effect across section sizes"
+        }
+      ],
+      "fix": "Drop the .slice(0, 500) truncation in tokenize() so the whole section participates in similarity scoring.",
+      "effort": "small"
+    },
+    {
+      "id": "dedup-never-crosses-sections-or-notes",
+      "order": 52,
+      "statement": "Duplicate detection never compares across sections or notes.",
+      "tags": [
+        "ARCH"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`deduplicateUnits()` keys its candidate map on the note id joined to the section key, so every comparison stays inside one section of one note. The vault stores the same fact twice when it lands under two sections of a single note, or on both halves of a split identity. Nothing ever reconciles the two copies, and both go on competing for retrieval budget.",
+      "evidence": [
+        {
+          "file": "dedup.ts",
+          "symbol": "deduplicateUnits()"
+        }
+      ],
+      "fix": "Key the deduplicateUnits() candidate map on note id alone so comparison spans every section of a note.",
+      "effort": "small"
+    },
+    {
+      "id": "semantic-duplication-is-unchecked-by-design",
+      "order": 53,
+      "statement": "Reworded restatements are never detected as duplicates.",
+      "tags": [
+        "ARCH",
+        "SCALE"
+      ],
+      "severity": "high",
+      "grade": "measured",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The write path running from `evidence-unit-extraction.ts` through `deduplicateUnits()` into `draft-projector.ts` never calls an embedding function, and there are no embedding references in `dedup.ts`, `draft-projector.ts`, `source-extraction.ts` or `source-processing.ts`. Embeddings exist only on the index and retrieval side, in `embedding-adapter.ts`, `rebuild.ts` and `retrieval.ts`. An embedding sweep over one corpus at a cosine threshold of roughly 0.88 surfaced about 35 genuine same-fact-different-words pairs that lexical dedup had passed through. Each accepted restatement stays in the vault and competes for retrieval budget indefinitely.",
+      "evidence": [
+        {
+          "file": "dedup.ts",
+          "symbol": "deduplicateUnits()"
+        },
+        {
+          "file": "draft-projector.ts",
+          "symbol": "write path with no embedding call"
+        },
+        {
+          "file": "measurement",
+          "symbol": "embedding sweep over corpus bullets at cosine ~0.88"
+        }
+      ],
+      "fix": "Call the existing embedding-adapter from deduplicateUnits() to compare candidates by cosine similarity alongside the lexical check.",
+      "effort": "medium"
+    },
+    {
+      "id": "identity-sections-mix-five-claim-kinds",
+      "order": 54,
+      "statement": "One identity section holds five different kinds of claim.",
+      "tags": [
+        "ARCH",
+        "MODEL",
+        "UX"
+      ],
+      "severity": "high",
+      "grade": "reported",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Stable traits, changes to those traits, dispositions and beliefs, backstory, and plain events all land in one character identity section. `isAdditiveLtmSection()` marks that section additive and exempts only `items` and `progression`, so all five kinds accumulate against a single 20,000-character limit, a single contribution count, and a single retrieval budget. The characters who get the most development saturate first, and their budget goes to whichever claim kind happens to rank rather than to the kind the prompt needed.",
+      "evidence": [
+        {
+          "file": "draft-projector.ts",
+          "symbol": "isAdditiveLtmSection()"
+        },
+        {
+          "file": "draft-projector.ts",
+          "symbol": "mergeSection()"
+        }
+      ],
+      "fix": "Split the character identity section into separate section keys per claim kind so each carries its own cap and retrieval budget.",
+      "effort": "large"
+    },
+    {
+      "id": "keyword-cap-has-no-cap-aware-affordance",
+      "order": 55,
+      "statement": "Nothing curates keywords when the cap is reached.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "high",
+      "grade": "observed",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "A token editor in the note editor and `PATCH /notes/:id` let a user curate keywords by hand, and `blockers()` in `identity-repair.ts` reports \"Combined keywords exceed the 30-keyword note limit.\" as a merge blocker. Nothing ranks, trims or auto-prunes when the union crosses thirty, and the editor enforces no count, so the cap arrives as a hard projection failure that an unrelated claim happens to trigger. The blind prune-and-retry behaviour that works around this lives in the operator's own `review-app.cjs`, not in the package.",
+      "evidence": [
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "TokenEditor"
+        },
+        {
+          "file": "identity-repair.ts",
+          "symbol": "blockers()"
+        },
+        {
+          "file": "review-app.cjs",
+          "symbol": "operator prune-and-retry"
+        }
+      ],
+      "fix": "Show a live count against the 30-keyword limit in MemoryVault's TokenEditor that blocks adding past the cap.",
+      "effort": "small"
+    },
+    {
+      "id": "split-identities-never-merge",
+      "order": 56,
+      "statement": "Two notes for one subject can never be merged.",
+      "tags": [
+        "ARCH",
+        "USER",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "observed",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Fuzzy subject matching does exist on the way in: `subject-identity.ts` matches names against a trusted catalogue and records the basis as `exact_name`, `unique_alias`, `spelling_variation` or `trait_or_qualified_alias`. Nothing repairs a split once it has happened, and identity repair reported zero merge candidates for the pair that needed merging. One subject's history then sits in two notes, and dedup never compares them either, because its key is per note.",
+      "evidence": [
+        {
+          "file": "subject-identity.ts",
+          "symbol": "loadTrustedLtmSubjectCatalog()"
+        },
+        {
+          "file": "identity-repair.ts",
+          "symbol": "blockers()"
+        },
+        {
+          "file": "dedup.ts",
+          "symbol": "deduplicateUnits()"
+        }
+      ],
+      "fix": "Add a merge action that folds one note's sections, links and subjects into another, using identity-repair's blockers() as the precheck.",
+      "effort": "medium"
+    },
+    {
+      "id": "ids-derive-from-subject-strings-unstated",
+      "order": 57,
+      "statement": "Nothing states that note ids derive from subject strings.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The engine generates note ids from the subject string a claim carries. The derivation surfaces only when the result runs too long, in `evidence-unit-validation.ts`, which emits \"Generated target note id '${noteId}' exceeds the long-term memory storage contract.\" Normalising names across the corpus before ingest is therefore a precondition for one note per subject, and no interface text or documentation says so. A user ingesting unnormalised names gets split notes with no signal at the time it happens.",
+      "evidence": [
+        {
+          "file": "evidence-unit-validation.ts",
+          "symbol": "generated target note id validation"
+        },
+        {
+          "file": "subject-identity.ts",
+          "symbol": "loadTrustedLtmSubjectCatalog()"
+        }
+      ],
+      "fix": "State in the import UI copy that note ids derive from the subject string, and that normalising names before ingest is a precondition.",
+      "effort": "small"
+    },
+    {
+      "id": "no-path-to-correct-a-stored-claim",
+      "order": 58,
+      "statement": "There is no way to correct a wrong claim already in the vault.",
+      "tags": [
+        "ARCH",
+        "UX"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "All seven mutation kinds, `create_note`, `append_section`, `update_section`, `add_link`, `set_keywords`, `set_status` and `set_subjects`, act on a draft before apply. After apply, free-form section editing in the vault is the only remaining handle on the text, and it silently truncates at 20,000 characters and does not tie a line back to the evidence unit that produced it or supersede it. Correcting a wrong claim in practice means fixing the corpus and re-ingesting the whole source.",
+      "evidence": [
+        {
+          "file": "shared schema",
+          "symbol": "seven mutation kinds"
+        },
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "TokenEditor"
+        }
+      ],
+      "fix": "Add per-contribution delete and replace controls to the vault note editor backed by PATCH /notes/:id so a user corrects a stored claim without re-ingesting the source.",
+      "effort": "medium"
+    },
+    {
+      "id": "compression-depth-is-not-recorded",
+      "order": 59,
+      "statement": "Nothing records how heavily a claim was compressed.",
+      "tags": [
+        "ARCH",
+        "CORPUS"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Sections and chunks carry only wall-clock `createdAt` and `updatedAt` under `ltmSectionSchema` and `ltmMemoryChunkSchema`, and no field records how many summarisation passes produced the text. Once stored, a near-verbatim extraction looks exactly like a claim that has been through several rounds of compression. Each pass gives meaning a chance to drift, so the vault ends up holding claims of very different reliability with nothing to separate them.",
+      "evidence": [
+        {
+          "file": "ltmSectionSchema",
+          "symbol": "createdAt / updatedAt only"
+        },
+        {
+          "file": "ltmMemoryChunkSchema",
+          "symbol": "createdAt / updatedAt only"
+        }
+      ],
+      "fix": "Add a compressionDepth field to ltmSectionSchema and ltmMemoryChunkSchema that carries the source's summarisation pass count.",
+      "effort": "medium"
+    },
+    {
+      "id": "derived-notes-accumulate-low-durability-content",
+      "order": 60,
+      "statement": "Identity notes accumulate content with no lasting value.",
+      "tags": [
+        "SCALE",
+        "MODEL"
+      ],
+      "severity": "low",
+      "grade": "measured",
+      "group": "What happens over months",
+      "cluster": "The vault decaying with use",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Extraction pulls routines, schedules and one-off logistics and files them into the same identity note as load-bearing history. About 10% of one real identity note was this kind of content, removable with no information loss. It consumes section characters, contributions and retrieval budget for as long as the note exists.",
+      "evidence": [
+        {
+          "file": "measurement",
+          "symbol": "manual audit of one real identity note"
+        }
+      ],
+      "fix": "Classify routines, schedules and logistics at extraction and route them to a separate low-durability section key instead of the identity section.",
+      "effort": "medium"
+    },
+    {
+      "id": "projection-errors-cannot-name-the-object",
+      "order": 61,
+      "statement": "Section-limit errors never name the note that overflowed.",
+      "tags": [
+        "UX",
+        "ARCH"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Errors and observability",
+      "cluster": "Diagnosing it",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`mergeSection()` in `draft-projector.ts` throws \"A projected section exceeds the 20,000-character text limit.\" and \"A projected section exceeds the 100-contribution limit.\" with code `projection_limit_exceeded`. No caller hands it the note id or the section key: both sit one frame up in `applyMutation` as `current.id` and `mutation.sectionKey`, and nothing threads them down, so the omission is structural rather than a matter of message wording. Other errors in the same codebase do name their object, including `evidence-unit-validation.ts` and the key-qualified messages from `blockers()` in `identity-repair.ts`. One run produced 35 identical failures with no note id, no section key and no current size, leaving no way to tell which of 161 notes overflowed.",
+      "evidence": [
+        {
+          "file": "draft-projector.ts",
+          "symbol": "mergeSection()"
+        },
+        {
+          "file": "evidence-unit-validation.ts",
+          "symbol": "note id error message"
+        },
+        {
+          "file": "identity-repair.ts",
+          "symbol": "blockers()"
+        }
+      ],
+      "fix": "Thread current.id and mutation.sectionKey from applyMutation into mergeSection() in draft-projector.ts and name them in the projection_limit_exceeded message.",
+      "effort": "small"
+    },
+    {
+      "id": "storage-contract-error-dumps-schema",
+      "order": 62,
+      "statement": "The storage-contract error delivers a raw schema dump.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "observed",
+      "group": "Errors and observability",
+      "cluster": "Diagnosing it",
+      "decision": "rework",
+      "mergeInto": null,
+      "annotations": [
+        {
+          "id": "ann-msnqvzoe-13479",
+          "text": "needs rewording. what's the \"storage-contract failure\"?",
+          "createdAt": "2026-08-10T21:30:00.158Z"
+        }
+      ],
+      "edited": true,
+      "description": "A storage-contract failure means a projected note no longer validates against `ltmNoteSchema`, usually because it breached an array cap such as the 30-keyword or 250-link limits. `projectLtmDraftMutationGroup()` in `draft-projector.ts` catches the parse failure and rethrows it as \"Long-term memory projection for char_wren exceeds its storage contract: \" followed by the validator's own message, which begins `[{\"code\":\"too_big\",\"maximum\":30,\"type\":\"array\", ...`. That message does name the note, unlike the section-limit errors, but the part identifying which cap it hit arrives as a serialized issue array the reader has to parse by hand.",
+      "evidence": [
+        {
+          "file": "draft-projector.ts",
+          "symbol": "projectLtmDraftMutationGroup()"
+        },
+        {
+          "file": "schema.ts",
+          "symbol": "ltmNoteSchema"
+        }
+      ],
+      "fix": "Map the caught validator issues in projectLtmDraftMutationGroup() to a readable line naming the field and the cap it exceeded instead of appending the raw issue array.",
+      "effort": "small"
+    },
+    {
+      "id": "auth-failure-reads-as-a-generic-error",
+      "order": 63,
+      "statement": "A permissions failure is shown as a generic loading error.",
+      "tags": [
+        "UX",
+        "ARCH",
+        "BUG"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Errors and observability",
+      "cluster": "Diagnosing it",
+      "decision": "rework",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`registerPrivilegedRoutes` in `server-entry.ts` attaches a blanket `onRequest` hook to every route in the package, so that hook gates `/status` identically to `DELETE /data`, with no per-route granularity. With `ADMIN_SECRET` unset and the request not loopback-exempt, `requirePrivilegedAccess` returns 403 with \"ADMIN_SECRET is required for privileged APIs\", but `request()` in `api.ts` reads only `payload.error` and never inspects the status code, and the read views discard even that: `MemorySettings.tsx` renders a fixed \"Could not load memory settings.\", and the same pattern produces \"Integrity check could not load.\", \"Long-Term Memory status could not load.\" and \"Could not load activity.\" A search of the stock LTM client for `403` or `ApiError` returns nothing, so nothing distinguishes a permissions problem from a server fault. The engine already ships `getPrivilegedActionErrorMessage` and `PRIVILEGED_ACCESS_HINT`, which name the remedy, and the package's private client ignores them despite sending `X-Admin-Secret` from the same localStorage key.",
+      "evidence": [
+        {
+          "file": "server-entry.ts",
+          "symbol": "registerPrivilegedRoutes()"
+        },
+        {
+          "file": "privileged-gate.ts",
+          "symbol": "requirePrivilegedAccess()"
+        },
+        {
+          "file": "api.ts",
+          "symbol": "request()"
+        },
+        {
+          "file": "MemorySettings.tsx",
+          "symbol": "load error rendering"
+        }
+      ],
+      "fix": "Have request() in api.ts inspect the response status and return getPrivilegedActionErrorMessage with PRIVILEGED_ACCESS_HINT for 403 so the views name the ADMIN_SECRET remedy.",
+      "effort": "small"
+    },
+    {
+      "id": "status-diagnostics-are-fetched-and-dropped",
+      "order": 64,
+      "statement": "Most of the status payload is fetched and never displayed.",
+      "tags": [
+        "UX",
+        "BUG"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Errors and observability",
+      "cluster": "Diagnosing it",
+      "decision": "rework",
+      "mergeInto": null,
+      "annotations": [
+        {
+          "id": "ann-msnrf74j-4cfxl",
+          "text": "bruh the sentence structure here is whack. reword to simplify",
+          "createdAt": "2026-08-10T21:44:56.275Z"
+        }
+      ],
+      "edited": true,
+      "description": "The `/status` response carries index errors and warnings, a dirty flag, a generation timestamp, a source hash, note counts by type and by status, event counts, and both embedding fields. The interface reads two values from it: the total note count and the indexed chunk count. It fetches everything else on every load and throws it away, including `indexes.errors` and `embeddingsAvailable`, so the fields that would explain a degraded vault are precisely the ones no component renders.",
+      "evidence": [
+        {
+          "file": "routes.ts",
+          "symbol": "/status"
+        },
+        {
+          "file": "LongTermMemoryDetail.tsx",
+          "symbol": "status consumption"
+        }
+      ],
+      "fix": "Render indexes.errors, indexes.warnings, the dirty flag, the generation timestamp and embeddingsAvailable from the already-fetched /status payload in LongTermMemoryDetail.tsx.",
+      "effort": "small"
+    },
+    {
+      "id": "the-answers-are-scattered-and-one-is-off-by-default",
+      "order": 65,
+      "statement": "Diagnostic information is split across four separate places.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Errors and observability",
+      "cluster": "Diagnosing it",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Rejected candidates render in a collapsed panel in `ReviewQueue.tsx`, integrity results in the maintenance tab of `MemorySettings.tsx`, last injection in `LastInjectionSummary.tsx` in two spots, and the 200-event debug feed in `ActivityView.tsx`. `LongTermMemoryNavigation.tsx` lists the activity view as no destination at all: it sits inside the settings debug tab behind a \"Record debug activity\" toggle that defaults off, and until a user finds that toggle the package records nothing to look at. No surface combines them, so answering why memory is not working means visiting four components in three tabs, and the one carrying per-candidate recall scoring is the one that starts empty.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "data-ltm-rejected-suggestions"
+        },
+        {
+          "file": "MemorySettings.tsx",
+          "symbol": "maintenance and debug tabs"
+        },
+        {
+          "file": "ActivityView.tsx",
+          "symbol": "debug log feed"
+        },
+        {
+          "file": "LongTermMemoryNavigation.tsx",
+          "symbol": "tab destinations"
+        }
+      ],
+      "fix": "Promote ActivityView.tsx to a Diagnostics destination in LongTermMemoryNavigation.tsx that also embeds rejected suggestions, integrity results and the last-injection readout with debug recording on by default.",
+      "effort": "medium"
+    },
+    {
+      "id": "vault-health-is-split-and-thin",
+      "order": 66,
+      "statement": "Vault health reporting omits most of what the package knows.",
+      "tags": [
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Errors and observability",
+      "cluster": "Diagnosing it",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`LongTermMemoryDetail.tsx` shows a health pill and, when health is not healthy, a warning banner whose popover gives a derived index health label, the indexed chunk count, and a pointer to Settings, Maintenance, Reindex. The same response also delivers note counts by type, embedded chunk counts, index errors and warnings, the dirty flag and the generation timestamp, and the component renders none of them; a different component again, inside `MemorySettings.tsx`, reports integrity problems. What exists therefore covers roughly two of six things the package already knows about vault state, split across two places, with no single view of it.",
+      "evidence": [
+        {
+          "file": "LongTermMemoryDetail.tsx",
+          "symbol": "health pill and warning"
+        },
+        {
+          "file": "MemorySettings.tsx",
+          "symbol": "maintenance integrity"
+        }
+      ],
+      "fix": "Expand the health popover in LongTermMemoryDetail.tsx to render note counts by type, embedded chunk counts, index errors and warnings, the dirty flag and the generation timestamp from the same /status response.",
+      "effort": "small"
+    },
+    {
+      "id": "character-memories-are-an-untyped-card-global-store",
+      "order": 67,
+      "statement": "Concluding a scene writes untyped memories onto a character card.",
+      "tags": [
+        "ENGINE",
+        "ARCH",
+        "BUG"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Marinara Engine",
+      "cluster": "Marinara Engine",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The conclude handler in `scene.routes.ts` pushes an entry for every character in the scene, shaped `{ from: personaName, fromCharId: \"scene\", summary: \"[Scene on <date>] <summary>\" }`. A second writer, `handleMemoryCommand()`, resolves its target by fuzzy name match across the entire character list rather than the chat's participants. `characterMemories` is not a typed field: card `extensions` is `Record<string, unknown>`, so the key rides along unvalidated and three modules re-declare it locally. No client code reads it, no endpoint touches it, and the snapshot layer suppresses its writes, so nothing offers a view, edit, clear or version history and the only removal path is editing card extensions wholesale.",
+      "evidence": [
+        {
+          "file": "scene.routes.ts",
+          "symbol": "conclude handler"
+        },
+        {
+          "file": "conversation-side-effect-command-runtime.ts",
+          "symbol": "handleMemoryCommand()"
+        },
+        {
+          "file": "character.schema.ts",
+          "symbol": "characterExtensionsSchema"
+        },
+        {
+          "file": "character-commands.ts",
+          "symbol": "MEMORY_RE"
+        }
+      ],
+      "fix": "Declare characterMemories as a typed field in characterExtensionsSchema so the three local re-declarations share one validated shape.",
+      "effort": "medium"
+    },
+    {
+      "id": "card-memories-cross-chat-scope-is-undocumented",
+      "order": 68,
+      "statement": "Card memories reach every chat using that character.",
+      "tags": [
+        "ENGINE",
+        "UX"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Marinara Engine",
+      "cluster": "Marinara Engine",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`mergeConversationCharacterMemories()` keeps entries whose `createdAt` is at or after the start of the local day, so scene-local state enters the prompt of any conversation containing that character until the next local midnight. A second reader, `buildScheduleContinuityContext()`, uses a different window: memories since the schedule's week start, top 8. The entries themselves persist on the card forever and stay card-global in both cases. Documentation covers the `[memory: …]` command and scene conclusion, but says nothing about the store's cross-chat scope.",
+      "evidence": [
+        {
+          "file": "conversation-memory-context.ts",
+          "symbol": "mergeConversationCharacterMemories()"
+        },
+        {
+          "file": "conversation.routes.ts",
+          "symbol": "buildScheduleContinuityContext()"
+        },
+        {
+          "file": "scenes.md",
+          "symbol": "scene conclusion docs"
+        }
+      ],
+      "fix": "Document in scenes.md that scene-conclusion memories are card-global and enter every chat with that character until local midnight.",
+      "effort": "small"
+    },
+    {
+      "id": "rangeless-summary-entries-order-by-creation-time",
+      "order": 69,
+      "statement": "Summary entries without a message range sort by creation time.",
+      "tags": [
+        "ENGINE",
+        "BUG"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Marinara Engine",
+      "cluster": "Marinara Engine",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`sortChatSummaryEntries()` sorts primarily on `rangeStartIndex`, so entries that have one sort by narrative position. Every automated entry and most manual ones, meaning a `sourceMode` of `last` or `agent`, carry no range and collapse to `Number.MAX_SAFE_INTEGER`, falling through to `createdAt` and then original array index. `messageCount` and `messageIds` sit on those same entries and would pin position; the sort never consults them. A summary written later about earlier messages therefore lands in the order it would take if it covered later material.",
+      "evidence": [
+        {
+          "file": "chat-summary-entries.ts",
+          "symbol": "sortChatSummaryEntries()"
+        },
+        {
+          "file": "chat.ts",
+          "symbol": "ChatSummaryEntry"
+        }
+      ],
+      "fix": "Fall back to the first messageIds index for position in sortChatSummaryEntries() when rangeStartIndex is absent.",
+      "effort": "small"
+    },
+    {
+      "id": "unsummarised-day-details-emit-in-key-order",
+      "order": 70,
+      "statement": "Unsummarised day details are emitted in arbitrary order.",
+      "tags": [
+        "ENGINE",
+        "BUG"
+      ],
+      "severity": "low",
+      "grade": "source",
+      "group": "Marinara Engine",
+      "cluster": "Marinara Engine",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`collectConversationKeyDetails()` walks the day-details object in raw key order and emits what it finds. Nothing on that path applies a chronological sort. Key details for a day reach the prompt in whatever order the object happens to hold them.",
+      "evidence": [
+        {
+          "file": "conversation-history-runtime.ts",
+          "symbol": "collectConversationKeyDetails()"
+        }
+      ],
+      "fix": "Sort the day-details keys chronologically in collectConversationKeyDetails() before emitting them.",
+      "effort": "small"
+    },
+    {
+      "id": "backfilling-a-consolidated-week-does-nothing",
+      "order": 71,
+      "statement": "Writing a day summary into a consolidated week is a silent no-op.",
+      "tags": [
+        "ENGINE",
+        "USER"
+      ],
+      "severity": "medium",
+      "grade": "source",
+      "group": "Marinara Engine",
+      "cluster": "Marinara Engine",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "`conversation-history-runtime.ts` builds a `dayToWeek` map and runs `if (args.dayToWeek.has(date)) continue;`, skipping any day a consolidated week already covers. The store accepts a day summary written into such a range, and that summary then contributes nothing to the assembled history. No error, warning or log marks the skip, so the write reads as applied.",
+      "evidence": [
+        {
+          "file": "conversation-history-runtime.ts",
+          "symbol": "dayToWeek skip"
+        }
+      ],
+      "fix": "Reject the day-summary write with an explicit error when dayToWeek already covers that date.",
+      "effort": "small"
+    },
+    {
+      "id": "two-summary-subsystems-are-unaware-of-each-other",
+      "order": 72,
+      "statement": "The two summary subsystems do not know about each other.",
+      "tags": [
+        "ENGINE",
+        "ARCH"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Marinara Engine",
+      "cluster": "Marinara Engine",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Roleplay summaries live in `summaryEntries` as a range-indexed list that `chat-summary-entries.ts` handles; conversation summaries live in a per-day map that `conversation-history-runtime.ts` consolidates into weeks. Storage shape, ordering key, compression behaviour and date handling all differ, and neither path reads the other when assembling history. A story told partly in each mode ends up with two disconnected records and nothing that reconciles them.",
+      "evidence": [
+        {
+          "file": "chat-summary-entries.ts",
+          "symbol": "sortChatSummaryEntries()"
+        },
+        {
+          "file": "conversation-history-runtime.ts",
+          "symbol": "dayToWeek consolidation"
+        }
+      ],
+      "fix": "Unify roleplay summaryEntries and the conversation day map behind one summary store with a shared ordering key.",
+      "effort": "large"
+    },
+    {
+      "id": "roleplay-summaries-never-compress",
+      "order": 73,
+      "statement": "Roleplay summaries grow until they are deleted at a hard cap.",
+      "tags": [
+        "ENGINE",
+        "ARCH"
+      ],
+      "severity": "high",
+      "grade": "source",
+      "group": "Marinara Engine",
+      "cluster": "Marinara Engine",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Conversation summaries consolidate day entries into weeks; the roleplay path has no equivalent step. `MAX_AUTOMATED_CHAT_SUMMARY_ENTRIES = 200` in `chat-summary-entries.ts` caps automated entries, so the sequence ends in deletion rather than compaction. Entries accumulate at full length until they hit the cap, and the cap then discards the excess outright, losing that material instead of condensing it.",
+      "evidence": [
+        {
+          "file": "chat-summary-entries.ts",
+          "symbol": "MAX_AUTOMATED_CHAT_SUMMARY_ENTRIES"
+        },
+        {
+          "file": "conversation-history-runtime.ts",
+          "symbol": "dayToWeek consolidation"
+        }
+      ],
+      "fix": "Consolidate older automated summaryEntries as they approach MAX_AUTOMATED_CHAT_SUMMARY_ENTRIES, mirroring the dayToWeek consolidation, instead of discarding the excess.",
+      "effort": "medium"
+    },
+    {
+      "id": "a-number-kept-its-value-and-lost-its-subject",
+      "order": 74,
+      "statement": "A summarised number kept its value and lost its subject.",
+      "tags": [
+        "CORPUS",
+        "MODEL"
+      ],
+      "severity": "medium",
+      "grade": "reported",
+      "group": "What the vault is fed",
+      "cluster": "What the vault is fed",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "One summarised estimate in the corpus carried its figure through unchanged while the summariser swapped the thing it estimated for whatever theme dominated the surrounding entries. The result reads as internally consistent and plausible, so nothing downstream separates it from a correct claim. Ingest turns it into a durable claim whose precision is exactly what makes it convincing.",
+      "evidence": [
+        {
+          "file": "measurement",
+          "symbol": "entry-by-entry comparison of summary text against source"
+        }
+      ],
+      "fix": "Require the summariser prompt to restate the subject of any quantity in the same clause as the figure.",
+      "effort": "small"
+    },
+    {
+      "id": "firsts-were-asserted-where-the-source-did-not",
+      "order": 75,
+      "statement": "The summariser asserted firsts the source never claimed.",
+      "tags": [
+        "CORPUS",
+        "MODEL"
+      ],
+      "severity": "medium",
+      "grade": "reported",
+      "group": "What the vault is fed",
+      "cluster": "What the vault is fed",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Entries in the corpus record events as happening for the first time on dates where they did not, and the summariser marked the same event a first on two different days. The superlative came from surrounding context rather than from anything in the source text. Both versions arrive as ordinary dated assertions, and nothing at ingest distinguishes the inferred superlative from a stated one.",
+      "evidence": [
+        {
+          "file": "measurement",
+          "symbol": "entry-by-entry comparison of summary text against source"
+        }
+      ],
+      "fix": "Forbid the summariser prompt from asserting a first unless the source text states it.",
+      "effort": "small"
+    },
+    {
+      "id": "numbers-and-superlatives-are-where-drift-changes-meaning",
+      "order": 76,
+      "statement": "Numbers and superlatives are where paraphrase changes meaning.",
+      "tags": [
+        "CORPUS",
+        "MODEL"
+      ],
+      "severity": "medium",
+      "grade": "reported",
+      "group": "What the vault is fed",
+      "cluster": "What the vault is fed",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "Compression across most of the corpus dropped detail without altering what a claim asserted. On bare quantities and on the words first, only and never, it instead resolved ambiguity toward the dominant nearby theme. In those cases the shorter text is not a lower-resolution version of the source but a different assertion, and it enters the vault carrying the confidence of a specific one.",
+      "evidence": [
+        {
+          "file": "measurement",
+          "symbol": "entry-by-entry comparison of summary text against source"
+        }
+      ],
+      "fix": "Mark evidence units containing bare quantities or the words first, only or never as review-required so they never auto-apply.",
+      "effort": "small"
+    },
+    {
+      "id": "chunk-boundary-artifacts-become-durable-claims",
+      "order": 77,
+      "statement": "Text produced by chunk boundaries becomes permanent memory.",
+      "tags": [
+        "CORPUS"
+      ],
+      "severity": "high",
+      "grade": "measured",
+      "group": "What the vault is fed",
+      "cluster": "What the vault is fed",
+      "decision": "rework",
+      "mergeInto": null,
+      "annotations": [
+        {
+          "id": "ann-msns9shs-1bxjg",
+          "text": "bruh this wording is ass",
+          "createdAt": "2026-08-10T22:08:43.648Z"
+        }
+      ],
+      "edited": true,
+      "description": "The summariser's chunker cuts the transcript, and text that exists only because of where it cut reached the corpus as content. One scene-continuation phrase occurred 37 times across the corpus and frequently doubled into a key-detail bullet, and the summariser emitted status filler as standalone bullets. Some of those bullets weld a real fact onto the filler, so deleting them by pattern would have taken the fact with it. Every one of them can become a permanent claim in the vault.",
+      "evidence": [
+        {
+          "file": "measurement",
+          "symbol": "occurrence count of boundary phrases across corpus entries"
+        }
+      ],
+      "fix": "Cut the summariser's chunker on scene boundaries so it never emits continuation and status filler as content.",
+      "effort": "medium"
+    },
+    {
+      "id": "planning-notes-are-recorded-as-events",
+      "order": 78,
+      "statement": "Out-of-character planning is recorded as in-fiction events.",
+      "tags": [
+        "CORPUS"
+      ],
+      "severity": "low",
+      "grade": "reported",
+      "group": "What the vault is fed",
+      "cluster": "What the vault is fed",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The summariser renders out-of-character planning in the same form as things that happened, with no marker separating intention from event. The story later narrated one planning entry's contents as well, so the same material entered the corpus twice, once as a plan and once as an event. Nothing downstream carries a field that would tell the two apart.",
+      "evidence": [
+        {
+          "file": "measurement",
+          "symbol": "manual read of corpus entries against story order"
+        }
+      ],
+      "fix": "Have the summariser tag out-of-character planning entries with an explicit marker so extraction can skip them.",
+      "effort": "medium"
+    },
+    {
+      "id": "bullets-bundle-several-facts",
+      "order": 79,
+      "statement": "One source bullet often carries several facts.",
+      "tags": [
+        "CORPUS"
+      ],
+      "severity": "medium",
+      "grade": "reported",
+      "group": "What the vault is fed",
+      "cluster": "What the vault is fed",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The ingest contract asks for roughly one bullet per claim. Corpus bullets frequently pack an event together with its cause and its resulting state, and extraction either turns such a bullet into one muddled claim or drops it for failing the expected shape. Neither outcome preserves the separate facts, and nothing shows the loss at the bullet level because the text itself looks well formed.",
+      "evidence": [
+        {
+          "file": "measurement",
+          "symbol": "manual read of corpus bullets against the one-claim contract"
+        }
+      ],
+      "fix": "Split a multi-fact bullet into separate evidence units in evidence-unit-extraction rather than producing one muddled unit or dropping it.",
+      "effort": "medium"
+    },
+    {
+      "id": "long-entries-degrade-toward-the-end",
+      "order": 80,
+      "statement": "Long summary entries get less accurate toward the end.",
+      "tags": [
+        "CORPUS",
+        "MODEL"
+      ],
+      "severity": "medium",
+      "grade": "measured",
+      "group": "What the vault is fed",
+      "cluster": "What the vault is fed",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "The corpus held 97 entries totalling 53,933 tokens, with the largest at 1,405 tokens and 60 key details, and 17 entries over the size threshold. Accuracy inside a long entry deteriorates as it runs on: dates and names get looser the further in they appear. Cleanup brought the corpus to 96 entries and 45,646 tokens with a maximum entry of 776 tokens. The tail of a long entry supplies extraction its least reliable material, and nothing marks it as such.",
+      "evidence": [
+        {
+          "file": "measurement",
+          "symbol": "tokenizer count over the source corpus file"
+        }
+      ],
+      "fix": "Split source entries above a token threshold into separate extraction inputs in source-processing so no single entry runs long enough to degrade.",
+      "effort": "medium"
+    },
+    {
+      "id": "contradictions-between-entries-have-no-automatic-resolution",
+      "order": 81,
+      "statement": "Contradictions between source entries have no automatic resolution.",
+      "tags": [
+        "CORPUS",
+        "ARCH"
+      ],
+      "severity": "medium",
+      "grade": "reported",
+      "group": "What the vault is fed",
+      "cluster": "What the vault is fed",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "When two source entries disagree, extraction takes both, and the run either records a conflict on a note or stores two claims that retrieval can return together. Nothing arbitrates between them. The review queue never reads `mutation.note.conflicts` at all, so a `create_note` carrying a conflict presents the reviewer with no conflict information, and the vault renders `conflict.proposed` without ever showing `conflict.existing`. The model can therefore receive both versions with no indication that they disagree.",
+      "evidence": [
+        {
+          "file": "ReviewQueue.tsx",
+          "symbol": "no reads of mutation.note.conflicts"
+        },
+        {
+          "file": "MemoryVault.tsx",
+          "symbol": "conflict block"
+        }
+      ],
+      "fix": "Surface mutation.note.conflicts in review with existing beside proposed so the reviewer arbitrates before the vault stores both versions.",
+      "effort": "medium"
+    },
+    {
+      "id": "proto-facets-dont-teach",
+      "order": 82,
+      "statement": "Data-model facets and convenience facets look the same.",
+      "tags": [
+        "PROTO",
+        "UX"
+      ],
+      "severity": "low",
+      "grade": "reported",
+      "group": "Prototype workbench",
+      "cluster": "Prototype workbench",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "This behaviour lives in the operator's own review workbench, `review-app.cjs`, not in the package under review. The panel renders facets that reflect the underlying data model in the same visual form as facets that exist purely as query convenience. A reader cannot see the distinction the author intended, so the panel fails to convey the data model it partly exposes.",
+      "evidence": [
+        {
+          "file": "review-app.cjs",
+          "symbol": "operator review workbench facet panel"
+        }
+      ],
+      "fix": "Give data-model facets a distinct visual treatment from convenience facets in the review-app.cjs facet panel.",
+      "effort": "small"
+    },
+    {
+      "id": "proto-nits",
+      "order": 83,
+      "statement": "The prototype workbench has a set of small interaction defects.",
+      "tags": [
+        "PROTO",
+        "UX"
+      ],
+      "severity": "low",
+      "grade": "reported",
+      "group": "Prototype workbench",
+      "cluster": "Prototype workbench",
+      "decision": "keep",
+      "mergeInto": null,
+      "annotations": [],
+      "edited": true,
+      "description": "These defects belong to the operator's own review workbench, `review-app.cjs`, not to the package under review. Hotkeys swallow copy; collapse-all leaves parts of the view expanded; the stored-content section never collapses at all; the facet panel dismisses on neither click-away nor escape; cross-references take no click. The clear button sits at the end of the facet row, so on mobile a user scrolls the row before reaching it.",
+      "evidence": [
+        {
+          "file": "review-app.cjs",
+          "symbol": "operator review workbench"
+        }
+      ],
+      "fix": "Fix the listed defects in review-app.cjs by scoping hotkeys away from copy, making collapse-all and the stored-content block actually collapse, dismissing the facet panel on escape or click-away, linking cross-references, and moving the clear button to the start of the facet row.",
+      "effort": "medium"
+    }
+  ],
+  "removed": [
+    {
+      "id": "which-memory-system",
+      "reason": "lorebooks versus memory guidance. Too hairy, per review."
+    },
+    {
+      "id": "export-breaks-on-content-uri",
+      "reason": "the package ships no HTML export; the artifact and the `content://` problem both belong to the operator's `migrate.cjs`."
+    },
+    {
+      "id": "workspace-behind-long-descent",
+      "reason": "navigation is a persistent four-tab rail roughly three steps from a chat, not an eight-step descent."
+    },
+    {
+      "id": "fingerprint-trap",
+      "reason": "freshness never reads the source note's stored fingerprint, so a partly-failed extraction yields a fresh draft with no block reasons, and the real condition is already labelled \"Extraction incomplete\"."
+    },
+    {
+      "id": "no-reextract-path",
+      "reason": "a re-extract control exists and extraction never skips; what survives is now finding 28."
+    },
+    {
+      "id": "undici-timeout",
+      "reason": "the five-minute limit is a deliberate, configurable engine setting on the server's own outbound call; what survives is now finding 27."
+    },
+    {
+      "id": "summary-order-derives-from-seq",
+      "reason": "there is no sequence field and narrative position is already the primary sort key; the inverse problem is now finding 69."
+    },
+    {
+      "id": "provenance-stripped-at-injection",
+      "reason": "the label stripper only cleans legacy patterns nothing writes; the real loss is now finding 14."
+    },
+    {
+      "id": "ranking-internals-unsurfaced",
+      "reason": "merged into finding 11."
+    },
+    {
+      "id": "rejections-inert-without-a-verb",
+      "reason": "a recover action does exist; merged into finding 19."
+    },
+    {
+      "id": "real-unit-is-a-cohort",
+      "reason": "merged into finding 31."
+    },
+    {
+      "id": "no-vault-state-view",
+      "reason": "both overstated; replaced by findings 64, 65 and 66."
+    },
+    {
+      "id": "instrumentation-no-consumer",
+      "reason": "both overstated; replaced by findings 64, 65 and 66."
+    },
+    {
+      "id": "chunk-filler-becomes-claims",
+      "reason": "merged with the boilerplate finding into 77."
+    },
+    {
+      "id": "layered-summarisation-compounds-drift",
+      "reason": "merged with per-claim provenance into 59."
+    }
+  ],
+  "notes": []
+}

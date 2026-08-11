@@ -1,0 +1,3 @@
+# Rotating backups written by triage-app.cjs before each run's first write.
+# Recovery scaffolding, not history — findings.json itself is the tracked artifact.
+findings.backup-*.json
