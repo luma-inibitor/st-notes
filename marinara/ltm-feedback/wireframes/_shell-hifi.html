@@ -74,14 +74,15 @@
 
   .masthead{border-bottom:1px solid var(--stroke);padding:56px 0 34px;
     display:flex;flex-direction:column;gap:20px}
-  .mast-meta{display:flex;flex-wrap:wrap;gap:8px 10px;font-family:var(--mono);
-    font-size:.72rem;color:var(--ink-3)}
-  .mast-meta span{border:1px solid var(--stroke-soft);border-radius:999px;
-    padding:3px 10px;background:var(--sheet)}
-  .quote{border-left:2px solid var(--accent);padding:4px 0 4px 18px;color:var(--ink-2);
-    font-size:1.02rem;max-width:66ch;display:flex;flex-direction:column;gap:10px}
+
+  /* Visible to screen readers and to the generated contents rail, not to the eye. */
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;
+    clip-path:inset(50%);white-space:nowrap;margin:-1px;padding:0;border:0}
 
   section{padding-top:68px}
+  /* Anchored landing spots clear the top of the viewport by the same offset the
+     sticky facet panel uses, so a scrolled-to heading is never jammed against it. */
+  section[id],.cluster,.finding,.journey{scroll-margin-top:18px}
   .sec-head{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
 
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
@@ -280,6 +281,11 @@
   .dev-table.wrap td{min-width:0}
   .prose ul,.prose ol{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
   .prose li{color:var(--ink-2)}
+  /* A list that is itself the prose block, rather than nested inside one. */
+  ul.prose,ol.prose{list-style:disc;margin:10px 0 0;padding-left:20px;
+    color:var(--ink-2);line-height:1.6}
+  ul.prose li,ol.prose li{color:var(--ink-2);margin-top:6px}
+  ul.prose li:first-child,ol.prose li:first-child{margin-top:0}
   .subhead{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
     color:var(--accent-2);margin:32px 0 0}
 
@@ -336,29 +342,46 @@
   @media (max-width:640px){.fchips,.fdesc,.ffix,.evrow,.fnote{margin-left:0}}
 
   .findings-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:28px;align-items:start}
-  @media (max-width:900px){
-    .findings-layout{grid-template-columns:minmax(0,1fr)}
-    .facetpanel{position:static;max-height:none;overflow:visible;
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr));gap:10px 16px;align-items:start}
-    .facetpanel .fsearch,.facetpanel .fsummary,.facetpanel .fclear{grid-column:1/-1}
-    .fgroupbox{gap:0}
-    .fopt{padding:1px 4px}
-  }
   .facetpanel{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px;overscroll-behavior:contain;
     border:1px solid var(--stroke-soft);border-radius:12px;background:var(--sheet);padding:14px;
     max-height:calc(100vh - 36px);overflow-y:auto}
+  /* Narrow: the rail has nowhere to sit, so it becomes a band at the top of the
+     list and scrolls away with the page. This block must stay AFTER the base
+     .facetpanel rule — same specificity, so source order decides the winner. */
+  @media (max-width:900px){
+    .findings-layout{grid-template-columns:minmax(0,1fr)}
+    .facetpanel{position:static;top:auto;max-height:none;overflow:visible;
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr));gap:10px 16px;align-items:start}
+    .facetpanel .fsearch,.facetpanel .fsummary,.facetpanel .fclear{grid-column:1/-1}
+  }
   .fsearch{width:100%;border:1px solid var(--stroke);border-radius:7px;background:var(--frame-2);
     color:var(--ink);font-family:var(--sans);font-size:.82rem;padding:7px 9px}
   .fsearch::placeholder{color:var(--ink-3)}
   .fgrouphead{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;
     color:var(--ink-3);margin-bottom:5px}
-  .fgroupbox{display:flex;flex-direction:column;gap:2px}
-  .fopt{display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-2);cursor:pointer;
-    padding:2px 5px;border-radius:5px;border:1px solid transparent}
-  .fopt:hover{background:var(--frame-2)}
-  .fopt.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 11%,transparent)}
-  .fopt .n{margin-left:auto;font-family:var(--mono);font-size:.68rem;color:var(--ink-3)}
-  .fopt.zero{opacity:.4}
+  .fgroupdd{border-top:1px solid var(--stroke-soft);padding-top:9px}
+  .fgroupdd>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;
+    margin-bottom:0;user-select:none}
+  .fgroupdd>summary::-webkit-details-marker{display:none}
+  .fgroupdd>summary::after{content:"";width:0;height:0;margin-left:auto;
+    border-left:4px solid transparent;border-right:4px solid transparent;
+    border-top:5px solid var(--ink-3);transition:transform .12s}
+  .fgroupdd[open]>summary::after{transform:rotate(180deg)}
+  .fgroupdd>summary:hover{color:var(--ink)}
+  .fgroupdd[open]>summary{margin-bottom:6px}
+  .ddn{font-family:var(--mono);font-size:.6rem;color:var(--ground);background:var(--accent);
+    border-radius:999px;padding:0 5px;line-height:1.5}
+  /* Chips, not rows: five groups and 33 options do not fit a rail one line each. */
+  .fgroupbox{display:flex;flex-wrap:wrap;gap:4px}
+  .fopt{display:inline-flex;align-items:baseline;gap:4px;font-size:.74rem;color:var(--ink-2);
+    cursor:pointer;padding:2px 7px;border-radius:999px;border:1px solid var(--stroke-soft);
+    background:var(--frame-2);line-height:1.5;white-space:nowrap;max-width:100%;user-select:none}
+  .fopt>span:first-child{overflow:hidden;text-overflow:ellipsis}
+  .fopt:hover{border-color:var(--ink-3);color:var(--ink)}
+  .fopt.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+  .fopt .n{font-family:var(--mono);font-size:.64rem;color:var(--ink-3)}
+  .fopt.on .n{color:var(--accent)}
+  .fopt.zero{opacity:.38}
   .fsummary{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
     border-top:1px solid var(--stroke-soft);padding-top:11px}
   .fsummary b{color:var(--accent)}
@@ -397,27 +420,12 @@
 
   <header class="masthead">
     <p class="eyebrow">Marinara Engine · Long-Term Memory · UI/UX proposal</p>
-    <h1>What the memory is doing</h1>
+    <h1>LTM Consolidated Feedback</h1>
     <p class="lede">
-      Interface proposals for the <code>long-term-memory</code> package, drawn against the
-      Engine's real surfaces and at the real scale of the problem: a vault of 118 memories and
-      one extraction run of 1,142 candidates. Six journeys, each stepped through state by state.
+      Interface proposals for the <code>long-term-memory</code> agent. Feedback is based on using
+      the agent to ingest ~100 summaries, producing over 1k mutation candidates.
+      Based on the experience, Claude consolidated issue findings and proposes six user journeys.
     </p>
-    <div class="quote">
-      <p>“it looks like nothing got injected ... and the app ui agrees. there's something in the
-        debug logs that says the recall workflow selected things, but nothing actually got
-        injected??”</p>
-      <p>Partway through planning the migration, on the vocabulary, said to the assistant
-        helping with it: “i don't know what draft, mutation, or note means for example. and
-        that's not an exhaustive list of my confusions.”</p>
-    </div>
-    <div class="mast-meta">
-      <span>engine 2.4.1</span>
-      <span>package 1.1.6</span>
-      <span>desktop 1600×1000 · phone 390×844</span>
-      <span>wireframe — not visual design</span>
-      <span>teal marks memory, and only memory</span>
-    </div>
   </header>
 
   <section id="ground">
@@ -748,9 +756,13 @@ Object.keys(STATES).forEach(function(v){
      val:function(f){return [f.dataset.grade];}},
     {key:"tags",  label:"Tags", order:null,
      val:function(f){return (f.dataset.tags||"").split(/\s+/).filter(Boolean);}},
-    {key:"cluster", label:"Cluster", order:null,
+    {key:"cluster", label:"Cluster", order:null, dd:true,
      val:function(f){return [f.dataset.cluster];}}
   ];
+  /* Twelve long cluster names overflow the rail and push Clear/Collapse out of
+     reach, so that group folds into a disclosure. render() rebuilds the panel's
+     innerHTML on every interaction, so the open state has to live out here. */
+  var ddOpen={};
 
   var state={}; GROUPS.forEach(function(g){state[g.key]=new Set();});
   var query="";
@@ -758,8 +770,10 @@ Object.keys(STATES).forEach(function(v){
   GROUPS.forEach(function(g){
     var vals=new Set();
     items.forEach(function(f){ g.val(f).forEach(function(v){ if(v) vals.add(v); }); });
+    /* vals is a Set, which has no .length — slice.call would yield []. */
+    var loose=[]; vals.forEach(function(v){ loose.push(v); });
     g.values = g.order ? g.order.filter(function(v){return vals.has(v);})
-                       : [].slice.call(vals).sort();
+                       : loose.sort();
   });
 
   function matchesExcept(f, skipKey){
@@ -780,17 +794,25 @@ Object.keys(STATES).forEach(function(v){
       query.replace(/"/g,"&quot;")+'">';
     GROUPS.forEach(function(g){
       if(!g.values.length) return;
-      html+='<div><p class="fgrouphead">'+g.label+'</p><div class="fgroupbox">';
+      var picked=state[g.key].size;
+      if(g.dd){
+        html+='<details class="fgroupdd"'+(ddOpen[g.key]?" open":"")+' data-dd="'+g.key+'">'+
+          '<summary class="fgrouphead">'+g.label+
+          (picked?'<span class="ddn">'+picked+'</span>':'')+'</summary><div class="fgroupbox">';
+      } else {
+        html+='<div><p class="fgrouphead">'+g.label+'</p><div class="fgroupbox">';
+      }
       g.values.forEach(function(v){
         var n=items.filter(function(f){
           return matchesExcept(f,g.key) && g.val(f).indexOf(v)>=0;
         }).length;
         var on=state[g.key].has(v);
+        var safe=String(v).replace(/"/g,"&quot;");
         html+='<span class="fopt'+(on?" on":"")+(n===0&&!on?" zero":"")+
-          '" data-g="'+g.key+'" data-v="'+String(v).replace(/"/g,"&quot;")+'">'+
+          '" data-g="'+g.key+'" data-v="'+safe+'" title="'+safe+' — '+n+'">'+
           '<span>'+v+'</span><span class="n">'+n+'</span></span>';
       });
-      html+='</div></div>';
+      html+= g.dd ? '</div></details>' : '</div></div>';
     });
     var shown=items.filter(matches).length;
     html+='<p class="fsummary"><b>'+shown+'</b> of '+items.length+' findings</p>';
@@ -821,16 +843,28 @@ Object.keys(STATES).forEach(function(v){
     } else if(none){ none.remove(); }
   }
 
+  /* Filtering changes how many findings exist above the fold, so the page would
+     otherwise slide under the pointer on every toggle. Park the section head at
+     the top instead, which keeps the rail and the count line where they were. */
+  function pin(){
+    var sec=document.getElementById("findings");
+    if(sec) sec.scrollIntoView({block:"start"});
+  }
   panel.addEventListener("click",function(e){
     if(e.target.closest("#fclear")){
       GROUPS.forEach(function(g){state[g.key].clear();});
-      query=""; render(); return;
+      query=""; render(); pin(); return;
     }
     var o=e.target.closest(".fopt"); if(!o) return;
     var set=state[o.dataset.g];
     if(set.has(o.dataset.v)) set.delete(o.dataset.v); else set.add(o.dataset.v);
-    render();
+    render(); pin();
   });
+  /* "toggle" does not bubble, so listen in the capture phase. */
+  panel.addEventListener("toggle",function(e){
+    var dd=e.target.dataset && e.target.dataset.dd;
+    if(dd) ddOpen[dd]=e.target.open;
+  },true);
   panel.addEventListener("input",function(e){
     if(e.target.id!=="fq") return;
     query=e.target.value.trim().toLowerCase();
@@ -896,6 +930,103 @@ Object.keys(STATES).forEach(function(v){
       : window.matchMedia("(prefers-color-scheme: dark)").matches;
     root.setAttribute("data-theme", dark?"light":"dark");
   });
+})();
+</script>
+
+<script>
+/* Same-document anchors, made to work behind a rewriting host.
+   htmlpreview.github.io fetches the raw file and injects <base href="…raw.githubusercontent.com/…">
+   right after <head>. With a base present, href="#f12" no longer resolves same-document: it
+   resolves against the base, so a click navigates away to raw.githubusercontent.com instead of
+   scrolling. That host also rewrites static a[href] anchors once, before any inline script runs,
+   which leaves every link the contents rail and the findings body build at runtime unrewritten.
+   This handler resolves fragments itself, so it is correct with or without a <base>. */
+(function(){
+  function sameDocFragment(a){
+    var raw=a.getAttribute("href");
+    if(!raw) return null;
+    if(raw.charAt(0)==="#") return raw.slice(1);
+    /* Resolved elsewhere, but differing from this document only by hash. */
+    var here=location.href.split("#")[0];
+    var there=a.href.split("#")[0];
+    if(a.hash && there===here) return a.hash.slice(1);
+    return null;
+  }
+
+  function el(id){
+    if(!id) return null;
+    var t=null;
+    try{ t=document.getElementById(decodeURIComponent(id)); }catch(e){}
+    return t || document.getElementById(id);
+  }
+
+  /* The facet engine hides non-matching findings outright. Scrolling to one is a
+     scroll to nothing, so clear the filters through the panel's own control and
+     let that script stay the owner of its state. */
+  function unhide(t){
+    var hiddenHere = t.classList && t.classList.contains("hidden");
+    var box = t.closest ? t.closest(".cluster") : null;
+    var hiddenBox = box && box.classList.contains("hidden");
+    if(!hiddenHere && !hiddenBox) return;
+    var clear=document.getElementById("fclear");
+    if(clear) clear.click();
+  }
+
+  /* Same reasoning for collapse: dispatch a click on the finding's own toggle so
+     the collapse script remains the single writer of the shut class. */
+  function expand(t){
+    if(!t.classList || !t.classList.contains("finding")) return;
+    if(!t.classList.contains("shut")) return;
+    var btn=t.querySelector(".ftoggle");
+    if(btn){ btn.click(); }
+    if(t.classList.contains("shut")){          /* belt and braces if that script is absent */
+      t.classList.remove("shut");
+      if(btn){ btn.setAttribute("aria-expanded","true");
+               btn.setAttribute("aria-label","Collapse this finding"); }
+    }
+  }
+
+  function go(id, push){
+    var t=el(id);
+    if(!t) return false;
+    unhide(t);
+    t=el(id) || t;
+    expand(t);
+    if(push){
+      var base=location.href.split("#")[0];
+      try{ history.replaceState(null,"",base+"#"+id); }
+      catch(e){ try{ history.replaceState(null,"","#"+id); }catch(e2){} }
+    }
+    t.scrollIntoView({block:"start"});
+    return true;
+  }
+
+  document.addEventListener("click", function(e){
+    if(e.defaultPrevented) return;
+    if(e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a=e.target.closest ? e.target.closest("a[href]") : null;
+    if(!a) return;
+    if(a.hasAttribute("download") || (a.getAttribute("target")||"")==="_blank") return;
+    var id=sameDocFragment(a);
+    if(id===null || id==="") return;
+    e.preventDefault();
+    go(id, true);
+  }, true);
+
+  /* Landing straight on #f12: the target may be collapsed, filtered out, or not
+     yet in the DOM — findings can be rendered at runtime, and htmlpreview writes
+     the document after its own load. Run on both milestones, once each. */
+  var done=false;
+  function onArrive(){
+    if(done) return;
+    var id=location.hash.slice(1);
+    if(!id) { done=true; return; }
+    if(go(id, false)) done=true;
+  }
+  if(document.readyState!=="loading") onArrive();
+  document.addEventListener("DOMContentLoaded", onArrive);
+  window.addEventListener("load", onArrive);
+  window.addEventListener("hashchange", function(){ done=false; onArrive(); });
 })();
 </script>
 </body>

@@ -1,19 +1,17 @@
   <section id="orientation">
     <div class="sec-head">
-      <p class="eyebrow">Before the findings</p>
-      <h2>What this is, and what it is not</h2>
+      <p class="eyebrow">Introduction</p>
+      <!-- The contents rail is generated from each section's h2, so this section keeps
+           one for the rail and for screen readers while showing no display heading. -->
+      <h2 class="vh">Introduction</h2>
       <p class="prose">
-        One operator moved a three-week story off Marinara Engine's built-in chat summaries and
-        onto the Long-Term Memory vault, then wrote down everything the system did along the way.
-        This document collects the result: <strong>83 findings</strong>, each one traced either to
-        a symbol in the package source or to an artifact captured while running it.
+        I moved a three-week story off Marinara Engine's built-in chat summaries and
+        into the Long-Term Memory vault, then wrote down everything the system did along the way.
+        This document collects <strong>83 findings</strong> with source code references.
       </p>
       <p class="prose">
-        Nobody asked for this. It is unsolicited feedback from a single person's use at a scale the
-        package probably did not anticipate, and it carries the biases of one corpus, one host and
-        one set of settings. It is not a bug report: the two defects that were plainly defects went
-        upstream as issues on their own. It is not a support request either. Nothing here needs an
-        answer, and the maintainer owns every decision about what to act on.
+        This is a lot of shit. I tried editing down the Claude slop but it's still a slopfest.
+        Feel free to take as much or as little from this as you like.
       </p>
     </div>
 
@@ -24,26 +22,25 @@
       <tr><td>Package</td><td><b>Long-Term Memory 1.1.6</b>, capability API 1.6, built against engine 2.4.1 (<code>c0ce4d8</code>)</td></tr>
       <tr><td>Host</td><td>Termux on Android for the migration, and a Linux container for the first-run walkthrough. The Android host is where the native embedding binding cannot load.</td></tr>
       <tr><td>Extraction model</td><td><b>GLM 5.2</b> ran both full extractions. Gemini Flash and DS v4 were evaluated and not used.</td></tr>
-      <tr><td>Embeddings</td><td>Local ONNX, space id <code>local:Xenova/all-MiniLM-L6-v2:q8:mean:normalized:v1</code>. The native binding never loaded on this host, so the vector lane produced nothing for the entire migration.</td></tr>
+      <tr><td>Embeddings</td><td>None. Local ONNX doesn't work on Android/Termux out of the box.</td></tr>
       <tr><td>Corpus</td><td>One story across <b>10 chats</b>: 6 roleplay, 4 conversation branches. 97 summary entries spanning 2026-07-13 to 2026-08-06, which extraction turned into 1,142 claims across 161 notes.</td></tr>
-      <tr><td>Verified</td><td>August 2026, against the source checkouts named above</td></tr>
+      <tr><td>Date</td><td>Early August 2026, against the source checkouts named above</td></tr>
     </table></div>
 
     <p class="subhead">Scope</p>
     <p class="prose">
       The review covers the package's review, apply, diagnostic and error surfaces, its extraction
-      and projection pipeline, and its retrieval and injection path as far as the prompt. It reads
-      the engine wherever engine behaviour decided what the package could do, and it marks those
-      findings so the maintainer can hand them off rather than absorb them.
+      and projection pipeline, and its retrieval and injection path as far as the prompt.
     </p>
-    <p class="prose">
-      Six things went unexamined. Lorebook interop, the world-state agent, reconciliation between
-      roleplay time and wall-clock time, multi-persona setups, and group chats never entered the
-      migration, so this review says nothing about them. The sixth is retrieval quality: the
-      findings describe the plumbing that selects and injects memories, not whether the memories it
-      picked were the right ones. Judging that needs a working vector lane, and this host never had
-      one.
-    </p>
+    <p class="prose">Out of scope:</p>
+    <ul class="prose">
+      <li>Lorebook interop</li>
+      <li>World-state agent or any other agent interactions</li>
+      <li>Reconciliation between roleplay time and wall-clock time</li>
+      <li>Multi-persona setups</li>
+      <li>Group chats</li>
+      <li>Retrieval quality</li>
+    </ul>
 
     <p class="subhead">How to read a finding</p>
     <p class="prose">
@@ -58,30 +55,15 @@
         <b>Medium</b> marks something workaroundable through the API, misleading rather than
         incorrect, or a constraint only a power user reaches. <b>Low</b> marks something better
         prompting fixes, something that may be model-dependent, or a clunky interface a user
-        surmounts by poking around. The rubric is published so anyone can re-grade a row and see
-        where the disagreement sits.</td></tr>
+        surmounts by poking around.</td></tr>
       <tr><td>Evidence grade</td><td class="ours">source · observed · measured · reported</td>
-        <td><b>Source</b> means someone read the behaviour in the code at a cited symbol.
+        <td><b>Source</b> means Claude checked the source code.
         <b>Observed</b> means it happened during the migration and left an artifact.
-        <b>Measured</b> means a number came out of analysis rather than out of the source.
-        <b>Reported</b> means the operator described it and the underlying mechanism is confirmed
-        elsewhere. Sixty-two of the 83 findings are graded source.</td></tr>
+        <b>Measured</b> means a number came out of analysis from user activity.
+        <b>Reported</b> means I personally ran into and discussed the issue with Claude.</td></tr>
       <tr><td>Effort</td><td class="ours">small · medium · large</td>
-        <td>A rough read of how much the fix disturbs, from wiring an existing helper through to
-        changing a data model. These are estimates from outside the project, and the maintainer
-        will correct several of them.</td></tr>
+        <td>Claude estimate of effort to address a given issue.</td></tr>
       <tr><td>Bug tag</td><td class="ours">present or absent</td>
-        <td>Separates behaviour nobody intended from a design tradeoff someone chose. Fifteen
-        findings carry it. The rest describe decisions that are defensible and still produce a bad
-        outcome at this scale, which is a different conversation from a defect.</td></tr>
+        <td>Distinguish between bugs and UI/UX issues, missing features, etc.</td></tr>
     </table></div>
-
-    <p class="subhead">One note on naming</p>
-    <p class="prose">
-      The corpus is a private story, so every character and scene name in this document is a
-      neutral alias, applied consistently. Where an example needs a person, it names
-      <strong>Wren</strong>. Counts, identifier shapes and mechanics stay exactly as they occurred,
-      because those are the evidence: when a row reports two note ids for one subject, the two ids
-      really did exist and really did split that subject's history in half.
-    </p>
   </section>
