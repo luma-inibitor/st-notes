@@ -1,44 +1,84 @@
 <section class="journey" id="j1">
   <div class="jhead"><span class="jnum">JOURNEY 1</span><h2>First run</h2></div>
   <p class="goal"><em>"I want this character to remember things about me."</em>
-  Switch it on and reach visible proof it worked, without needing to know what a draft is.</p>
+  Switch it on and reach visible proof it worked. The current build fails this journey at the
+  last step, so the failure is drawn here before the fix is.</p>
 
   <div class="flow">
-    <span class="step"><b>Enable</b> in chat settings</span>
-    <span class="step"><b>See</b> what it can learn from now</span>
-    <span class="step"><b>Accept</b> a handful, modes stated</span>
+    <span class="step"><b>Enable</b> and see what is readable</span>
+    <span class="step"><b>Extract</b>, with the cost stated</span>
+    <span class="step"><b>Accept</b>, eligibility set here</span>
     <span class="step"><b>Observe</b> it used in a reply</span>
   </div>
 
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">1.1</span><span class="t">Enable, with an immediate next step</span></figcaption>
+      <figcaption><span class="n">1.1</span><span class="t">Enable, with an immediate next step</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="chip on">on</span> Long-Term Memory</div>
         <div class="box">
-          <div class="row"><span class="grow"><b>Ready to learn from</b></span></div>
+          <div class="row"><span class="grow"><b>Readable now</b></span></div>
           <div class="sp"></div>
           <div class="list">
-            <div class="item"><span class="grow">Character card <span class="faint">· 1 source</span></span><span class="btn">Import</span></div>
-            <div class="item"><span class="grow">Chat summaries <span class="faint">· none yet</span></span><span class="chip">later</span></div>
+            <div class="item"><span class="grow">Character card <span class="faint">· 1</span></span><span class="btn">Read it</span></div>
+            <div class="item"><span class="grow">Chat summaries <span class="faint">· 0, written after longer sessions</span></span><span class="chip">later</span></div>
+            <div class="item"><span class="grow">This conversation <span class="faint">· transcripts are never read directly</span></span><span class="chip bad">n/a</span></div>
           </div>
         </div>
-        <div class="box solid mono">Nothing is stored until you accept it.</div>
       </div>
       <div class="note"><span class="fx">F2</span><span class="fx">F3</span>
-      Counts are shown for <b>every</b> source, including the empty one, with when it fills.
-      The current build opens on chat summaries, which is necessarily empty on a new chat, and
-      says nothing about the tab that does have something.</div>
+      Three rows, three different reasons for a zero. One has material, one will have material
+      later, and one never will, because a transcript is not a source kind and only summaries of
+      it are. The current build opens on the summaries tab, which is necessarily empty on a new
+      chat, and offers no way to tell those three states apart.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">1.2</span><span class="t">What it proposes, in plain nouns</span></figcaption>
+      <figcaption><span class="n">1.2</span><span class="t">The read, and what it costs</span><span class="feas">in package</span></figcaption>
       <div class="screen">
-        <div class="bar">4 things learned from the character card</div>
+        <div class="bar"><span class="grow">Reading the character card</span><span class="chip warn">running</span></div>
+        <div class="meter"><i class="w75"></i></div>
+        <div class="row mono faint">1 source · about 30 seconds</div>
+        <div class="box">
+          <div class="row"><span class="grow">Model</span><span class="chip">chat default</span></div>
+          <div class="sp"></div>
+          <div class="row faint">Structured output required. A model that cannot hold the schema is reported here, not after the bill.</div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F23</span><span class="fx">F24</span>
+      A first run involves a model call, and the journey says so rather than presenting memories
+      as though they appeared. Schema compatibility is stated at the point of use, since today it
+      is discovered by paying for a full run and reading a rejection breakdown afterward.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">1.3</span><span class="t">What the current build does here</span><span class="feas eng">today</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">4 memories saved</span><span class="chip">done</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Available in</span><span class="chip">roleplay</span></div>
+          <div class="sp"></div>
+          <div class="row faint">This chat is a conversation. None of these are eligible in it.</div>
+        </div>
+        <div class="box solid">
+          <div class="row"><span class="grow">Next turn</span><span class="chip bad">0 recalled</span></div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F8</span><span class="fx">F9</span>
+      This frame is the present behaviour, not a proposal. A character card import is stamped
+      roleplay only, so a user who follows every documented step in a conversation chat ends with
+      four saved memories and nothing recalled. The mode set is never shown at accept time and is
+      editable only later, in the vault editor, in another part of the workspace.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">1.4</span><span class="t">Eligibility decided where the decision is</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar">4 things read from the character card</div>
         <div class="list">
-          <div class="item"><span class="cb on"></span><span class="grow">Works nights at a clinic <span class="faint">· about Wren</span></span></div>
-          <div class="item"><span class="cb on"></span><span class="grow">Afraid of open water <span class="faint">· about Wren</span></span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Works nights at a clinic</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Afraid of open water</span></div>
           <div class="item"><span class="cb"></span><span class="grow">Lives in the harbour district <span class="faint">· about the world</span></span></div>
         </div>
         <div class="box">
@@ -47,30 +87,30 @@
         </div>
         <div class="row"><span class="btn pri">Remember these</span><span class="btn">Not now</span></div>
       </div>
-      <div class="note"><span class="fx">F1</span><span class="fx">F8</span><span class="fx">F9</span>
-      No drafts, no mutations, no evidence units. Mode eligibility is stated here and
-      defaulted from the originating chat, which is the single control that decides whether any
-      of this is ever recallable. Today it is read-only text in review and only editable later
-      in a different workspace, and an import defaults to roleplay regardless of where you are.</div>
+      <div class="note"><span class="fx">F1</span><span class="fx">F8</span>
+      The eligibility default follows the chat the material was read in, and is visible at the
+      moment of the decision rather than three screens away. The copy names things a reader
+      already understands, so the seven pipeline nouns are not a prerequisite for the first
+      screen anyone sees.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">1.3</span><span class="t">Proof, two turns later</span></figcaption>
+      <figcaption><span class="n">1.5</span><span class="t">Proof, two turns later</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Memory</span><span class="chip">this turn</span></div>
         <div class="box">
-          <div class="row"><span class="grow"><b>2 memories used</b> · 112 tokens</span></div>
+          <div class="row"><span class="grow"><b>2 used</b> · 112 tokens</span></div>
           <div class="sp"></div>
           <div class="ph l"></div><div class="ph m"></div>
           <div class="sp"></div>
-          <div class="row faint mono">14:22 · turn 6</div>
+          <div class="row faint mono">14:22 · turn t6</div>
         </div>
         <div class="box solid"><span class="dim">Nothing dropped this turn.</span></div>
       </div>
       <div class="note"><span class="fx">F7</span>
-      A timestamp and a turn reference, so the number can be read as <b>this turn</b> rather than
-      as the last time anything worked. The current readout has no negative state and no
-      timestamp, so it holds a stale count indefinitely when injection is dead.</div>
+      A timestamp and a turn reference, so the figure reads as this turn rather than as the last
+      time anything worked. The present readout has neither, and holds its last successful count
+      indefinitely once injection stops.</div>
     </figure>
 
   </div>

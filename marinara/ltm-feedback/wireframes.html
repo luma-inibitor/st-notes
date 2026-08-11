@@ -108,6 +108,10 @@ h3{font-size:15px;margin:0 0 10px;color:var(--dim);font-weight:600}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim);
   border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--panel);margin-bottom:32px}
 .legend b{color:var(--ink)}
+.feas{margin-left:auto;font:600 9.5px/1.7 var(--mono);letter-spacing:.04em;text-transform:uppercase;
+  padding:0 6px;border-radius:4px;border:1px solid var(--line-strong);color:var(--dim);background:var(--panel)}
+.feas.rst{border-color:var(--note-line);color:var(--note-ink);background:var(--note-bg)}
+.feas.eng{border-color:var(--bad-line);color:var(--bad);background:var(--bad-bg)}
 @media (max-width:640px){ .frames{grid-template-columns:1fr} .rail{display:none} }
 </style>
 </head>
@@ -116,14 +120,18 @@ h3{font-size:15px;margin:0 0 10px;color:var(--dim);font-weight:600}
 
 <h1>Long-Term Memory — journey wireframes</h1>
 <p class="sub">Greybox layouts for six user journeys. Structure and information hierarchy only:
-no visual design, no final copy. Every frame is achievable without an engine change unless its
-annotation says otherwise. Amber notes tie a frame to the findings it answers.</p>
+no visual design, no final copy. Every frame carries a feasibility mark, and every figure in
+them belongs to one worked example: a vault of 118 memories, and one extraction run of 1,142
+candidates. Amber notes tie a frame to the findings it answers.</p>
 
 <div class="legend">
   <span><b>Greybox</b> shape only, not styling</span>
   <span><span class="chip">chip</span> state or facet</span>
   <span><span class="chip warn">warn</span> pressure or degraded</span>
   <span><span class="chip bad">bad</span> failure</span>
+  <span><span class="feas">in package</span> no engine change</span>
+  <span><span class="feas rst">restart</span> new route, ships at a release</span>
+  <span><span class="feas eng">engine</span> needs an engine change</span>
   <span><b class="mono">F-id</b> finding this frame answers</span>
 </div>
 
@@ -139,44 +147,84 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
 <section class="journey" id="j1">
   <div class="jhead"><span class="jnum">JOURNEY 1</span><h2>First run</h2></div>
   <p class="goal"><em>"I want this character to remember things about me."</em>
-  Switch it on and reach visible proof it worked, without needing to know what a draft is.</p>
+  Switch it on and reach visible proof it worked. The current build fails this journey at the
+  last step, so the failure is drawn here before the fix is.</p>
 
   <div class="flow">
-    <span class="step"><b>Enable</b> in chat settings</span>
-    <span class="step"><b>See</b> what it can learn from now</span>
-    <span class="step"><b>Accept</b> a handful, modes stated</span>
+    <span class="step"><b>Enable</b> and see what is readable</span>
+    <span class="step"><b>Extract</b>, with the cost stated</span>
+    <span class="step"><b>Accept</b>, eligibility set here</span>
     <span class="step"><b>Observe</b> it used in a reply</span>
   </div>
 
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">1.1</span><span class="t">Enable, with an immediate next step</span></figcaption>
+      <figcaption><span class="n">1.1</span><span class="t">Enable, with an immediate next step</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="chip on">on</span> Long-Term Memory</div>
         <div class="box">
-          <div class="row"><span class="grow"><b>Ready to learn from</b></span></div>
+          <div class="row"><span class="grow"><b>Readable now</b></span></div>
           <div class="sp"></div>
           <div class="list">
-            <div class="item"><span class="grow">Character card <span class="faint">· 1 source</span></span><span class="btn">Import</span></div>
-            <div class="item"><span class="grow">Chat summaries <span class="faint">· none yet</span></span><span class="chip">later</span></div>
+            <div class="item"><span class="grow">Character card <span class="faint">· 1</span></span><span class="btn">Read it</span></div>
+            <div class="item"><span class="grow">Chat summaries <span class="faint">· 0, written after longer sessions</span></span><span class="chip">later</span></div>
+            <div class="item"><span class="grow">This conversation <span class="faint">· transcripts are never read directly</span></span><span class="chip bad">n/a</span></div>
           </div>
         </div>
-        <div class="box solid mono">Nothing is stored until you accept it.</div>
       </div>
       <div class="note"><span class="fx">F2</span><span class="fx">F3</span>
-      Counts are shown for <b>every</b> source, including the empty one, with when it fills.
-      The current build opens on chat summaries, which is necessarily empty on a new chat, and
-      says nothing about the tab that does have something.</div>
+      Three rows, three different reasons for a zero. One has material, one will have material
+      later, and one never will, because a transcript is not a source kind and only summaries of
+      it are. The current build opens on the summaries tab, which is necessarily empty on a new
+      chat, and offers no way to tell those three states apart.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">1.2</span><span class="t">What it proposes, in plain nouns</span></figcaption>
+      <figcaption><span class="n">1.2</span><span class="t">The read, and what it costs</span><span class="feas">in package</span></figcaption>
       <div class="screen">
-        <div class="bar">4 things learned from the character card</div>
+        <div class="bar"><span class="grow">Reading the character card</span><span class="chip warn">running</span></div>
+        <div class="meter"><i class="w75"></i></div>
+        <div class="row mono faint">1 source · about 30 seconds</div>
+        <div class="box">
+          <div class="row"><span class="grow">Model</span><span class="chip">chat default</span></div>
+          <div class="sp"></div>
+          <div class="row faint">Structured output required. A model that cannot hold the schema is reported here, not after the bill.</div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F23</span><span class="fx">F24</span>
+      A first run involves a model call, and the journey says so rather than presenting memories
+      as though they appeared. Schema compatibility is stated at the point of use, since today it
+      is discovered by paying for a full run and reading a rejection breakdown afterward.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">1.3</span><span class="t">What the current build does here</span><span class="feas eng">today</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">4 memories saved</span><span class="chip">done</span></div>
+        <div class="box">
+          <div class="row"><span class="grow">Available in</span><span class="chip">roleplay</span></div>
+          <div class="sp"></div>
+          <div class="row faint">This chat is a conversation. None of these are eligible in it.</div>
+        </div>
+        <div class="box solid">
+          <div class="row"><span class="grow">Next turn</span><span class="chip bad">0 recalled</span></div>
+        </div>
+      </div>
+      <div class="note"><span class="fx">F8</span><span class="fx">F9</span>
+      This frame is the present behaviour, not a proposal. A character card import is stamped
+      roleplay only, so a user who follows every documented step in a conversation chat ends with
+      four saved memories and nothing recalled. The mode set is never shown at accept time and is
+      editable only later, in the vault editor, in another part of the workspace.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">1.4</span><span class="t">Eligibility decided where the decision is</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar">4 things read from the character card</div>
         <div class="list">
-          <div class="item"><span class="cb on"></span><span class="grow">Works nights at a clinic <span class="faint">· about Wren</span></span></div>
-          <div class="item"><span class="cb on"></span><span class="grow">Afraid of open water <span class="faint">· about Wren</span></span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Works nights at a clinic</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Afraid of open water</span></div>
           <div class="item"><span class="cb"></span><span class="grow">Lives in the harbour district <span class="faint">· about the world</span></span></div>
         </div>
         <div class="box">
@@ -185,30 +233,30 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
         </div>
         <div class="row"><span class="btn pri">Remember these</span><span class="btn">Not now</span></div>
       </div>
-      <div class="note"><span class="fx">F1</span><span class="fx">F8</span><span class="fx">F9</span>
-      No drafts, no mutations, no evidence units. Mode eligibility is stated here and
-      defaulted from the originating chat, which is the single control that decides whether any
-      of this is ever recallable. Today it is read-only text in review and only editable later
-      in a different workspace, and an import defaults to roleplay regardless of where you are.</div>
+      <div class="note"><span class="fx">F1</span><span class="fx">F8</span>
+      The eligibility default follows the chat the material was read in, and is visible at the
+      moment of the decision rather than three screens away. The copy names things a reader
+      already understands, so the seven pipeline nouns are not a prerequisite for the first
+      screen anyone sees.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">1.3</span><span class="t">Proof, two turns later</span></figcaption>
+      <figcaption><span class="n">1.5</span><span class="t">Proof, two turns later</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Memory</span><span class="chip">this turn</span></div>
         <div class="box">
-          <div class="row"><span class="grow"><b>2 memories used</b> · 112 tokens</span></div>
+          <div class="row"><span class="grow"><b>2 used</b> · 112 tokens</span></div>
           <div class="sp"></div>
           <div class="ph l"></div><div class="ph m"></div>
           <div class="sp"></div>
-          <div class="row faint mono">14:22 · turn 6</div>
+          <div class="row faint mono">14:22 · turn t6</div>
         </div>
         <div class="box solid"><span class="dim">Nothing dropped this turn.</span></div>
       </div>
       <div class="note"><span class="fx">F7</span>
-      A timestamp and a turn reference, so the number can be read as <b>this turn</b> rather than
-      as the last time anything worked. The current readout has no negative state and no
-      timestamp, so it holds a stale count indefinitely when injection is dead.</div>
+      A timestamp and a turn reference, so the figure reads as this turn rather than as the last
+      time anything worked. The present readout has neither, and holds its last successful count
+      indefinitely once injection stops.</div>
     </figure>
 
   </div>
@@ -231,7 +279,7 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">2.1</span><span class="t">Narrow, then choose</span></figcaption>
+      <figcaption><span class="n">2.1</span><span class="t">Narrow, then choose</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="input ph-text">Filter 60 chats and 41 characters</div>
         <div class="row"><span class="chip on">6 chats</span><span class="chip on">2 characters</span><span class="chip">clear</span></div>
@@ -248,12 +296,13 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
       The filter is a finder and nothing else: it narrows a large library so the material is
       reachable, and it does not decide anything about the run. Every kind carries a count,
       including the kind that cannot be ingested at all, so the ceiling on what a chat can teach
-      is stated up front. Today re-extraction posts one source per request and disables itself
-      while in flight, so 74 sources means 74 clicks.</div>
+      is stated up front. A bulk import route already exists and this frame feeds it. Re-extraction
+      is the narrower gap: it posts one source per request and disables itself while in flight, so
+      a second pass over material already read is taken one source at a time.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">2.2</span><span class="t">Scope derived from the selection</span></figcaption>
+      <figcaption><span class="n">2.2</span><span class="t">Scope derived from the selection</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Who this run may write about</span><span class="chip">derived</span></div>
         <div class="box">
@@ -269,16 +318,17 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
         <div class="row"><span class="btn pri">Extract 74</span><span class="btn">Edit scope</span></div>
       </div>
       <div class="note"><span class="fx">F17</span><span class="fx">F18</span>
-      Scope is computed from the material selected rather than chosen as a browsing mode, which
-      is the distinction the current build collapses: its import target both narrows the list and
-      builds the scope, so the widest target passes no scope, produces an empty roster, and
-      rejects every candidate as <code>untrusted_subject</code> after the model call is paid for.
-      The roster count is stated before the run and a zero blocks it. Persona is editable here,
-      where today it can only arrive through the API.</div>
+      Deriving the trusted roster from the material instead of asking a user to type names is the
+      right instinct, and the current build already has it. What the build then collapses is the
+      second distinction: its import target both narrows the list and builds the scope, so the
+      widest target passes no scope, produces an empty roster, and rejects every candidate as
+      <code>untrusted_subject</code> after the model call is paid for. Here the two are separate,
+      the roster count is stated before the run, and a zero blocks it rather than starting it.
+      Persona is editable on this screen, where today it can only arrive through the API.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">2.3</span><span class="t">A long run, reporting itself</span></figcaption>
+      <figcaption><span class="n">2.3</span><span class="t">A long run, reporting itself</span><span class="feas rst">restart</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Extracting</span><span class="chip warn">running</span><span class="btn">Stop</span></div>
         <div class="meter"><i class="w50"></i></div>
@@ -301,25 +351,28 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">2.4</span><span class="t">What was kept, what was lost</span></figcaption>
+      <figcaption><span class="n">2.4</span><span class="t">What was kept, what was lost</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Run finished</span><span class="chip warn">partial</span></div>
         <div class="box"><div class="row"><span class="grow"><b>1,142 candidates</b> · 838 kept · 304 dropped</span></div></div>
         <div class="list">
           <div class="item"><span class="grow">Subject could not be matched <span class="faint">· 141</span></span><span class="btn">Review</span></div>
-          <div class="item"><span class="grow">Restates something already stored <span class="faint">· 96</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Optional field returned null, whole claim discarded <span class="faint">· 96</span></span><span class="btn">Review</span></div>
           <div class="item"><span class="grow">No evidence in the source text <span class="faint">· 44</span></span><span class="btn">Review</span></div>
-          <div class="item"><span class="grow">Section already at its cap <span class="faint">· 23</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Unsupported memory category <span class="faint">· 23</span></span><span class="btn">Review</span></div>
         </div>
         <div class="row"><span class="btn pri">Open review · 838</span><span class="btn">Recover a dropped one</span></div>
       </div>
-      <div class="note"><span class="fx">F21</span><span class="fx">F19</span><span class="fx">F20</span>
-      The summary states totals, kept and dropped, and groups the drops into one row per cause
-      with a count, so forty instances of one problem are read once. Recovery is reachable from
-      the summary. Today the badge reports requested, wrote, succeeded, failed, cancelled and
-      missing, none of which is the size of the loss; the rejected panel is a collapsed
-      <code>&lt;details&gt;</code> scoped to one selected source; and the eight draft block codes
-      render as humanised enum names.</div>
+      <div class="note"><span class="fx">F21</span><span class="fx">F19</span><span class="fx">F20</span><span class="fx">F22</span>
+      Totals first, then one row per cause with a count, so ninety-six instances of one problem
+      are read once and recovery starts from the same screen. The largest single cause is a schema
+      defect rather than a judgement the model made: optional fields are declared optional and
+      never nullable, so a unit carrying an explicit null is discarded whole, and naming that here
+      is what separates a fixable bug from a rejected claim. Review opens on the 838 that survived;
+      dropped candidates are recovered from this screen, not queued. Against that, today's badge
+      reports requested, wrote, succeeded, failed, cancelled and missing, none of which is the size
+      of the loss; the rejected panel is a collapsed <code>&lt;details&gt;</code> scoped to one
+      selected source; and the eight draft block codes render as humanised enum names.</div>
     </figure>
 
   </div>
@@ -341,7 +394,7 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">3.1</span><span class="t">Facets, grouped by where they come from</span></figcaption>
+      <figcaption><span class="n">3.1</span><span class="t">Facets, grouped by where they come from</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Facets</span><span class="btn">Clear</span></div>
         <div class="box">
@@ -349,60 +402,76 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
           <div class="sp"></div>
           <div class="list">
             <div class="item"><span class="cb on"></span><span class="grow">Restates the vault <span class="faint">· 61</span></span></div>
-            <div class="item"><span class="cb"></span><span class="grow">Near-duplicate in this batch <span class="faint">· 75</span></span></div>
-            <div class="item"><span class="cb"></span><span class="grow">Reworded restatement <span class="faint">· 35</span></span><span class="chip bad">off</span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Duplicate of another incoming claim <span class="faint">· 75</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Keyword cap reached <span class="faint">· 24</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Section cap reached <span class="faint">· 35</span></span></div>
+            <div class="item"><span class="cb"></span><span class="grow">Reworded restatement <span class="faint">· count unavailable, semantic lane dead</span></span><span class="chip bad">off</span></div>
           </div>
         </div>
         <div class="box solid">
           <div class="row"><span class="grow"><b>From the model</b></span></div>
           <div class="sp"></div>
-          <div class="row"><span class="chip">risk</span><span class="chip">importance</span><span class="chip on">weak match 9</span><span class="chip">drop reason</span></div>
+          <div class="row"><span class="chip">risk</span><span class="chip">importance</span><span class="chip">weak subject match 9</span><span class="chip">overwrites a stored value 47</span></div>
         </div>
         <div class="box">
-          <div class="row"><span class="grow"><b>Yours</b></span><span class="chip">4 saved slices</span></div>
+          <div class="row"><span class="grow"><b>Yours</b></span><span class="chip">saved slices</span></div>
         </div>
       </div>
-      <div class="note"><span class="fx">F31</span><span class="fx">F42</span><span class="fx">F50</span><span class="fx">F51</span><span class="fx">F52</span><span class="fx">F53</span>
-      Facets sit in three bands so a shingle heuristic is never mistaken for a schema field, and
-      each carries a live count. Restatement is computed against every stored contribution rather
-      than one section blob, across a whole note rather than one section, over the full text
-      rather than a 500-token prefix; the embedding pass reports itself unavailable rather than
-      returning a silent zero. <code>match.basis</code> is threaded onto the mutation so a claim
-      bound by a fuzzy spelling variation can be pulled out of the pile. The current queue has no
-      filter, search, sort or pivot control of any kind.</div>
+      <div class="note"><span class="fx">F42</span>
+      Three bands, so a shingle heuristic is never mistaken for a schema field, and every band
+      carries a live count against the 838 in the queue. The disabled facet states why it is
+      disabled instead of returning a silent zero, which on this vault would read as a clean
+      result. <code>match.basis</code> is already computed during subject resolution and already
+      travels into rejection details; threading it onto the mutation is the small remaining step
+      that lets a reviewer pull out claims bound by a spelling variation alone. The four rewrites
+      of the server-side dedup algorithm are cited where they belong, on the write path, not here:
+      two of them run before review, so fixing them shrinks these counts rather than filling
+      this rail.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">3.2</span><span class="t">One list, two independent controls</span></figcaption>
+      <figcaption><span class="n">3.2</span><span class="t">One list, two independent controls</span><span class="feas">in package</span></figcaption>
       <div class="screen">
-        <div class="bar"><span class="grow">1,142 claims · 340 shown · 61 selected</span><span class="chip">418 of 1,142 reviewed</span></div>
+        <div class="bar"><span class="grow">838 claims · 61 shown · 61 selected</span><span class="chip">24 decided</span></div>
         <div class="row"><span class="btn">group by: target note</span><span class="btn">sort by: risk</span></div>
         <div class="box solid">
-          <div class="row"><span class="grow"><b>Character A</b> <span class="faint">· 41 claims</span></span><span class="chip warn">trait 19.2k / 20k</span></div>
+          <div class="row"><span class="grow"><b>Wren</b> <span class="faint">· character note</span></span><span class="chip warn">trait 19,240 / 20,000</span></div>
           <div class="sp"></div>
           <div class="meter warn"><i class="w96"></i></div>
         </div>
         <div class="list">
-          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line <span class="faint">· restates vault 0.71</span></span><span class="chip">merges</span></div>
-          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line <span class="faint">· new</span></span><span class="chip bad">overwrites</span></div>
-          <div class="item"><span class="cb"></span><span class="grow">Claim text, one line <span class="faint">· weak match</span></span><span class="chip">merges</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line <span class="faint">· restates the vault</span></span><span class="chip">merges</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line <span class="faint">· new</span></span><span class="chip warn">overwrites</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Claim text, one line <span class="faint">· its source note changed since this draft was built</span></span><span class="chip bad">stale</span></div>
         </div>
-        <div class="box"><div class="row"><span class="grow faint mono">selection and edits held across regroup and reload</span></div></div>
+        <div class="box"><div class="row"><span class="grow">Written without review</span><span class="chip bad">not in this list</span></div>
+          <div class="sp"></div>
+          <div class="row faint">Low-risk chat-summary material goes straight to the vault. This queue is a subset of what the run wrote, and says so.</div>
+        </div>
+        <div class="box"><div class="row"><span class="grow faint mono">selection and edits held across regroup and re-sort</span></div></div>
       </div>
-      <div class="note"><span class="fx">F32</span><span class="fx">F33</span><span class="fx">F34</span><span class="fx">F36</span>
-      Group-by and sort act on one list, the filter set survives a pivot, and a reviewed-of-total
-      figure says how far the pass has come. Every row states whether accepting it appends to a
-      section or replaces it. Today selection resets on any change of chat, source or draft, which
-      confines a batch to one draft even though the apply path already groups by draft; selection
-      and unsubmitted edits live only in component state and a reload discards them; and the
-      summary counts only what remains.</div>
+      <div class="note"><span class="fx">F31</span><span class="fx">F32</span><span class="fx">F33</span><span class="fx">F34</span><span class="fx">F36</span><span class="fx">F29</span><span class="fx">F43</span>
+      The data needed to organise this work by subject is already on the wire: <code>targets[]</code>
+      is consumed today, it just renders as an unlabeled wrapper with no header. Giving it a header
+      and a pivot is therefore a presentation change, not a new query. Group-by and sort act on one
+      list and the facet set survives a pivot, so a slice is composed once and worked to exhaustion.
+      A stale row is marked in the list rather than at apply time, since freshness is recomputed on
+      every review read and a reviewer composing a slice today can otherwise select rows that will
+      fail later because the source note moved underneath them. The auto-applied band is stated for
+      the same reason: with the low-risk gate open, the reviewed set is not the vault, and a queue
+      that hides that is telling a reviewer they have seen everything. Selection persists across
+      regroup and re-sort only. Holding it across a reload needs client storage this package does
+      not have, so the frame does not promise it; today selection additionally resets on any change
+      of chat, source or draft, which confines a batch to one draft even though the apply path
+      already groups by draft.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">3.3</span><span class="t">A row opened for editing</span></figcaption>
+      <figcaption><span class="n">3.3</span><span class="t">A row opened for editing</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Editing claim</span><span class="chip">merges into trait</span><span class="btn">Close</span></div>
         <div class="input area">Claim text, editable in place</div>
+        <div class="row mono faint">412 characters in this contribution</div>
         <div class="meter warn"><i class="w96"></i></div>
         <div class="row mono faint">19,240 of 20,000 characters in the projected section</div>
         <div class="box solid">
@@ -413,30 +482,33 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
         <div class="box">
           <div class="row"><span class="grow">Links to</span><span class="chip">Timeline: harbour arrival</span></div>
           <div class="sp"></div>
-          <div class="row"><span class="chip">keywords 24 / 30</span><span class="chip">importance 3</span></div>
+          <div class="row"><span class="chip warn">keywords 28 / 30</span><span class="chip">contributions 91 / 100</span></div>
         </div>
         <div class="row"><span class="btn pri">Save edit</span><span class="btn">Accept as written</span><span class="btn">Drop</span></div>
       </div>
       <div class="note"><span class="fx">F44</span><span class="fx">F45</span><span class="fx">F46</span>
-      Edit is a labelled control on the row, not a panel below the diagnostics, and it covers link,
-      keyword, status and subject mutations as well as text. The character counter is live against
-      the 20,000 cap and blocks save at the limit. A link mutation resolves its target id to a
-      title using the lookup the queue already applies elsewhere. Today the editor silently trims
-      at the cap with no counter and no marker at the cut, renders nothing for four of the seven
-      mutation kinds, and a link row never shows what it points at.</div>
+      An in-place editor already exists on this path and already persists a text change, which is
+      more than most of this pipeline offers. Three things are added around it. It is a labelled
+      control on the row rather than a panel below the diagnostics, and it reaches the link,
+      keyword, status and subject mutations that today render as nothing at all for four of the
+      seven kinds. Two counters are shown with different labels, the contribution being written and
+      the section it lands in, so one denominator never carries two meanings; the section counter
+      is live against the 20,000 cap and blocks save there, where today the editor trims silently
+      with no counter and no marker at the cut. A link mutation resolves its target id to a title
+      through the lookup the queue already applies elsewhere, instead of showing a bare id.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">3.4</span><span class="t">A conflict, with three ways out</span></figcaption>
+      <figcaption><span class="n">3.4</span><span class="t">A conflict, with three ways out</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Conflict on <span class="mono">trait</span></span><span class="chip bad">contradicts stored</span></div>
         <div class="box">
-          <div class="row"><span class="grow"><b>Stored</b></span><span class="chip">recalled 84 times · last 2d ago</span></div>
+          <div class="row"><span class="grow"><b>Stored</b></span><span class="chip">recalled 21 times · last 2 Mar</span></div>
           <div class="sp"></div>
           <div class="ph l"></div>
         </div>
         <div class="box solid">
-          <div class="row"><span class="grow"><b>Proposed</b> <span class="faint">· from chat summary, turn 240</span></span></div>
+          <div class="row"><span class="grow"><b>Proposed</b> <span class="faint">· from a chat summary</span></span></div>
           <div class="sp"></div>
           <div class="ph m"></div>
         </div>
@@ -453,13 +525,12 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">3.5</span><span class="t">Apply, preflighted and reported</span></figcaption>
+      <figcaption><span class="n">3.5</span><span class="t">Apply, preflighted and reported</span><span class="feas rst">restart</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Apply 61 selected</span><span class="chip warn">2 would fail</span></div>
         <div class="list">
-          <div class="item"><span class="grow">Section cap exceeded on one note <span class="faint">· 1 row marked</span></span><span class="btn">Show</span></div>
-          <div class="item"><span class="grow">Link target not in this batch <span class="faint">· 1 row marked</span></span><span class="btn">Show</span></div>
-          <div class="item"><span class="grow">Dropped rows still available as dependencies <span class="faint">· 3</span></span><span class="chip">auto-included</span></div>
+          <div class="item"><span class="grow">Section cap exceeded on the trait section <span class="faint">· 2 rows marked</span></span><span class="btn">Show</span></div>
+          <div class="item"><span class="grow">Dropped rows still available as dependencies</span><span class="chip">auto-included</span></div>
         </div>
         <div class="box solid"><div class="row"><span class="cb on"></span><span class="grow">Take a restore point first <span class="faint">· there is no undo</span></span></div></div>
         <div class="meter warn"><i class="w75"></i></div>
@@ -474,6 +545,28 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
       point is a backup export, which already exists and is already routed. Real undo needs the
       commit journals retained past <code>publish()</code>, which is a larger change and is not
       assumed here.</div>
+    </figure>
+
+    <figure class="frame">
+      <figcaption><span class="n">3.6</span><span class="t">The same surface at the median size</span><span class="feas">in package</span></figcaption>
+      <div class="screen">
+        <div class="bar"><span class="grow">12 claims from one character card</span><span class="chip">all shown</span></div>
+        <div class="list">
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line</span><span class="chip">merges</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line</span><span class="chip">merges</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Claim text, one line <span class="faint">· weak subject match</span></span><span class="chip warn">check</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Claim text, one line</span><span class="chip">merges</span></div>
+        </div>
+        <div class="box solid"><span class="dim">No facet rail, no group-by, no sort. Twelve rows are read end to end faster than a filter is composed.</span></div>
+        <div class="row"><span class="btn pri">Accept selected</span><span class="btn">Accept all</span><span class="btn">Show facets</span></div>
+      </div>
+      <div class="note"><span class="fx">F31</span>
+      Everything above this frame is drawn at the size of a migration, and the machinery earns its
+      keep there. It does not earn its keep at a dozen rows, where a rail of six facets is more
+      surface than the work it filters. The controls collapse to one escape hatch, and the list is
+      the whole interface. Scale decides this, not loop: the same journey, the same route and the
+      same row component, with the composition step removed because there is nothing to compose.
+      A queue built only for 838 makes the common case feel like the rare one.</div>
     </figure>
 
   </div>
@@ -494,7 +587,7 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">4.1</span><span class="t">Vault browser, same facets as review</span></figcaption>
+      <figcaption><span class="n">4.1</span><span class="t">Vault browser, same facets as review</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="row">
           <div class="rail box">
@@ -509,79 +602,86 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
           </div>
           <div class="col grow">
             <div class="input ph-text">search memories</div>
-            <div class="bar">161 memories · 24 shown <span class="chip">source notes hidden</span></div>
+            <div class="bar">118 memories · 43 source notes hidden</div>
             <div class="row"><span class="chip">group by subject</span><span class="chip on">sort by size</span></div>
             <div class="list">
-              <div class="item"><span class="grow">Wren · identity <span class="faint">· 19.2k / 20k</span></span><span class="chip warn">near cap</span></div>
-              <div class="item"><span class="grow">Wren · timeline <span class="faint">· 41 contributions</span></span><span class="chip">roleplay</span></div>
-              <div class="item"><span class="grow">Harbour district · world <span class="faint">· 3.1k / 20k</span></span></div>
+              <div class="item"><span class="grow">Wren · identity <span class="faint">· 19,240 / 20,000</span></span><span class="chip warn">near cap</span></div>
+              <div class="item"><span class="grow">Wren · timeline <span class="faint">· eligible in roleplay only</span></span><span class="chip">roleplay</span></div>
+              <div class="item"><span class="grow">Harbour district · world <span class="faint">· 6,180 / 20,000</span></span></div>
             </div>
           </div>
         </div>
       </div>
       <div class="note"><span class="fx">F5</span><span class="fx">F55</span>
-      One list with type, subject, status, mode eligibility and cap pressure as filters, and source
-      notes excluded by default so the total matches what recall can actually reach. The current vault
-      offers a status filter and free-text search, counts source notes in every total, and renders them
-      first.</div>
+      The current vault already gets one thing right: free-text search over stored notes is fast and it
+      works. What it lacks is the rest of the shelf. This list adds type, subject, status, mode
+      eligibility and cap pressure as filters, and holds the 43 source notes out of the default view, so
+      the header count of 118 is the number recall can actually reach. Today every total silently
+      includes the audit records, and they sort to the top.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">4.2</span><span class="t">One memory, with provenance and use</span></figcaption>
+      <figcaption><span class="n">4.2</span><span class="t">One memory, with provenance and use</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Wren · identity</span><span class="chip">roleplay</span><span class="chip">chat</span></div>
         <div class="box">
-          <div class="row"><span class="grow"><b>Works nights at a clinic</b></span><span class="faint mono">recalled 41×</span></div>
+          <div class="row"><span class="grow"><b>Works nights at a clinic</b></span><span class="faint mono">recalled 21×</span></div>
           <div class="sp"></div>
-          <div class="row faint mono">from character card · imported 3 Mar</div>
+          <div class="row faint mono">from the character card · last recalled 2 Mar</div>
         </div>
         <div class="box">
-          <div class="row"><span class="grow">Afraid of open water</span><span class="faint mono">recalled 0×</span></div>
-          <div class="row faint mono">from chat summary · turn 88</div>
+          <div class="row"><span class="grow">Afraid of open water</span><span class="faint mono">never recalled</span></div>
+          <div class="row faint mono">from a chat summary · semantic lane dead, so this may be unreachable rather than unused</div>
         </div>
-        <div class="box solid"><div class="row"><span class="grow">Section length</span><span class="mono">19,240 / 20,000</span></div>
+        <div class="box solid"><div class="row"><span class="grow">The projected section</span><span class="mono">19,240 / 20,000</span></div>
           <div class="meter warn"><i class="w96"></i></div></div>
       </div>
       <div class="note"><span class="fx">F47</span><span class="fx">F58</span>
-      Each stored line names the contribution that produced it and how many times it has been injected,
-      both of which are already written to disk. Today the note editor is one free-form text area with
-      no link back to the evidence unit and no recall count on any route, so a line that has never been
-      used looks identical to one the model leans on every turn.</div>
+      Two facts already written to disk, surfaced: the contribution each stored line came from, and how
+      many times that line has been injected. A caveat rides with the second one, because on this vault
+      the semantic lane is dead, so a count of zero is as likely to mean unreachable as unimportant. The
+      present editor is a single free-form text area with no link back to the evidence unit and no recall
+      count on any route, which leaves a line the model leans on every turn looking exactly like one it
+      has never seen.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">4.3</span><span class="t">Correct it in place</span></figcaption>
+      <figcaption><span class="n">4.3</span><span class="t">Correct it in place</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar">Editing one contribution</div>
         <div class="input area ph-text">Works nights at the harbour clinic.</div>
         <div class="input ph-text">keywords: clinic, nights, harbour</div>
-        <div class="row"><span class="grow mono dim">412 / 20,000 characters</span><span class="chip">18 / 30 keywords</span></div>
+        <div class="row"><span class="grow mono dim">this contribution · 412 characters</span><span class="chip warn">28 / 30 keywords</span></div>
+        <div class="box solid"><div class="row"><span class="grow">The projected section</span><span class="mono">19,240 / 20,000</span></div>
+          <div class="meter warn"><i class="w96"></i></div></div>
         <div class="row"><span class="btn pri">Save</span><span class="btn">Stop using here</span><span class="btn">Forget</span></div>
         <div class="box solid mono">Note id derives from the subject name. Renaming the subject creates a second note.</div>
       </div>
       <div class="note"><span class="fx">F45</span><span class="fx">F57</span><span class="fx">F58</span>
-      Per-contribution edit, scope removal and delete, backed by the existing note patch route, with a
-      live counter against the character and keyword caps instead of a silent trim. The current editor
-      cuts text at 20,000 characters with no counter and no marker, and correcting a wrong claim means
-      fixing the corpus and re-ingesting the source.</div>
+      Two sizes, two labels, no shared denominator read twice: what this one contribution costs, and
+      where the section lands once it is saved. Editing, scope removal and delete all ride the note patch
+      route that already exists. Against that, the current editor trims at 20,000 characters with no
+      counter and no marker of what it cut, and the only sanctioned way to correct a wrong claim is to
+      fix the corpus and ingest the source again.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">4.4</span><span class="t">A stored conflict, with a third option</span></figcaption>
+      <figcaption><span class="n">4.4</span><span class="t">A stored conflict, with a third option</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Conflict on <span class="mono">identity</span></span><span class="chip bad">unresolved</span></div>
-        <div class="box"><div class="row"><span class="grow"><b>Existing</b></span><span class="faint mono">recalled 41×</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>Existing</b></span><span class="faint mono">recalled 21×</span></div>
           <div class="ph l"></div></div>
-        <div class="box solid"><div class="row"><span class="grow"><b>Proposed</b></span><span class="faint mono">from turn 214</span></div>
+        <div class="box solid"><div class="row"><span class="grow"><b>Proposed</b></span><span class="faint mono">from turn t214</span></div>
           <div class="ph m"></div></div>
         <div class="row"><span class="btn">Keep existing</span><span class="btn">Take proposed</span><span class="btn pri">Keep both, in order</span></div>
-        <div class="box solid mono">Merge two notes for one subject: blocked, keyword union is 34 of 30.</div>
+        <div class="box solid mono">Merging the two notes for this subject is blocked: the keyword union is over the 30 cap.</div>
       </div>
       <div class="note"><span class="fx">F35</span><span class="fx">F56</span>
-      Existing and proposed sit side by side with the recall count on the text about to be overwritten,
-      and keeping both ordered is offered because most contradictions in a long story are the situation
-      moving rather than a dispute. Review never reads conflicts at all today, and the vault shows the
-      proposed value without ever displaying the existing one.</div>
+      Both values face each other, and the recall count sits on the one about to be overwritten, so the
+      cost of taking the proposal is legible before it is taken. A third option exists because most
+      contradictions in a long story are the situation moving on rather than a dispute about a fact. Of
+      the 47 claims in this run that overwrite a stored value, review reads none of them as conflicts,
+      and the vault prints the proposed text without ever putting the existing text next to it.</div>
     </figure>
 
   </div>
@@ -602,68 +702,76 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">5.1</span><span class="t">This turn, with reasons and a negative state</span></figcaption>
+      <figcaption><span class="n">5.1</span><span class="t">This turn, with reasons and a negative state</span><span class="feas eng">engine</span></figcaption>
       <div class="screen">
-        <div class="bar"><span class="grow">Memory · this turn</span><span class="faint mono">14:41 · turn 214</span></div>
-        <div class="box"><div class="row"><span class="grow"><b>Nothing recalled this turn</b></span><span class="chip bad">0 used</span></div></div>
+        <div class="bar"><span class="grow">Memory · this turn</span><span class="faint mono">14:41 · turn t214</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>3 used · 11 dropped</b></span><span class="chip bad">nothing reached the model</span></div></div>
         <div class="list">
-          <div class="item"><span class="grow">Over budget</span><span class="mono">3</span></div>
-          <div class="item"><span class="grow">Below score threshold</span><span class="mono">2</span></div>
-          <div class="item"><span class="grow">Not eligible in this chat mode</span><span class="mono">6</span></div>
-          <div class="item"><span class="grow">Preset assembled the prompt, no memory slot</span><span class="chip bad">skipped</span></div>
+          <div class="item"><span class="grow">Over the token budget</span><span class="mono">2</span></div>
+          <div class="item"><span class="grow">Below the score threshold</span><span class="mono">6</span></div>
+          <div class="item"><span class="grow">Not enabled for this chat mode</span><span class="mono">3</span></div>
+          <div class="item"><span class="grow">The preset assembled the prompt with no memory slot, so the 3 selected memories were discarded before the send</span><span class="chip bad">discarded</span></div>
         </div>
         <div class="row"><span class="btn">Open diagnostics</span></div>
       </div>
       <div class="note"><span class="fx">F6</span><span class="fx">F7</span><span class="fx">F10</span><span class="fx">F8</span>
-      A zero record with a timestamp is written even when nothing is injected, and the four rejection
-      counts the budget pass already computes replace the single number the current readout shows with
-      no zero state and no timestamp. Placing this beside the message in the transcript is the one thing
-      a capability package cannot do, since conversation mounts are gated on a package kind this package
-      lacks and message content is sanitised through an allowlist, which is why the report lives in
-      settings and the workspace instead.</div>
+      Everything above the last row is package work: the three rejection counts come from the budget
+      pass that already computes them, and a receipt with a timestamp gets written even on a turn that
+      injects nothing. The last row is not. A record that the preset discarded an assembled injection can
+      only be written where the prompt is assembled, which is engine code, so the whole frame carries the
+      engine mark rather than pretending a package can reach it. This is the single most important
+      negative state in the document, because it is the failure a user cannot otherwise tell apart from
+      memory simply having nothing to say. Note also that this report lives in settings and the
+      workspace: conversation mounts are gated on a package kind this package lacks, and message content
+      is sanitised through an allowlist, so the readout cannot sit beside the message in the transcript.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">5.2</span><span class="t">Recall history across turns</span></figcaption>
+      <figcaption><span class="n">5.2</span><span class="t">Recall history across turns</span><span class="feas rst">restart</span></figcaption>
       <div class="screen">
-        <div class="tabs"><span class="tab">Vault</span><span class="tab">Review</span><span class="tab on">Recall</span><span class="tab">Diagnostics</span></div>
+        <div class="tabs"><span class="tab">Vault</span><span class="tab">Review</span><span class="tab">Sources</span><span class="tab">Settings</span><span class="tab on">Recall</span></div>
         <div class="list">
-          <div class="item"><span class="mono faint">t214</span><span class="grow">0 used · 11 dropped</span><span class="chip bad">skipped</span></div>
+          <div class="item"><span class="mono faint">t214</span><span class="grow">3 used · 11 dropped</span><span class="chip bad">discarded</span></div>
           <div class="item"><span class="mono faint">t213</span><span class="grow">2 used · 4 dropped</span></div>
+          <div class="item"><span class="mono faint">t212</span><span class="grow">no receipt recorded</span><span class="chip warn">unknown</span></div>
           <div class="item"><span class="mono faint">t211</span><span class="grow">5 used · 1 dropped</span><span class="chip warn">no order</span></div>
           <div class="item"><span class="mono faint">t208</span><span class="grow">0 used · 0 candidates</span></div>
         </div>
         <div class="box solid"><div class="row"><span class="grow mono dim">t211 · timeline bullets injected in relevance order</span><span class="btn">View</span></div></div>
       </div>
       <div class="note"><span class="fx">F12</span><span class="fx">F13</span><span class="fx">F11</span>
-      The receipt is appended per turn rather than overwritten once per chat, which is the package's own
-      code and turns a volatile reading into a record that can be read after the fact. Rows flag turns
-      where timeline events reached the model with no sequence and where ranking ran age-blind, since the
-      cooldown option is never passed and no lane derives a score from recency.</div>
+      Recall is added as a fifth tab rather than taking a seat from anything: journey 2 lives in Sources
+      and the permissions frame below is in Settings, so all four existing destinations stay. Reading the
+      history means a new route, hence the restart mark. The receipt is appended per turn instead of
+      overwritten once per chat, which converts a volatile reading into a record. <code>t212</code> is
+      printed as a row of its own and labelled, because a silent gap in a history whose purpose is
+      catching silent injection failures is exactly the thing it was built to rule out. Two rows also
+      flag known weaknesses: timeline events that reached the model with no sequence, and ranking that
+      ran age-blind, since the cooldown option is never passed and no lane derives a score from
+      recency.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">5.3</span><span class="t">Diagnostics, assembled from what is known</span></figcaption>
+      <figcaption><span class="n">5.3</span><span class="t">Diagnostics for the recall path</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Diagnostics</span><span class="chip warn">degraded</span></div>
         <div class="list">
-          <div class="item"><span class="grow">Semantic lane off <span class="faint">· embeddings unavailable on this install</span></span><span class="chip bad">dead</span></div>
-          <div class="item"><span class="grow">Index rebuild failed 2 Mar <span class="faint">· 14 notes saved, not searchable</span></span><span class="btn">Rebuild</span></div>
-          <div class="item"><span class="grow">18 memories not eligible in Conversation</span><span class="btn">Set modes</span></div>
+          <div class="item"><span class="grow">Memories not enabled for this chat mode <span class="faint">· 3 of them were dropped on t214</span></span><span class="btn">Set modes</span></div>
+          <div class="item"><span class="grow">Below the score threshold <span class="faint">· 6 on t214, ranked by the lexical lane alone</span></span><span class="btn">Show them</span></div>
+          <div class="item"><span class="grow">Rejected candidates from the last run <span class="faint">· 304 of 1,142</span></span><span class="btn">Open</span></div>
         </div>
-        <div class="box"><div class="row"><span class="grow mono dim">indexed chunks 4,102 · embedded 0 · dirty · generated 2 Mar 09:14</span></div></div>
-        <div class="box solid"><div class="row"><span class="grow">Integrity, rejected candidates and last injection</span><span class="chip on">here</span></div></div>
+        <div class="box solid"><div class="row"><span class="grow">Vault health: index and embeddings</span><span class="chip warn">degraded</span><span class="btn">Open health</span></div></div>
       </div>
-      <div class="note"><span class="fx">F15</span><span class="fx">F16</span><span class="fx">F64</span><span class="fx">F65</span><span class="fx">F66</span>
-      One destination renders the fields the status response already carries, including the embedding
-      availability flag, index errors, the dirty flag and the generation timestamp, and it holds the
-      integrity results and rejected candidates that currently sit in three other components. A rebuild
-      that embedded nothing reports healthy today, and a failed index rebuild is a transient line in a
-      batch result that no component reads afterwards.</div>
+      <div class="note"><span class="fx">F15</span><span class="fx">F16</span><span class="fx">F65</span>
+      This frame answers one question, why the turn came out the way it did, and hands the vault-wide
+      question off. Index state, embedding availability and the failed rebuild are rendered once, in
+      frame 6.3, and linked to from here rather than drawn twice in two layouts under two different verbs.
+      What stays is per-turn: the mode filter, the threshold, and the rejected candidates from the last
+      run, which today sit in three separate components with no path between them.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">5.4</span><span class="t">A permissions failure that names the remedy</span></figcaption>
+      <figcaption><span class="n">5.4</span><span class="t">A permissions failure that names the remedy</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Memory settings</span><span class="chip bad">403</span></div>
         <div class="empty">This install requires an admin secret for memory routes.</div>
@@ -671,13 +779,14 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
           <div class="sp"></div>
           <div class="input ph-text">admin secret</div>
           <div class="row"><span class="btn pri">Save secret</span><span class="btn">How to set it</span></div></div>
-        <div class="box solid mono">Projection limit: note <b>char_wren</b>, section <b>identity</b>, 20,431 of 20,000.</div>
       </div>
-      <div class="note"><span class="fx">F63</span><span class="fx">F61</span>
-      The response status is read, so a 403 renders the privileged-access message the engine already
-      ships rather than a fixed loading error, and a cap failure names the note, the section and the
-      current size. Today four read views print the same generic string for any failure, and 35 identical
-      projection errors in one run named neither note nor section.</div>
+      <div class="note"><span class="fx">F63</span>
+      The correct copy for this case already exists: the engine ships a privileged-access message naming
+      both remedies, and nothing here needs writing. It is simply never reached, because the four read
+      views print one generic loading string for every failure without looking at the response status. So
+      an authentication problem with a documented fix arrives as a vault that will not load. One failure
+      per screen, too: a projection-limit error belongs with the note that overflowed, and cannot co-occur
+      with a 403 that stopped every read.</div>
     </figure>
 
   </div>
@@ -698,9 +807,9 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">6.1</span><span class="t">Cap pressure, before it is a wall</span></figcaption>
+      <figcaption><span class="n">6.1</span><span class="t">Cap pressure, before it is a wall</span><span class="feas">in package</span></figcaption>
       <div class="screen">
-        <div class="bar"><span class="grow">Notes under pressure</span><span class="chip warn">7</span></div>
+        <div class="bar"><span class="grow">Notes under pressure</span><span class="chip warn">none at a cap yet</span></div>
         <div class="box">
           <div class="row"><span class="grow">Wren · identity</span><span class="mono">19,240 / 20,000</span></div>
           <div class="meter warn"><i class="w96"></i></div>
@@ -709,7 +818,7 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
           <div class="meter warn"><i class="w95"></i></div>
           <div class="sp"></div>
           <div class="row"><span class="grow">contributions</span><span class="mono">91 / 100</span></div>
-          <div class="meter bad"><i class="w90"></i></div>
+          <div class="meter warn"><i class="w90"></i></div>
         </div>
         <div class="box">
           <div class="row"><span class="grow">Harbour district · world</span><span class="mono">6,180 / 20,000</span></div>
@@ -719,55 +828,65 @@ annotation says otherwise. Amber notes tie a frame to the findings it answers.</
         <div class="row"><span class="btn pri">Compact</span><span class="btn">Split by claim kind</span></div>
       </div>
       <div class="note"><span class="fx">F48</span><span class="fx">F45</span><span class="fx">F54</span>
-      Section length, keyword count and contribution count are shown as filling meters on every note, all
-      three already computed at write time. Today no component renders a character counter, a keyword
-      count or the contributions field, so the first sign of a full note is an apply failing partway
-      through a batch. Splitting identity into separate section keys is a schema change and is marked
+      Three pressures, three meters, all three already computed at write time: characters, keywords and
+      contributions. The amber is uniform on purpose. Nothing on this vault has reached a cap, so nothing
+      here is drawn in the failure colour, and the least pressured of the three bars is not allowed to be
+      the reddest. Red is held back for a limit actually hit. Against that restraint, the present build
+      renders none of the three, which makes the first sign of a full note an apply that fails partway
+      through a batch. Splitting identity into separate section keys is a schema change, so it is marked
       here rather than offered as a one-click action.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">6.2</span><span class="t">Compaction preview on an additive section</span></figcaption>
+      <figcaption><span class="n">6.2</span><span class="t">Compaction preview on an additive section</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Wren · identity · 91 contributions</span><span class="chip">preview</span></div>
         <div class="list">
-          <div class="item"><span class="cb on"></span><span class="grow">Restates an earlier line <span class="faint">· 0.91 similar</span></span><span class="chip warn">remove</span></div>
-          <div class="item"><span class="cb on"></span><span class="grow">Restates an earlier line <span class="faint">· 0.88 similar</span></span><span class="chip warn">remove</span></div>
-          <div class="item"><span class="cb on"></span><span class="grow">Schedule detail, never recalled <span class="faint">· 0 recalls</span></span><span class="chip">low durability</span></div>
-          <div class="item"><span class="cb"></span><span class="grow">Load-bearing history <span class="faint">· 41 recalls</span></span><span class="chip on">keep</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Restates a line already in this section <span class="faint">· names the line it restates</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Restates a line already in this section <span class="faint">· names the line it restates</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb on"></span><span class="grow">Restates two earlier lines taken together <span class="faint">· both shown before removal</span></span><span class="chip warn">remove</span></div>
+          <div class="item"><span class="cb"></span><span class="grow">Says something no other line in the section says</span><span class="chip on">keep</span></div>
         </div>
-        <div class="box"><div class="row"><span class="grow">After compaction</span><span class="mono">12,880 / 20,000 · 58 contributions</span></div>
+        <div class="box"><div class="row"><span class="grow">After compaction</span><span class="mono">12,880 / 20,000</span></div>
           <div class="meter"><i class="w65"></i></div></div>
-        <div class="row"><span class="btn pri">Apply compaction</span><span class="btn">Export backup first</span></div>
+        <div class="box solid"><div class="row"><span class="grow">Gated on index health: the rebuild failed on 14 notes, so compaction stays blocked</span><span class="chip bad">blocked</span></div></div>
+        <div class="row"><span class="btn pri">Repair the index first</span><span class="btn">Export backup</span><span class="btn">Apply compaction</span></div>
       </div>
       <div class="note"><span class="fx">F49</span><span class="fx">F50</span><span class="fx">F53</span><span class="fx">F60</span>
-      Additive sections union forever, so this pass compares each stored contribution against the others
-      by line and by embedding and shows what would be dropped as restatement or as low-durability
-      logistics before anything is written. Stored dedup currently compares a claim against the whole
-      section as one blob, which cannot reach its threshold once a section holds real content, and the
-      write path never calls an embedding function at all.</div>
+      Additive sections union forever, so a compaction pass has to exist. Every removal here is justified
+      one way only, by naming another line in the same section that already says it, and the reader sees
+      both lines before agreeing. A recall count of zero is not a reason and does not appear: on this
+      vault the semantic lane is dead and the index rebuild failed on 14 notes, which makes zero a
+      statement about reachability, not about worth, and deletion here has no undo. For the same reason
+      the action is gated until the index is repaired. Stored dedup today compares a claim against the
+      whole section as one blob, which cannot cross its threshold once a section holds real content, and
+      the write path never calls an embedding function at all.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">6.3</span><span class="t">Vault state in one view</span></figcaption>
+      <figcaption><span class="n">6.3</span><span class="t">Vault state in one view</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Vault health</span><span class="chip warn">degraded</span></div>
         <div class="box">
-          <div class="row"><span class="grow">Notes by type</span><span class="mono">character 84 · world 31 · timeline 46</span></div>
-          <div class="row"><span class="grow">Indexed chunks</span><span class="mono">4,102</span></div>
+          <div class="row"><span class="grow">Memories</span><span class="mono">118</span></div>
+          <div class="row"><span class="grow">Source notes, hidden by default</span><span class="mono">43</span></div>
           <div class="row"><span class="grow">Embedded chunks</span><span class="mono">0</span> <span class="chip bad">unavailable</span></div>
           <div class="row"><span class="grow">Index state</span><span class="chip warn">dirty</span> <span class="faint mono">built 2 Mar 09:14</span></div>
         </div>
         <div class="list">
           <div class="item"><span class="grow">Index error <span class="faint">· rebuild failed on 14 notes</span></span><span class="btn">Repair</span></div>
-          <div class="item"><span class="grow">Integrity check <span class="faint">· 3 orphaned links</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Integrity check <span class="faint">· orphaned links found</span></span><span class="btn">Review</span></div>
         </div>
       </div>
       <div class="note"><span class="fx">F64</span><span class="fx">F66</span><span class="fx">F65</span>
-      Every value here arrives in the status response that is already fetched on load, plus the integrity
-      results that live in a separate tab. The interface reads two of those fields, the total note count
-      and the indexed chunk count, and discards the rest, so a vault whose semantic lane is dead and
-      whose index is dirty reads as healthy.</div>
+      The current build already fetches everything this view needs. Its status response, requested once on
+      load, carries the embedding availability flag, the dirty flag, the index errors and the build
+      timestamp, and the integrity results sit one tab away. So this frame costs a render, not a request.
+      This is also the only place those fields are drawn, with frame 5.3 linking here instead of repeating
+      them under a second name. Two of the fields are read today and the rest are dropped on the floor,
+      which is how a vault with a dead semantic lane and
+      a dirty index comes to report itself as healthy. One verb for the fix, Repair, used here and
+      referred to as such from journey 5.</div>
     </figure>
 
   </div>

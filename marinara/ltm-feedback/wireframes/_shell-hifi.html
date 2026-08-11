@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interface proposals for the Long-Term Memory package, drawn against Marinara Engine's real surfaces.">
+<title>Long-Term Memory — interface proposals</title>
+
+<style>
+  /* ── Tokens ──────────────────────────────────────────────────────────
+     Dark-first: the bare :root carries dark because the Engine is a dark
+     app. Light is the deliberate override. One accent, and it marks
+     exactly one thing: memory. */
+  :root {
+    --ground:#07060f; --sheet:#0e0d1c; --frame:#121122; --frame-2:#1a1830;
+    --frame-3:#232043; --stroke:#35315c; --stroke-soft:#252242;
+    --ink:#ece9ff; --ink-2:#aca6c9; --ink-3:#7a7496;
+    --accent:#8fd6c4; --accent-ink:#06120e; --accent-2:#9db4ff;
+    --good:#7ee0b8; --warn:#ffcf8a; --bad:#ff9e9e;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.9);
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:light){ :root:not([data-theme="dark"]){
+    --ground:#f4f4f7; --sheet:#ffffff; --frame:#ffffff; --frame-2:#f1f0f6;
+    --frame-3:#e5e3ef; --stroke:#c7c3d8; --stroke-soft:#e2e0ea;
+    --ink:#16142a; --ink-2:#514c६9; --ink-3:#847e9b;
+    --accent:#1d7a66; --accent-ink:#ffffff; --accent-2:#3d5bb8;
+    --good:#1c8560; --warn:#8a5a10; --bad:#a03434;
+    --shadow:0 14px 40px -24px rgba(20,16,50,.4);
+  }}
+  :root[data-theme="light"]{
+    --ground:#f4f4f7; --sheet:#ffffff; --frame:#ffffff; --frame-2:#f1f0f6;
+    --frame-3:#e5e3ef; --stroke:#c7c3d8; --stroke-soft:#e2e0ea;
+    --ink:#16142a; --ink-2:#514c69; --ink-3:#847e9b;
+    --accent:#1d7a66; --accent-ink:#ffffff; --accent-2:#3d5bb8;
+    --good:#1c8560; --warn:#8a5a10; --bad:#a03434;
+    --shadow:0 14px 40px -24px rgba(20,16,50,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+
+  h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.2}
+  h1{font-size:clamp(2rem,4.6vw,3.1rem);font-weight:800;letter-spacing:-.028em}
+  h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:750;letter-spacing:-.02em}
+  h3{font-size:1.13rem;font-weight:700;letter-spacing:-.01em}
+  h4{font-size:.95rem;font-weight:700}
+  p{margin:0}
+  .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-3);margin:0}
+  .lede{color:var(--ink-2);font-size:1.06rem;max-width:64ch}
+  .prose{color:var(--ink-2);max-width:68ch}
+  .prose strong{color:var(--ink);font-weight:650}
+  code{font-family:var(--mono);font-size:.86em;background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:4px;padding:.08em .34em;color:var(--ink)}
+
+  .masthead{border-bottom:1px solid var(--stroke);padding:56px 0 34px;
+    display:flex;flex-direction:column;gap:20px}
+  .mast-meta{display:flex;flex-wrap:wrap;gap:8px 10px;font-family:var(--mono);
+    font-size:.72rem;color:var(--ink-3)}
+  .mast-meta span{border:1px solid var(--stroke-soft);border-radius:999px;
+    padding:3px 10px;background:var(--sheet)}
+  .quote{border-left:2px solid var(--accent);padding:4px 0 4px 18px;color:var(--ink-2);
+    font-size:1.02rem;max-width:66ch;display:flex;flex-direction:column;gap:10px}
+
+  section{padding-top:68px}
+  .sec-head{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
+  .card{background:var(--sheet);border:1px solid var(--stroke-soft);border-radius:12px;
+    padding:18px 18px 20px;display:flex;flex-direction:column;gap:9px}
+  .card-tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--accent-2)}
+  .card p{color:var(--ink-2);font-size:.9rem;line-height:1.55}
+  .card .src{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
+    border-top:1px dashed var(--stroke-soft);padding-top:9px;margin-top:auto;word-break:break-word}
+
+  .journey{border:1px solid var(--stroke);border-radius:16px;background:var(--sheet);
+    padding:26px;margin-top:22px;display:flex;flex-direction:column;gap:24px}
+  .j-head{display:flex;flex-direction:column;gap:10px}
+  .j-title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .j-badge{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.1em;
+    color:var(--accent-ink);background:var(--accent);border-radius:5px;padding:3px 9px}
+  .j-thesis{color:var(--ink-2);max-width:70ch}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--stroke-soft);padding-bottom:14px}
+  .tab{font-family:var(--mono);font-size:.73rem;color:var(--ink-2);background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:999px;padding:6px 13px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;transition:background .15s,color .15s,border-color .15s}
+  .tab:hover{border-color:var(--stroke);color:var(--ink)}
+  .tab .num{color:var(--ink-3)}
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);
+    color:var(--accent-ink);font-weight:700}
+  .tab[aria-selected="true"] .num{color:var(--accent-ink);opacity:.7}
+  .tab:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+
+  .stage{display:flex;flex-direction:column;gap:16px}
+  .caption{font-family:var(--mono);font-size:.76rem;line-height:1.6;color:var(--ink-2);
+    background:var(--frame-2);border:1px solid var(--stroke-soft);
+    border-left:2px solid var(--accent-2);border-radius:0 8px 8px 0;padding:11px 14px}
+  .caption b{color:var(--ink)}
+  .fx{display:inline-block;font-family:var(--mono);font-size:.66rem;font-weight:700;
+    border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:5px;opacity:.85}
+  .feas{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--stroke);border-radius:4px;padding:1px 6px;color:var(--ink-3);background:var(--frame-2)}
+  .feas.rst{border-color:color-mix(in srgb,var(--warn) 55%,transparent);color:var(--warn)}
+  .feas.eng{border-color:color-mix(in srgb,var(--bad) 55%,transparent);color:var(--bad)}
+  .feas.now{border-color:color-mix(in srgb,var(--ink-3) 60%,transparent);color:var(--ink-3);
+    background:transparent;border-style:dashed}
+
+  .rack{display:grid;grid-template-columns:minmax(0,1fr) 232px;gap:22px;align-items:start}
+  @media (max-width:860px){.rack{grid-template-columns:minmax(0,1fr)}}
+  .rack-cell{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .rack-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-3);display:flex;gap:8px;align-items:center}
+
+  /* ══ Device chrome ══════════════════════════════════════════════════ */
+  .dev{background:var(--frame);border:1px solid var(--stroke);border-radius:10px;overflow:hidden;
+    position:relative;font-size:11px;line-height:1.35;color:var(--ink-2);box-shadow:var(--shadow)}
+  .dev-desk{display:grid;grid-template-columns:104px minmax(0,1fr);height:412px}
+  .dev-desk.drawer{grid-template-columns:104px minmax(0,1fr) 186px}
+  .dev-phone{display:flex;flex-direction:column;height:412px}
+
+  .side{border-right:1px solid var(--stroke-soft);background:var(--frame-2);padding:8px 7px;
+    display:flex;flex-direction:column;gap:7px;min-width:0}
+  .side-title{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .chat-row{border:1px solid var(--stroke-soft);border-radius:5px;padding:4px 6px;font-size:9px;
+    color:var(--ink-2);background:var(--frame);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chat-row.on{border-color:var(--accent-2);background:var(--frame-3);color:var(--ink)}
+
+  .main{display:flex;flex-direction:column;min-width:0;background:var(--frame)}
+  .topbar{height:26px;border-bottom:1px solid var(--stroke-soft);display:flex;align-items:center;
+    gap:6px;padding:0 8px;background:var(--frame-2);flex-shrink:0;font-family:var(--mono);
+    font-size:9px;color:var(--ink-3);letter-spacing:.06em}
+  .ico{width:13px;height:13px;border:1px solid var(--stroke);border-radius:3px;flex-shrink:0;
+    display:grid;place-items:center;font-size:8px;color:var(--ink-3)}
+  .ico.hot{border-color:var(--accent);color:var(--accent);
+    background:color-mix(in srgb,var(--accent) 16%,transparent);
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .ico.wide{width:auto;padding:0 5px}
+
+  /* workspace tab rail */
+  .rail{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--stroke-soft);
+    background:var(--frame-2);flex-shrink:0;flex-wrap:wrap}
+  .rt{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:5px;
+    border:1px solid var(--stroke-soft);color:var(--ink-3);background:var(--frame)}
+  .rt.on{background:var(--frame-3);border-color:var(--stroke);color:var(--ink);font-weight:700}
+  .rt.new{border-color:var(--accent);color:var(--accent)}
+  .rt .b{margin-left:5px;color:var(--accent)}
+
+  .pane{flex:1;overflow:hidden;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+  .pane.split{flex-direction:row;gap:8px;padding:8px}
+  .facets{width:132px;flex-shrink:0;display:flex;flex-direction:column;gap:5px;
+    border-right:1px solid var(--stroke-soft);padding-right:8px;overflow:hidden}
+  .fgroup{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-3);margin-top:3px}
+  .fac{display:flex;gap:5px;align-items:center;font-size:9px;color:var(--ink-2);
+    border:1px solid transparent;border-radius:4px;padding:2px 4px}
+  .fac.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+  .fac .c{margin-left:auto;font-family:var(--mono);font-size:8px;color:var(--ink-3)}
+  .listcol{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;overflow:hidden}
+
+  .hdr{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;
+    color:var(--ink-3);flex-shrink:0}
+  .hdr .grow{flex:1}
+  .sel{font-family:var(--mono);font-size:8.5px;border:1px solid var(--stroke-soft);
+    border-radius:4px;padding:2px 6px;color:var(--ink-2);background:var(--frame-2)}
+
+  .grp{font-family:var(--mono);font-size:9px;color:var(--ink);background:var(--frame-2);
+    border:1px solid var(--stroke-soft);border-radius:5px;padding:4px 6px;display:flex;
+    gap:6px;align-items:center}
+  .grp .c{margin-left:auto;color:var(--ink-3)}
+
+  .row{border:1px solid var(--stroke-soft);border-radius:5px;padding:5px 6px;background:var(--frame);
+    display:flex;gap:6px;align-items:flex-start;font-size:9.5px;color:var(--ink-2);min-width:0}
+  .row.on{border-color:var(--accent-2);background:var(--frame-3);color:var(--ink)}
+  .row.warnrow{border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .row.badrow{border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+  .row .cb{width:10px;height:10px;border:1px solid var(--stroke);border-radius:2px;flex-shrink:0;margin-top:2px}
+  .row .cb.on{background:var(--accent);border-color:var(--accent)}
+  .row .t{flex:1;min-width:0}
+  .row .meta{font-family:var(--mono);font-size:8px;color:var(--ink-3)}
+
+  .tag{font-family:var(--mono);font-size:8px;border:1px solid var(--stroke-soft);border-radius:999px;
+    padding:0 5px;color:var(--ink-3);white-space:nowrap}
+  .tag.acc{border-color:var(--accent);color:var(--accent)}
+  .tag.warn{border-color:color-mix(in srgb,var(--warn) 50%,transparent);color:var(--warn)}
+  .tag.bad{border-color:color-mix(in srgb,var(--bad) 50%,transparent);color:var(--bad)}
+  .tag.good{border-color:color-mix(in srgb,var(--good) 50%,transparent);color:var(--good)}
+
+  .btn{font-family:var(--mono);font-size:8.5px;border:1px solid var(--stroke);border-radius:4px;
+    padding:2px 7px;color:var(--ink-2);background:var(--frame-2);white-space:nowrap}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+
+  .mtr{height:4px;border-radius:2px;background:var(--frame-3);overflow:hidden}
+  .mtr>i{display:block;height:100%;background:var(--ink-3)}
+  .mtr.warn>i{background:var(--warn)}
+  .mtr.acc>i{background:var(--accent)}
+  .w30{width:30%}.w50{width:50%}.w65{width:65%}.w75{width:75%}.w90{width:90%}.w95{width:95%}.w96{width:96%}
+
+  .note-s{font-size:9px;color:var(--ink-3);font-style:italic}
+  .empty{border:1px dashed var(--stroke-soft);border-radius:5px;padding:12px 8px;text-align:center;
+    font-family:var(--mono);font-size:8.5px;color:var(--ink-3)}
+
+  /* chat surfaces */
+  .msgs{flex:1;overflow:hidden;padding:8px;display:flex;flex-direction:column;justify-content:flex-end;gap:7px}
+  .msg{display:flex;gap:6px;align-items:flex-start}
+  .msg .av{width:14px;height:14px;border-radius:50%;border:1px solid var(--stroke);flex-shrink:0;background:var(--frame-2)}
+  .msg .bd{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .msg .who{font-family:var(--mono);font-size:8px;color:var(--ink-3);letter-spacing:.04em}
+  .msg .tx{font-size:9.5px;line-height:1.45;color:var(--ink-2)}
+  .bar-line{height:5px;border-radius:3px;background:var(--frame-3)}
+  .bar-line+.bar-line{margin-top:3px}
+  .inputbar{height:26px;border-top:1px solid var(--stroke-soft);display:flex;align-items:center;
+    padding:0 8px;gap:6px;flex-shrink:0;background:var(--frame-2)}
+
+  .drawer{border-left:1px solid var(--stroke-soft);background:var(--frame-2);display:flex;
+    flex-direction:column;min-width:0;overflow:hidden}
+  .drawer-head{padding:6px 8px;border-bottom:1px solid var(--stroke-soft);font-family:var(--mono);
+    font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+    display:flex;align-items:center;gap:6px}
+  .drawer-body{padding:8px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+
+  .kv{display:flex;gap:6px;font-size:9px;color:var(--ink-2)}
+  .kv .k{color:var(--ink-3);font-family:var(--mono);font-size:8.5px}
+  .kv .v{margin-left:auto;font-family:var(--mono);font-size:8.5px;color:var(--ink)}
+
+  .flowrail{display:flex;flex-direction:column;gap:9px}
+  .flow-track{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px}
+  .fstep{border:1px solid var(--stroke-soft);border-radius:8px;background:var(--frame-2);
+    padding:8px 11px;display:flex;flex-direction:column;gap:2px;min-width:132px;flex:1}
+  .fstep .sn{font-family:var(--mono);font-size:.62rem;color:var(--ink-3);letter-spacing:.1em}
+  .fstep .st{font-size:.82rem;color:var(--ink);font-weight:650}
+  .fstep .sd{font-size:.74rem;color:var(--ink-2)}
+  .fstep.term{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+  .arrow{align-self:center;color:var(--ink-3);font-size:.8rem}
+
+  .tradeoffs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .to{border:1px solid var(--stroke-soft);border-radius:10px;background:var(--frame-2);padding:14px 15px}
+  .to h4{margin-bottom:7px;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
+  .to ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:5px}
+  .to li{font-size:.83rem;color:var(--ink-2)}
+  .to.win h4{color:var(--good)} .to.cost h4{color:var(--warn)} .to.build h4{color:var(--accent-2)}
+
+  .theme-toggle{position:fixed;top:14px;right:14px;z-index:50;font-family:var(--mono);
+    font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
+    background:var(--sheet);border:1px solid var(--stroke);border-radius:999px;padding:7px 13px;
+    cursor:pointer;box-shadow:var(--shadow)}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--accent-2)}
+  @media print{.theme-toggle{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Marinara Engine · Long-Term Memory · UI/UX proposal</p>
+    <h1>What the memory is doing</h1>
+    <p class="lede">
+      Interface proposals for the <code>long-term-memory</code> package, drawn against the
+      Engine's real surfaces and at the real scale of the problem: a vault of 118 memories and
+      one extraction run of 1,142 candidates. Six journeys, each stepped through state by state.
+    </p>
+    <div class="quote">
+      <p>“it looks like nothing got injected ... and the app ui agrees. there's something in the
+        debug logs that says the recall workflow selected things, but nothing actually got
+        injected??”</p>
+      <p>“i still don't feel like you've given me a good mental model of how ltm works. i don't
+        know what draft, mutation, or note means for example. and that's not an exhaustive list
+        of my confusions.”</p>
+    </div>
+    <div class="mast-meta">
+      <span>engine 2.4.1</span>
+      <span>package 1.1.6</span>
+      <span>desktop 1600×1000 · phone 390×844</span>
+      <span>wireframe — not visual design</span>
+      <span>teal marks memory, and only memory</span>
+    </div>
+  </header>
+
+  <section id="ground">
+    <div class="sec-head">
+      <p class="eyebrow">Before the drawings</p>
+      <h2>What the package is allowed to do</h2>
+      <p class="prose">
+        These proposals are scoped to what a capability package can build without an engine
+        change, because the package maintainer may not own the engine. Four facts from the
+        source decide the shape of everything below, and one of them costs a proposal outright.
+      </p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="card-tag">Generous</span>
+        <h4>Most of this is the package's own code</h4>
+        <p>
+          It registers arbitrary routes under its own prefix, owns its storage directory and its
+          schema, gets a revision-checked document store, and can call both a language model and
+          an embedding model. Every derived signal, the facet engine, preflight, restore points
+          and compaction are all in reach.
+        </p>
+        <p class="src">capability-module-runtime.service.ts · activateOne</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Constraint</span>
+        <h4>Nothing can be pushed to the client</h4>
+        <p>
+          There is no event channel of any kind: no server-sent events helper, no websocket, no
+          invalidation signal. Every live surface here polls a route, which is exactly what the
+          package already does for its debug log.
+        </p>
+        <p class="src">no EventSource or WebSocket anywhere in packages/client/src</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Constraint</span>
+        <h4>A new route means a restart</h4>
+        <p>
+          Route paths cannot appear after the server is listening, so adding one is a release
+          decision rather than a runtime one. Frames that need a new route are marked, because
+          that changes how they ship, not whether they can.
+        </p>
+        <p class="src">capability-route-registration.service.ts · createRouteCollector</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">Costs a proposal</span>
+        <h4>Nothing can render in the transcript</h4>
+        <p>
+          The conversation mounts are chosen by a package's declared kind, which this package
+          does not have, and they sit outside the message list regardless. Message content is
+          sanitised through a fixed allowlist that strips capability elements. So the recall
+          report cannot sit beside the message it explains.
+        </p>
+        <p class="src">ConversationView.tsx · ChatMessage.tsx · sanitizeChatHtml</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="journeys">
+    <div class="sec-head">
+      <p class="eyebrow">The proposals</p>
+      <h2>Six journeys</h2>
+      <p class="prose">
+        Each is drawn in several states, from the moment a person wants something to the moment
+        they have it. <strong>Click the state chips</strong> to step through; desktop and phone
+        move together. Every state carries a feasibility mark and the findings it answers.
+      </p>
+    </div>
+    <!--JOURNEY_SECTIONS-->
+  </section>
+
+</div>
+
+<script>
+"use strict";
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+/*JOURNEY_DATA*/
+
+function feasMark(f){
+  if(!f) return "";
+  var cls = f==="restart"?"feas rst":f==="engine"?"feas eng":f==="today"?"feas now":"feas";
+  var txt = f==="restart"?"new route":f==="engine"?"needs engine":f==="today"?"today":"in package";
+  return '<span class="'+cls+'">'+txt+'</span>';
+}
+function fxList(a){return (a||[]).map(function(x){return '<span class="fx">F'+x+'</span>';}).join("");}
+
+function renderStage(v, idx){
+  var s = STATES[v][idx];
+  var stage = document.querySelector('[data-stage="'+v+'"]');
+  stage.innerHTML =
+    '<p class="caption">'+fxList(s.fx)+s.caption+'</p>'+
+    '<div class="rack">'+
+      '<div class="rack-cell"><span class="rack-label">Desktop · 1600×1000 '+feasMark(s.feas)+'</span>'+s.desk+'</div>'+
+      '<div class="rack-cell"><span class="rack-label">Phone · 390×844</span>'+s.phone+'</div>'+
+    '</div>';
+}
+
+Object.keys(STATES).forEach(function(v){
+  var tabs = document.querySelector('[data-tabs="'+v+'"]');
+  if(!tabs) return;
+  tabs.innerHTML = STATES[v].map(function(s,i){
+    return '<button class="tab" role="tab" type="button" data-i="'+i+'" aria-selected="'+(i===0)+'">'+
+      '<span class="num">'+s.num+'</span>'+esc(s.label)+'</button>';
+  }).join("");
+  tabs.addEventListener("click",function(e){
+    var btn = e.target.closest(".tab"); if(!btn) return;
+    tabs.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",String(b===btn));});
+    renderStage(v, Number(btn.dataset.i));
+  });
+  renderStage(v,0);
+
+  var flow = document.querySelector('[data-flow="'+v+'"]');
+  if(flow && FLOWS[v]){
+    flow.innerHTML = '<span class="rack-label">User journey</span><div class="flow-track">'+
+      FLOWS[v].map(function(st){
+        return '<div class="fstep'+(st.term?" term":"")+'"><span class="sn">'+esc(st.n)+
+          '</span><span class="st">'+esc(st.t)+'</span><span class="sd">'+esc(st.d)+'</span></div>';
+      }).join('<span class="arrow">→</span>')+'</div>';
+  }
+
+  var tr = document.querySelector('[data-trade="'+v+'"]');
+  if(tr && TRADE[v]){
+    var t = TRADE[v];
+    var col=function(cls,title,items){
+      return '<div class="to '+cls+'"><h4>'+title+'</h4><ul>'+
+        items.map(function(i){return "<li>"+esc(i)+"</li>";}).join("")+'</ul></div>';
+    };
+    tr.innerHTML = col("win","What it buys",t.win)+col("cost","What it costs",t.cost)+col("build","Build notes",t.build);
+  }
+});
+</script>
+
+<button class="theme-toggle" type="button" id="themeToggle" aria-live="polite">Theme</button>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById("themeToggle");
+  btn.addEventListener("click",function(){
+    var explicit=root.getAttribute("data-theme");
+    var dark = explicit ? explicit==="dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    root.setAttribute("data-theme", dark?"light":"dark");
+  });
+})();
+</script>
+</body>
+</html>

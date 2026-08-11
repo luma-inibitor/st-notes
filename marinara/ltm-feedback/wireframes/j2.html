@@ -15,7 +15,7 @@
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">2.1</span><span class="t">Narrow, then choose</span></figcaption>
+      <figcaption><span class="n">2.1</span><span class="t">Narrow, then choose</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="input ph-text">Filter 60 chats and 41 characters</div>
         <div class="row"><span class="chip on">6 chats</span><span class="chip on">2 characters</span><span class="chip">clear</span></div>
@@ -32,12 +32,13 @@
       The filter is a finder and nothing else: it narrows a large library so the material is
       reachable, and it does not decide anything about the run. Every kind carries a count,
       including the kind that cannot be ingested at all, so the ceiling on what a chat can teach
-      is stated up front. Today re-extraction posts one source per request and disables itself
-      while in flight, so 74 sources means 74 clicks.</div>
+      is stated up front. A bulk import route already exists and this frame feeds it. Re-extraction
+      is the narrower gap: it posts one source per request and disables itself while in flight, so
+      a second pass over material already read is taken one source at a time.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">2.2</span><span class="t">Scope derived from the selection</span></figcaption>
+      <figcaption><span class="n">2.2</span><span class="t">Scope derived from the selection</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Who this run may write about</span><span class="chip">derived</span></div>
         <div class="box">
@@ -53,16 +54,17 @@
         <div class="row"><span class="btn pri">Extract 74</span><span class="btn">Edit scope</span></div>
       </div>
       <div class="note"><span class="fx">F17</span><span class="fx">F18</span>
-      Scope is computed from the material selected rather than chosen as a browsing mode, which
-      is the distinction the current build collapses: its import target both narrows the list and
-      builds the scope, so the widest target passes no scope, produces an empty roster, and
-      rejects every candidate as <code>untrusted_subject</code> after the model call is paid for.
-      The roster count is stated before the run and a zero blocks it. Persona is editable here,
-      where today it can only arrive through the API.</div>
+      Deriving the trusted roster from the material instead of asking a user to type names is the
+      right instinct, and the current build already has it. What the build then collapses is the
+      second distinction: its import target both narrows the list and builds the scope, so the
+      widest target passes no scope, produces an empty roster, and rejects every candidate as
+      <code>untrusted_subject</code> after the model call is paid for. Here the two are separate,
+      the roster count is stated before the run, and a zero blocks it rather than starting it.
+      Persona is editable on this screen, where today it can only arrive through the API.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">2.3</span><span class="t">A long run, reporting itself</span></figcaption>
+      <figcaption><span class="n">2.3</span><span class="t">A long run, reporting itself</span><span class="feas rst">restart</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Extracting</span><span class="chip warn">running</span><span class="btn">Stop</span></div>
         <div class="meter"><i class="w50"></i></div>
@@ -85,25 +87,28 @@
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">2.4</span><span class="t">What was kept, what was lost</span></figcaption>
+      <figcaption><span class="n">2.4</span><span class="t">What was kept, what was lost</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Run finished</span><span class="chip warn">partial</span></div>
         <div class="box"><div class="row"><span class="grow"><b>1,142 candidates</b> · 838 kept · 304 dropped</span></div></div>
         <div class="list">
           <div class="item"><span class="grow">Subject could not be matched <span class="faint">· 141</span></span><span class="btn">Review</span></div>
-          <div class="item"><span class="grow">Restates something already stored <span class="faint">· 96</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Optional field returned null, whole claim discarded <span class="faint">· 96</span></span><span class="btn">Review</span></div>
           <div class="item"><span class="grow">No evidence in the source text <span class="faint">· 44</span></span><span class="btn">Review</span></div>
-          <div class="item"><span class="grow">Section already at its cap <span class="faint">· 23</span></span><span class="btn">Review</span></div>
+          <div class="item"><span class="grow">Unsupported memory category <span class="faint">· 23</span></span><span class="btn">Review</span></div>
         </div>
         <div class="row"><span class="btn pri">Open review · 838</span><span class="btn">Recover a dropped one</span></div>
       </div>
-      <div class="note"><span class="fx">F21</span><span class="fx">F19</span><span class="fx">F20</span>
-      The summary states totals, kept and dropped, and groups the drops into one row per cause
-      with a count, so forty instances of one problem are read once. Recovery is reachable from
-      the summary. Today the badge reports requested, wrote, succeeded, failed, cancelled and
-      missing, none of which is the size of the loss; the rejected panel is a collapsed
-      <code>&lt;details&gt;</code> scoped to one selected source; and the eight draft block codes
-      render as humanised enum names.</div>
+      <div class="note"><span class="fx">F21</span><span class="fx">F19</span><span class="fx">F20</span><span class="fx">F22</span>
+      Totals first, then one row per cause with a count, so ninety-six instances of one problem
+      are read once and recovery starts from the same screen. The largest single cause is a schema
+      defect rather than a judgement the model made: optional fields are declared optional and
+      never nullable, so a unit carrying an explicit null is discarded whole, and naming that here
+      is what separates a fixable bug from a rejected claim. Review opens on the 838 that survived;
+      dropped candidates are recovered from this screen, not queued. Against that, today's badge
+      reports requested, wrote, succeeded, failed, cancelled and missing, none of which is the size
+      of the loss; the rejected panel is a collapsed <code>&lt;details&gt;</code> scoped to one
+      selected source; and the eight draft block codes render as humanised enum names.</div>
     </figure>
 
   </div>

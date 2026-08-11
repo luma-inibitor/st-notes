@@ -13,68 +13,76 @@
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">5.1</span><span class="t">This turn, with reasons and a negative state</span></figcaption>
+      <figcaption><span class="n">5.1</span><span class="t">This turn, with reasons and a negative state</span><span class="feas eng">engine</span></figcaption>
       <div class="screen">
-        <div class="bar"><span class="grow">Memory · this turn</span><span class="faint mono">14:41 · turn 214</span></div>
-        <div class="box"><div class="row"><span class="grow"><b>Nothing recalled this turn</b></span><span class="chip bad">0 used</span></div></div>
+        <div class="bar"><span class="grow">Memory · this turn</span><span class="faint mono">14:41 · turn t214</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>3 used · 11 dropped</b></span><span class="chip bad">nothing reached the model</span></div></div>
         <div class="list">
-          <div class="item"><span class="grow">Over budget</span><span class="mono">3</span></div>
-          <div class="item"><span class="grow">Below score threshold</span><span class="mono">2</span></div>
-          <div class="item"><span class="grow">Not eligible in this chat mode</span><span class="mono">6</span></div>
-          <div class="item"><span class="grow">Preset assembled the prompt, no memory slot</span><span class="chip bad">skipped</span></div>
+          <div class="item"><span class="grow">Over the token budget</span><span class="mono">2</span></div>
+          <div class="item"><span class="grow">Below the score threshold</span><span class="mono">6</span></div>
+          <div class="item"><span class="grow">Not enabled for this chat mode</span><span class="mono">3</span></div>
+          <div class="item"><span class="grow">The preset assembled the prompt with no memory slot, so the 3 selected memories were discarded before the send</span><span class="chip bad">discarded</span></div>
         </div>
         <div class="row"><span class="btn">Open diagnostics</span></div>
       </div>
       <div class="note"><span class="fx">F6</span><span class="fx">F7</span><span class="fx">F10</span><span class="fx">F8</span>
-      A zero record with a timestamp is written even when nothing is injected, and the four rejection
-      counts the budget pass already computes replace the single number the current readout shows with
-      no zero state and no timestamp. Placing this beside the message in the transcript is the one thing
-      a capability package cannot do, since conversation mounts are gated on a package kind this package
-      lacks and message content is sanitised through an allowlist, which is why the report lives in
-      settings and the workspace instead.</div>
+      Everything above the last row is package work: the three rejection counts come from the budget
+      pass that already computes them, and a receipt with a timestamp gets written even on a turn that
+      injects nothing. The last row is not. A record that the preset discarded an assembled injection can
+      only be written where the prompt is assembled, which is engine code, so the whole frame carries the
+      engine mark rather than pretending a package can reach it. This is the single most important
+      negative state in the document, because it is the failure a user cannot otherwise tell apart from
+      memory simply having nothing to say. Note also that this report lives in settings and the
+      workspace: conversation mounts are gated on a package kind this package lacks, and message content
+      is sanitised through an allowlist, so the readout cannot sit beside the message in the transcript.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">5.2</span><span class="t">Recall history across turns</span></figcaption>
+      <figcaption><span class="n">5.2</span><span class="t">Recall history across turns</span><span class="feas rst">restart</span></figcaption>
       <div class="screen">
-        <div class="tabs"><span class="tab">Vault</span><span class="tab">Review</span><span class="tab on">Recall</span><span class="tab">Diagnostics</span></div>
+        <div class="tabs"><span class="tab">Vault</span><span class="tab">Review</span><span class="tab">Sources</span><span class="tab">Settings</span><span class="tab on">Recall</span></div>
         <div class="list">
-          <div class="item"><span class="mono faint">t214</span><span class="grow">0 used · 11 dropped</span><span class="chip bad">skipped</span></div>
+          <div class="item"><span class="mono faint">t214</span><span class="grow">3 used · 11 dropped</span><span class="chip bad">discarded</span></div>
           <div class="item"><span class="mono faint">t213</span><span class="grow">2 used · 4 dropped</span></div>
+          <div class="item"><span class="mono faint">t212</span><span class="grow">no receipt recorded</span><span class="chip warn">unknown</span></div>
           <div class="item"><span class="mono faint">t211</span><span class="grow">5 used · 1 dropped</span><span class="chip warn">no order</span></div>
           <div class="item"><span class="mono faint">t208</span><span class="grow">0 used · 0 candidates</span></div>
         </div>
         <div class="box solid"><div class="row"><span class="grow mono dim">t211 · timeline bullets injected in relevance order</span><span class="btn">View</span></div></div>
       </div>
       <div class="note"><span class="fx">F12</span><span class="fx">F13</span><span class="fx">F11</span>
-      The receipt is appended per turn rather than overwritten once per chat, which is the package's own
-      code and turns a volatile reading into a record that can be read after the fact. Rows flag turns
-      where timeline events reached the model with no sequence and where ranking ran age-blind, since the
-      cooldown option is never passed and no lane derives a score from recency.</div>
+      Recall is added as a fifth tab rather than taking a seat from anything: journey 2 lives in Sources
+      and the permissions frame below is in Settings, so all four existing destinations stay. Reading the
+      history means a new route, hence the restart mark. The receipt is appended per turn instead of
+      overwritten once per chat, which converts a volatile reading into a record. <code>t212</code> is
+      printed as a row of its own and labelled, because a silent gap in a history whose purpose is
+      catching silent injection failures is exactly the thing it was built to rule out. Two rows also
+      flag known weaknesses: timeline events that reached the model with no sequence, and ranking that
+      ran age-blind, since the cooldown option is never passed and no lane derives a score from
+      recency.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">5.3</span><span class="t">Diagnostics, assembled from what is known</span></figcaption>
+      <figcaption><span class="n">5.3</span><span class="t">Diagnostics for the recall path</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Diagnostics</span><span class="chip warn">degraded</span></div>
         <div class="list">
-          <div class="item"><span class="grow">Semantic lane off <span class="faint">· embeddings unavailable on this install</span></span><span class="chip bad">dead</span></div>
-          <div class="item"><span class="grow">Index rebuild failed 2 Mar <span class="faint">· 14 notes saved, not searchable</span></span><span class="btn">Rebuild</span></div>
-          <div class="item"><span class="grow">18 memories not eligible in Conversation</span><span class="btn">Set modes</span></div>
+          <div class="item"><span class="grow">Memories not enabled for this chat mode <span class="faint">· 3 of them were dropped on t214</span></span><span class="btn">Set modes</span></div>
+          <div class="item"><span class="grow">Below the score threshold <span class="faint">· 6 on t214, ranked by the lexical lane alone</span></span><span class="btn">Show them</span></div>
+          <div class="item"><span class="grow">Rejected candidates from the last run <span class="faint">· 304 of 1,142</span></span><span class="btn">Open</span></div>
         </div>
-        <div class="box"><div class="row"><span class="grow mono dim">indexed chunks 4,102 · embedded 0 · dirty · generated 2 Mar 09:14</span></div></div>
-        <div class="box solid"><div class="row"><span class="grow">Integrity, rejected candidates and last injection</span><span class="chip on">here</span></div></div>
+        <div class="box solid"><div class="row"><span class="grow">Vault health: index and embeddings</span><span class="chip warn">degraded</span><span class="btn">Open health</span></div></div>
       </div>
-      <div class="note"><span class="fx">F15</span><span class="fx">F16</span><span class="fx">F64</span><span class="fx">F65</span><span class="fx">F66</span>
-      One destination renders the fields the status response already carries, including the embedding
-      availability flag, index errors, the dirty flag and the generation timestamp, and it holds the
-      integrity results and rejected candidates that currently sit in three other components. A rebuild
-      that embedded nothing reports healthy today, and a failed index rebuild is a transient line in a
-      batch result that no component reads afterwards.</div>
+      <div class="note"><span class="fx">F15</span><span class="fx">F16</span><span class="fx">F65</span>
+      This frame answers one question, why the turn came out the way it did, and hands the vault-wide
+      question off. Index state, embedding availability and the failed rebuild are rendered once, in
+      frame 6.3, and linked to from here rather than drawn twice in two layouts under two different verbs.
+      What stays is per-turn: the mode filter, the threshold, and the rejected candidates from the last
+      run, which today sit in three separate components with no path between them.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">5.4</span><span class="t">A permissions failure that names the remedy</span></figcaption>
+      <figcaption><span class="n">5.4</span><span class="t">A permissions failure that names the remedy</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Memory settings</span><span class="chip bad">403</span></div>
         <div class="empty">This install requires an admin secret for memory routes.</div>
@@ -82,13 +90,14 @@
           <div class="sp"></div>
           <div class="input ph-text">admin secret</div>
           <div class="row"><span class="btn pri">Save secret</span><span class="btn">How to set it</span></div></div>
-        <div class="box solid mono">Projection limit: note <b>char_wren</b>, section <b>identity</b>, 20,431 of 20,000.</div>
       </div>
-      <div class="note"><span class="fx">F63</span><span class="fx">F61</span>
-      The response status is read, so a 403 renders the privileged-access message the engine already
-      ships rather than a fixed loading error, and a cap failure names the note, the section and the
-      current size. Today four read views print the same generic string for any failure, and 35 identical
-      projection errors in one run named neither note nor section.</div>
+      <div class="note"><span class="fx">F63</span>
+      The correct copy for this case already exists: the engine ships a privileged-access message naming
+      both remedies, and nothing here needs writing. It is simply never reached, because the four read
+      views print one generic loading string for every failure without looking at the response status. So
+      an authentication problem with a documented fix arrives as a vault that will not load. One failure
+      per screen, too: a projection-limit error belongs with the note that overflowed, and cannot co-occur
+      with a 403 that stopped every read.</div>
     </figure>
 
   </div>

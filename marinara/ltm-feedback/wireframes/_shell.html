@@ -108,6 +108,10 @@ h3{font-size:15px;margin:0 0 10px;color:var(--dim);font-weight:600}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim);
   border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--panel);margin-bottom:32px}
 .legend b{color:var(--ink)}
+.feas{margin-left:auto;font:600 9.5px/1.7 var(--mono);letter-spacing:.04em;text-transform:uppercase;
+  padding:0 6px;border-radius:4px;border:1px solid var(--line-strong);color:var(--dim);background:var(--panel)}
+.feas.rst{border-color:var(--note-line);color:var(--note-ink);background:var(--note-bg)}
+.feas.eng{border-color:var(--bad-line);color:var(--bad);background:var(--bad-bg)}
 @media (max-width:640px){ .frames{grid-template-columns:1fr} .rail{display:none} }
 </style>
 </head>
@@ -116,14 +120,18 @@ h3{font-size:15px;margin:0 0 10px;color:var(--dim);font-weight:600}
 
 <h1>Long-Term Memory — journey wireframes</h1>
 <p class="sub">Greybox layouts for six user journeys. Structure and information hierarchy only:
-no visual design, no final copy. Every frame is achievable without an engine change unless its
-annotation says otherwise. Amber notes tie a frame to the findings it answers.</p>
+no visual design, no final copy. Every frame carries a feasibility mark, and every figure in
+them belongs to one worked example: a vault of 118 memories, and one extraction run of 1,142
+candidates. Amber notes tie a frame to the findings it answers.</p>
 
 <div class="legend">
   <span><b>Greybox</b> shape only, not styling</span>
   <span><span class="chip">chip</span> state or facet</span>
   <span><span class="chip warn">warn</span> pressure or degraded</span>
   <span><span class="chip bad">bad</span> failure</span>
+  <span><span class="feas">in package</span> no engine change</span>
+  <span><span class="feas rst">restart</span> new route, ships at a release</span>
+  <span><span class="feas eng">engine</span> needs an engine change</span>
   <span><b class="mono">F-id</b> finding this frame answers</span>
 </div>
 

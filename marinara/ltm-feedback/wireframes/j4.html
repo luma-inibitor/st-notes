@@ -13,7 +13,7 @@
   <div class="frames">
 
     <figure class="frame">
-      <figcaption><span class="n">4.1</span><span class="t">Vault browser, same facets as review</span></figcaption>
+      <figcaption><span class="n">4.1</span><span class="t">Vault browser, same facets as review</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="row">
           <div class="rail box">
@@ -28,79 +28,86 @@
           </div>
           <div class="col grow">
             <div class="input ph-text">search memories</div>
-            <div class="bar">161 memories · 24 shown <span class="chip">source notes hidden</span></div>
+            <div class="bar">118 memories · 43 source notes hidden</div>
             <div class="row"><span class="chip">group by subject</span><span class="chip on">sort by size</span></div>
             <div class="list">
-              <div class="item"><span class="grow">Wren · identity <span class="faint">· 19.2k / 20k</span></span><span class="chip warn">near cap</span></div>
-              <div class="item"><span class="grow">Wren · timeline <span class="faint">· 41 contributions</span></span><span class="chip">roleplay</span></div>
-              <div class="item"><span class="grow">Harbour district · world <span class="faint">· 3.1k / 20k</span></span></div>
+              <div class="item"><span class="grow">Wren · identity <span class="faint">· 19,240 / 20,000</span></span><span class="chip warn">near cap</span></div>
+              <div class="item"><span class="grow">Wren · timeline <span class="faint">· eligible in roleplay only</span></span><span class="chip">roleplay</span></div>
+              <div class="item"><span class="grow">Harbour district · world <span class="faint">· 6,180 / 20,000</span></span></div>
             </div>
           </div>
         </div>
       </div>
       <div class="note"><span class="fx">F5</span><span class="fx">F55</span>
-      One list with type, subject, status, mode eligibility and cap pressure as filters, and source
-      notes excluded by default so the total matches what recall can actually reach. The current vault
-      offers a status filter and free-text search, counts source notes in every total, and renders them
-      first.</div>
+      The current vault already gets one thing right: free-text search over stored notes is fast and it
+      works. What it lacks is the rest of the shelf. This list adds type, subject, status, mode
+      eligibility and cap pressure as filters, and holds the 43 source notes out of the default view, so
+      the header count of 118 is the number recall can actually reach. Today every total silently
+      includes the audit records, and they sort to the top.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">4.2</span><span class="t">One memory, with provenance and use</span></figcaption>
+      <figcaption><span class="n">4.2</span><span class="t">One memory, with provenance and use</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Wren · identity</span><span class="chip">roleplay</span><span class="chip">chat</span></div>
         <div class="box">
-          <div class="row"><span class="grow"><b>Works nights at a clinic</b></span><span class="faint mono">recalled 41×</span></div>
+          <div class="row"><span class="grow"><b>Works nights at a clinic</b></span><span class="faint mono">recalled 21×</span></div>
           <div class="sp"></div>
-          <div class="row faint mono">from character card · imported 3 Mar</div>
+          <div class="row faint mono">from the character card · last recalled 2 Mar</div>
         </div>
         <div class="box">
-          <div class="row"><span class="grow">Afraid of open water</span><span class="faint mono">recalled 0×</span></div>
-          <div class="row faint mono">from chat summary · turn 88</div>
+          <div class="row"><span class="grow">Afraid of open water</span><span class="faint mono">never recalled</span></div>
+          <div class="row faint mono">from a chat summary · semantic lane dead, so this may be unreachable rather than unused</div>
         </div>
-        <div class="box solid"><div class="row"><span class="grow">Section length</span><span class="mono">19,240 / 20,000</span></div>
+        <div class="box solid"><div class="row"><span class="grow">The projected section</span><span class="mono">19,240 / 20,000</span></div>
           <div class="meter warn"><i class="w96"></i></div></div>
       </div>
       <div class="note"><span class="fx">F47</span><span class="fx">F58</span>
-      Each stored line names the contribution that produced it and how many times it has been injected,
-      both of which are already written to disk. Today the note editor is one free-form text area with
-      no link back to the evidence unit and no recall count on any route, so a line that has never been
-      used looks identical to one the model leans on every turn.</div>
+      Two facts already written to disk, surfaced: the contribution each stored line came from, and how
+      many times that line has been injected. A caveat rides with the second one, because on this vault
+      the semantic lane is dead, so a count of zero is as likely to mean unreachable as unimportant. The
+      present editor is a single free-form text area with no link back to the evidence unit and no recall
+      count on any route, which leaves a line the model leans on every turn looking exactly like one it
+      has never seen.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">4.3</span><span class="t">Correct it in place</span></figcaption>
+      <figcaption><span class="n">4.3</span><span class="t">Correct it in place</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar">Editing one contribution</div>
         <div class="input area ph-text">Works nights at the harbour clinic.</div>
         <div class="input ph-text">keywords: clinic, nights, harbour</div>
-        <div class="row"><span class="grow mono dim">412 / 20,000 characters</span><span class="chip">18 / 30 keywords</span></div>
+        <div class="row"><span class="grow mono dim">this contribution · 412 characters</span><span class="chip warn">28 / 30 keywords</span></div>
+        <div class="box solid"><div class="row"><span class="grow">The projected section</span><span class="mono">19,240 / 20,000</span></div>
+          <div class="meter warn"><i class="w96"></i></div></div>
         <div class="row"><span class="btn pri">Save</span><span class="btn">Stop using here</span><span class="btn">Forget</span></div>
         <div class="box solid mono">Note id derives from the subject name. Renaming the subject creates a second note.</div>
       </div>
       <div class="note"><span class="fx">F45</span><span class="fx">F57</span><span class="fx">F58</span>
-      Per-contribution edit, scope removal and delete, backed by the existing note patch route, with a
-      live counter against the character and keyword caps instead of a silent trim. The current editor
-      cuts text at 20,000 characters with no counter and no marker, and correcting a wrong claim means
-      fixing the corpus and re-ingesting the source.</div>
+      Two sizes, two labels, no shared denominator read twice: what this one contribution costs, and
+      where the section lands once it is saved. Editing, scope removal and delete all ride the note patch
+      route that already exists. Against that, the current editor trims at 20,000 characters with no
+      counter and no marker of what it cut, and the only sanctioned way to correct a wrong claim is to
+      fix the corpus and ingest the source again.</div>
     </figure>
 
     <figure class="frame">
-      <figcaption><span class="n">4.4</span><span class="t">A stored conflict, with a third option</span></figcaption>
+      <figcaption><span class="n">4.4</span><span class="t">A stored conflict, with a third option</span><span class="feas">in package</span></figcaption>
       <div class="screen">
         <div class="bar"><span class="grow">Conflict on <span class="mono">identity</span></span><span class="chip bad">unresolved</span></div>
-        <div class="box"><div class="row"><span class="grow"><b>Existing</b></span><span class="faint mono">recalled 41×</span></div>
+        <div class="box"><div class="row"><span class="grow"><b>Existing</b></span><span class="faint mono">recalled 21×</span></div>
           <div class="ph l"></div></div>
-        <div class="box solid"><div class="row"><span class="grow"><b>Proposed</b></span><span class="faint mono">from turn 214</span></div>
+        <div class="box solid"><div class="row"><span class="grow"><b>Proposed</b></span><span class="faint mono">from turn t214</span></div>
           <div class="ph m"></div></div>
         <div class="row"><span class="btn">Keep existing</span><span class="btn">Take proposed</span><span class="btn pri">Keep both, in order</span></div>
-        <div class="box solid mono">Merge two notes for one subject: blocked, keyword union is 34 of 30.</div>
+        <div class="box solid mono">Merging the two notes for this subject is blocked: the keyword union is over the 30 cap.</div>
       </div>
       <div class="note"><span class="fx">F35</span><span class="fx">F56</span>
-      Existing and proposed sit side by side with the recall count on the text about to be overwritten,
-      and keeping both ordered is offered because most contradictions in a long story are the situation
-      moving rather than a dispute. Review never reads conflicts at all today, and the vault shows the
-      proposed value without ever displaying the existing one.</div>
+      Both values face each other, and the recall count sits on the one about to be overwritten, so the
+      cost of taking the proposal is legible before it is taken. A third option exists because most
+      contradictions in a long story are the situation moving on rather than a dispute about a fact. Of
+      the 47 claims in this run that overwrite a stored value, review reads none of them as conflicts,
+      and the vault prints the proposed text without ever putting the existing text next to it.</div>
     </figure>
 
   </div>
