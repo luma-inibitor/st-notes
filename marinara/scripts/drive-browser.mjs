@@ -16,6 +16,7 @@
 //   clickText(label)   DOM-side click by visible text, prefix-tolerant.
 //   forceClick(sel)    Click through overlapping siblings via element.click().
 //   setCheckbox(label, on) Toggle a visually hidden checkbox by its row label.
+//   dismissOverlays()  Close "What's New?", tutorial, and mascot popovers.
 //   consoleErrors      Collected console and page errors.
 //
 // This driver deliberately does not use the repository's Playwright test runner
@@ -249,6 +250,33 @@ async function forceClick(selector) {
 // Toggles render as visually hidden 1x1 checkboxes, so they cannot be clicked
 // by coordinates. Find the input whose nearest labelled ancestor starts with
 // `rowLabel` and click the input itself.
+/** Dismiss first-boot overlays: the "What's New?" dialog, the tutorial
+ * invitation, and the mascot help popover. All three intercept pointer events
+ * over the whole app, so run this after every goto on a fresh profile. Safe to
+ * call when nothing is open. */
+async function dismissOverlays() {
+  for (let i = 0; i < 8; i++) {
+    const closed = await page.evaluate(() => {
+      const dlg = document.querySelector('[role="dialog"]');
+      if (dlg) {
+        const btn = [...dlg.querySelectorAll("button")].find((b) =>
+          /close|skip|got it|dismiss|continue|done|×/i.test(b.getAttribute("aria-label") || b.textContent || ""));
+        if (btn) { btn.click(); return true; }
+        document.querySelector("[data-backdrop-dismiss-surface]")
+          ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        return true;
+      }
+      const pop = [...document.querySelectorAll("button")].find((b) =>
+        /skip tutorial|got it|^×$/i.test((b.getAttribute("aria-label") || b.textContent || "").trim()) &&
+        b.closest('[class*="popover"],[class*="tutorial"],[class*="mascot"]'));
+      if (pop) { pop.click(); return true; }
+      return false;
+    });
+    await page.waitForTimeout(500);
+    if (!closed) break;
+  }
+}
+
 async function setCheckbox(rowLabel, checked = true) {
   return page.evaluate(
     ({ rowLabel, checked }) => {
@@ -286,6 +314,7 @@ const api = {
   clickText,
   forceClick,
   setCheckbox,
+  dismissOverlays,
 };
 
 try {

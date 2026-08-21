@@ -417,3 +417,40 @@ Set `PLAYWRIGHT_BROWSERS_PATH` to the directory holding `chromium-*`, and `PLAYW
 - [Frontend Architecture (Developers)](https://github.com/luma-inibitor/Marinara-Engine/blob/main/docs/development/frontend.md)
 - [Configuration](https://github.com/luma-inibitor/Marinara-Engine/blob/main/docs/CONFIGURATION.md)
 - [Contributing](https://github.com/luma-inibitor/Marinara-Engine/blob/main/CONTRIBUTING.md)
+
+### First-boot overlays block every click
+
+A fresh profile shows the **"What's New?"** dialog, then the tutorial invitation,
+then a mascot help popover — each intercepts pointer events over the whole app,
+and Playwright reports `subtree intercepts pointer events` on unrelated targets.
+Call `dismissOverlays()` after every `goto` (it is idempotent). The persistent
+profile remembers dismissals, but version bumps re-arm "What's New?".
+
+### Panel rows: hover-action pills overlay the right side
+
+Resource rows (presets, lorebooks, characters) carry an absolutely positioned
+action pill (star/duplicate/delete) over the right edge that is always visible
+on touch and intercepts clicks. Clicking row *text* can land on the pill and
+delete/duplicate instead of opening. Click at the **left edge** of the row
+(`clickText(label, { maxX: … })`) or `forceClick` the row container.
+
+### Built-in presets are read-only
+
+Stock presets (`systemKey` set, e.g. Marinara's Universal Preset) open a
+read-only interstitial with **Create editable copy**. Automation that wants the
+real editor must create the copy first; it appears as a second, near-identically
+named row — disambiguate before clicking.
+
+### macOS Playwright browser resolution
+
+If `PLAYWRIGHT_BROWSERS_PATH` holds a full build (`chromium-<rev>/chrome-mac-arm64/`),
+the binary is inside **`Google Chrome for Testing.app/Contents/MacOS/`** — point
+`PLAYWRIGHT_CHROMIUM_PATH` at that file. A `chromium_headless_shell-<rev>` dir of a
+*different* revision than your `playwright-core` will error with "Executable
+doesn't exist" — the exact-path override skips discovery entirely.
+
+### Scripts that import playwright must run from a repo that has it
+
+`node /tmp/script.mjs` fails module resolution even when a project nearby has
+Playwright installed. Copy the script into (or run it from) a directory whose
+`node_modules` contains playwright — the Engine checkout or a tool repo.
