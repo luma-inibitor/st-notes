@@ -22,6 +22,8 @@ export HARNESS=/path/to/st-notes/marinara/scripts
 | `seed-chat.mjs`                           | Creates cards, a persona, a chat, a Game Mode world, and message history.    |
 | `drive-browser.mjs`                       | Playwright driver with a persistent profile and screenshot helpers.          |
 | `steps/example-tour.mjs`                  | Example step module for the driver.                                          |
+| `slow-provider.mjs`                       | Provider that drips tokens or holds a stream open forever, for load and socket tests. |
+| `steps/issue-6388-settings-during-generation.mjs` | Times Chat Settings while generations pin the browser's sockets. See `issue-6388-repro.md`. |
 | `steps/fixture-tour.mjs`                  | Screenshots every chat seeded from the shipped fixtures.                     |
 | `responders/example-schema-responder.mjs` | Example of building a schema-valid reply for a structured-output agent.      |
 | `fixtures/`                               | Seed content for all three chat modes. See [`fixtures/README.md`](scripts/fixtures/README.md). |
